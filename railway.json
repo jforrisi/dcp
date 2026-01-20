@@ -5,7 +5,7 @@
     "buildCommand": "bash build.sh"
   },
   "deploy": {
-    "startCommand": "cd backend && python run.py",
+    "startCommand": "cd backend && venv/bin/python run.py",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }

@@ -89,7 +89,7 @@ export default function TimeSeriesPage() {
 
                 <div className="mb-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">Estadísticas</h2>
-                  <StatsCard stats={stats} isLoading={isLoadingStats} />
+                  <StatsCard stats={stats ?? null} isLoading={isLoadingStats} />
                 </div>
               </>
             ) : (

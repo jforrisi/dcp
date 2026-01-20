@@ -4,7 +4,7 @@ nixPkgs = ["nodejs-18_x", "python311", "python311Packages.pip"]
 [phases.install]
 cmds = [
   "cd frontend && npm install",
-  "cd backend && pip install -r requirements.txt"
+  "cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
 ]
 
 [phases.build]
@@ -13,4 +13,4 @@ cmds = [
 ]
 
 [start]
-cmd = "cd backend && python run.py"
+cmd = "cd backend && source venv/bin/activate && python run.py"

@@ -1,5 +1,4 @@
 import { Stats } from '../services/api';
-import { format } from 'date-fns';
 
 interface StatsCardProps {
   stats: Stats | null;
@@ -27,15 +26,6 @@ export default function StatsCard({ stats, isLoading }: StatsCardProps) {
   const formatValue = (value: number | null) => {
     if (value === null) return 'N/A';
     return value.toFixed(2);
-  };
-
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return 'N/A';
-    try {
-      return format(new Date(dateStr), 'dd/MM/yyyy');
-    } catch {
-      return dateStr;
-    }
   };
 
   const formatVariation = (variation: number | null) => {

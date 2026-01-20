@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { format, subMonths } from 'date-fns';
 import DateRangePicker from '../components/DateRangePicker';
 import VariationBarChart from '../components/VariationBarChart';
-import { apiService } from '../services/api';
+import { apiService, Variation } from '../services/api';
 
 export default function VariationComparisonPage() {
   const [fechaDesde, setFechaDesde] = useState(
@@ -13,10 +13,10 @@ export default function VariationComparisonPage() {
   const [orderBy, setOrderBy] = useState<'asc' | 'desc'>('desc');
   const [applyFilters, setApplyFilters] = useState(false);
 
-  const { data: variations = [], isLoading } = useQuery({
+  const { data: variations = [], isLoading } = useQuery<Variation[]>({
     queryKey: ['variations', fechaDesde, fechaHasta, orderBy, applyFilters],
     queryFn: () => apiService.getVariations(fechaDesde, fechaHasta, orderBy),
-    enabled: applyFilters && fechaDesde && fechaHasta,
+    enabled: Boolean(applyFilters && fechaDesde && fechaHasta),
   });
 
   const handleApplyFilters = () => {

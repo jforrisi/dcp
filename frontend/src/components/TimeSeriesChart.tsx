@@ -49,7 +49,7 @@ export default function TimeSeriesChart({ data }: TimeSeriesChartProps) {
 
       data.forEach((series) => {
         const price = series.precios.find((p) => p.fecha === date);
-        dataPoint[series.producto.nombre] = price ? price.valor : null;
+        dataPoint[series.producto.nombre] = price ? price.valor : 0;
       });
 
       return dataPoint;

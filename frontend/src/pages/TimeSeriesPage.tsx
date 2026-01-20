@@ -5,7 +5,7 @@ import ProductSelector from '../components/ProductSelector';
 import DateRangePicker from '../components/DateRangePicker';
 import TimeSeriesChart from '../components/TimeSeriesChart';
 import StatsCard from '../components/StatsCard';
-import { apiService } from '../services/api';
+import { apiService, TimeSeriesData, Stats } from '../services/api';
 
 export default function TimeSeriesPage() {
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
@@ -15,19 +15,19 @@ export default function TimeSeriesPage() {
   const [fechaHasta, setFechaHasta] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [applyFilters, setApplyFilters] = useState(false);
 
-  const { data: timeSeriesData = [], isLoading: isLoadingData } = useQuery({
+  const { data: timeSeriesData = [], isLoading: isLoadingData } = useQuery<TimeSeriesData[]>({
     queryKey: ['timeSeries', selectedProducts, fechaDesde, fechaHasta, applyFilters],
     queryFn: () =>
       apiService.getMultipleProductsPrices(selectedProducts, fechaDesde, fechaHasta),
-    enabled: applyFilters && selectedProducts.length > 0 && fechaDesde && fechaHasta,
+    enabled: Boolean(applyFilters && selectedProducts.length > 0 && fechaDesde && fechaHasta),
   });
 
   // Get stats for first selected product
-  const { data: stats, isLoading: isLoadingStats } = useQuery({
+  const { data: stats, isLoading: isLoadingStats } = useQuery<Stats>({
     queryKey: ['stats', selectedProducts[0], fechaDesde, fechaHasta, applyFilters],
     queryFn: () =>
       apiService.getProductStats(selectedProducts[0], fechaDesde, fechaHasta),
-    enabled: applyFilters && selectedProducts.length > 0 && fechaDesde && fechaHasta,
+    enabled: Boolean(applyFilters && selectedProducts.length > 0 && fechaDesde && fechaHasta),
   });
 
   const handleApplyFilters = () => {

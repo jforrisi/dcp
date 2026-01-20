@@ -1,0 +1,367 @@
+NOMBRE DEL PROYECTO
+===================
+
+Sistema unificado de series de tiempo de:
+- Precios de productos.
+- Precios/tarifas de servicios.
+- Variables macroeconómicas (por ejemplo, tipo de cambio, inflación, índices).
+
+OBJETIVO DEL MODELO DE DATOS
+============================
+
+Definir una estructura mínima y uniforme para almacenar series de tiempo de valor (precios, tarifas, índices, etc.), con:
+
+- Un catálogo general ("maestro") que describe cada serie.
+- Una tabla de observaciones ("maestro_precios") que guarda los valores a lo largo del tiempo.
+
+ESTRUCTURA DE CARPETAS LÓGICA
+=============================
+
+Esta estructura de carpetas es conceptual (para scripts, notebooks, etc.):
+
+- precios/download/productos/:
+  - Scripts cuya única responsabilidad es DESCARGAR archivos fuente de productos (por ejemplo, con Selenium + Chrome).
+  - Guardan siempre los archivos crudos en la carpeta `data_raw/`.
+  - No realizan validaciones ni inserciones en la base de datos.
+
+- precios/download/servicios/:
+  - Scripts cuya única responsabilidad es DESCARGAR archivos fuente de servicios (por ejemplo, con Selenium + Chrome).
+  - Guardan siempre los archivos crudos en la carpeta `data_raw/`.
+  - No realizan validaciones ni inserciones en la base de datos.
+
+- precios/update/productos/:
+  - Scripts cuya responsabilidad es ACTUALIZAR la base de datos con datos de productos.
+  - Para cada serie:
+    - Intentan primero leer directamente desde la URL con `pandas.read_excel`.
+    - Si pandas falla, se avisa al usuario y se elimina el código de pandas del script.
+    - Si la serie requiere Selenium/descarga previa, leen el archivo correspondiente desde `data_raw/` generado por un script de `precios/download/productos/`.
+  - Aplican todas las reglas de validación (fechas, Excel de prueba, confirmación del usuario).
+  - Insertan finalmente en las tablas `maestro` y `maestro_precios` solo después de la confirmación explícita del usuario.
+
+- precios/update/servicios/:
+  - Scripts cuya responsabilidad es ACTUALIZAR la base de datos con datos de servicios.
+  - Mismo flujo que `precios/update/productos/` pero para servicios.
+
+- macro/download/:
+  - Scripts cuya única responsabilidad es DESCARGAR archivos fuente de variables macroeconómicas (por ejemplo, con Selenium + Chrome).
+  - Guardan siempre los archivos crudos en la carpeta `data_raw/`.
+  - No realizan validaciones ni inserciones en la base de datos.
+
+- macro/update/:
+  - Scripts cuya responsabilidad es ACTUALIZAR la base de datos con variables macroeconómicas.
+  - Mismo flujo que `precios/update/productos/` pero para variables macro.
+
+- data_raw/:
+  - Carpeta donde se guardan los archivos fuente crudos descargados (Excel u otros formatos).
+
+MODELO DE DATOS
+===============
+
+TABLA: maestro
+--------------
+
+Tabla principal que define cada serie (producto, servicio o variable macro).
+
+Nombre sugerido: maestro
+
+Columnas:
+
+- id (INTEGER o VARCHAR, PK)
+  - Identificador único de la serie (producto, servicio o variable macro).
+- nombre (VARCHAR)
+  - Nombre descriptivo de la serie.
+- tipo (CHAR(1))
+  - Indica si la serie es un producto, un servicio o una variable macro.
+  - Valores permitidos:
+    - P = producto
+    - S = servicio
+    - M = variable macro
+- fuente (VARCHAR)
+  - Origen de los datos (ej.: scraping, API oficial, carga manual).
+- periodicidad (CHAR(1))
+  - Frecuencia esperada de los datos.
+  - Valores permitidos:
+    - D = diario (Daily)
+    - W = semanal (Weekly)
+    - M = mensual (Monthly)
+- unidad (VARCHAR, opcional)
+  - Unidad asociada al valor (ej.: UYU, USD, índice base 2010=100, litros, etc.).
+- categoria (VARCHAR, opcional)
+  - Clasificación general (ej.: Alimentos, Servicios públicos, Macro – tipo de cambio).
+- activo (BOOLEAN, opcional, por defecto TRUE)
+  - Marca si la serie se sigue usando.
+
+TABLA: maestro_precios
+----------------------
+
+Tabla de observaciones en el tiempo para cada ítem definido en maestro.
+
+Nombre sugerido: maestro_precios
+
+Columnas:
+
+- id (INTEGER, PK, autoincremental)
+  - Identificador único de la fila.
+- maestro_id (INTEGER o VARCHAR, FK a maestro.id)
+  - Referencia a la serie a la que pertenece este dato.
+- fecha (DATE o DATETIME)
+  - Fecha (o fecha-hora) de la observación / precio / valor.
+- valor (NUMERIC/DECIMAL)
+  - Valor numérico de la observación (precio, tarifa, índice, tipo de cambio, etc.).
+
+REGLAS PARA ESTRUCTURAR DATOS
+=============================
+
+1. Cada producto, servicio o variable macro debe tener una fila en maestro:
+   - Debe incluir: id, nombre, tipo (P/S/M), fuente, periodicidad (D/W/M).
+2. Todas las observaciones históricas y nuevas deben ir a maestro_precios:
+   - maestro_id = maestro.id de la serie correspondiente.
+   - fecha = fecha de la observación.
+   - valor = valor numérico de la observación.
+   - Los datos NO deben quedarse solo en archivos intermedios (CSV, Excel, etc.): el objetivo final es que toda la información estructurada termine insertada directamente en la base de datos en estas dos tablas.
+3. VALIDACIÓN DE FECHA (OBLIGATORIA):
+   - Antes de insertar cualquier dato en maestro_precios, el campo "fecha" DEBE ser validado como una fecha válida.
+   - Rechazar cualquier valor que no pueda ser interpretado como fecha (DATE o DATETIME).
+   - No insertar filas con fechas inválidas, nulas o en formato incorrecto.
+4. VALIDACIÓN Y CONFIRMACIÓN DEL USUARIO (OBLIGATORIA):
+   - ANTES de guardar cualquier dato en la base de datos, el sistema DEBE:
+     a) Preguntar al usuario cómo quiere llamar el archivo que contendrá los datos del maestro (nombre del archivo).
+     b) Mostrar un resumen de los datos que se van a insertar (tanto en maestro como en maestro_precios).
+     c) Solicitar confirmación explícita del usuario antes de proceder.
+   - NO guardar NADA en la base de datos que no haya sido validado y confirmado explícitamente por el usuario.
+   - Si el usuario rechaza o no confirma, los datos NO deben ser insertados.
+5. GENERACIÓN DE ARCHIVO EXCEL DE PRUEBA (OBLIGATORIA, MODO TESTING):
+   - ANTES de copiar/insertar datos en las tablas de la base de datos, el sistema DEBE:
+     a) Crear un DataFrame de prueba con todos los datos estructurados (maestro + maestro_precios).
+     b) Exportar este DataFrame a un archivo Excel en el directorio principal (main/raíz) del proyecto.
+     c) El archivo Excel debe tener al menos dos hojas:
+        - Hoja "maestro": con las filas que se insertarán en la tabla maestro.
+        - Hoja "maestro_precios": con las filas que se insertarán en la tabla maestro_precios.
+     d) Mostrar al usuario la ubicación del archivo Excel generado para su revisión.
+   - El usuario DEBE revisar y validar el contenido del Excel antes de que el sistema proceda con la inserción en la base de datos.
+   - Solo después de la validación del usuario sobre el Excel, proceder con la inserción en la base de datos.
+   - El Excel intermedio generado en la raíz del proyecto es una herramienta de testing/validación:
+     - Una vez que el flujo esté estable y validado, este archivo DEBE eliminarse después de su uso.
+     - También se debe eliminar o desactivar (por ejemplo, mediante una bandera de modo debug) la parte del código que genera dicho Excel.
+6. Interpretación de tipo:
+   - P = producto (ítems físicos).
+   - S = servicio (servicios periódicos).
+   - M = macro (variables macroeconómicas).
+7. Interpretación de periodicidad:
+   - D = diario.
+   - W = semanal.
+   - M = mensual.
+
+ESQUEMA SQL DE REFERENCIA
+=========================
+
+Ejemplo genérico compatible con PostgreSQL (ajustable a otros motores):
+
+CREATE TABLE maestro (
+    id              SERIAL PRIMARY KEY,       -- o usar VARCHAR si se prefieren IDs alfanuméricos
+    nombre          VARCHAR(255) NOT NULL,
+    tipo            CHAR(1) NOT NULL CHECK (tipo IN ('P', 'S', 'M')),
+    fuente          VARCHAR(255) NOT NULL,
+    periodicidad    CHAR(1) NOT NULL CHECK (periodicidad IN ('D', 'W', 'M')),
+    unidad          VARCHAR(100),            -- opcional
+    categoria       VARCHAR(255),            -- opcional
+    activo          BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE TABLE maestro_precios (
+    id          SERIAL PRIMARY KEY,
+    maestro_id  INTEGER NOT NULL REFERENCES maestro(id),
+    fecha       DATE NOT NULL,
+    valor       NUMERIC(18, 6) NOT NULL
+);
+
+-- Índices recomendados
+CREATE INDEX idx_maestro_precios_maestro_id ON maestro_precios (maestro_id);
+CREATE INDEX idx_maestro_precios_fecha ON maestro_precios (fecha);
+CREATE INDEX idx_maestro_precios_maestro_fecha ON maestro_precios (maestro_id, fecha);
+
+EJEMPLOS SIMPLIFICADOS
+======================
+
+Ejemplo 1: Producto
+-------------------
+
+maestro:
+- id: 1
+- nombre: "Leche entera 1L marca X"
+- tipo: "P"
+- fuente: "Scraping_supermercado_X"
+- periodicidad: "D"
+
+maestro_precios:
+- (maestro_id: 1, fecha: 2025-01-01, valor: 40.5)
+- (maestro_id: 1, fecha: 2025-01-02, valor: 41.0)
+
+Ejemplo 2: Variable macro (tipo de cambio)
+-----------------------------------------
+
+maestro:
+- id: 100
+- nombre: "Tipo de cambio USD/UYU"
+- tipo: "M"
+- fuente: "API_BCU"
+- periodicidad: "D"
+
+maestro_precios:
+- (maestro_id: 100, fecha: 2025-01-01, valor: 38.50)
+- (maestro_id: 100, fecha: 2025-01-02, valor: 38.70)
+
+Ejemplo 3: Inflación mensual
+----------------------------
+
+maestro:
+- id: 200
+- nombre: "Inflación mensual Uruguay (IPC general)"
+- tipo: "M"
+- fuente: "INE_IPC"
+- periodicidad: "M"
+
+maestro_precios:
+- (maestro_id: 200, fecha: 2025-01-01, valor: 0.75)   -- 0.75% en enero
+- (maestro_id: 200, fecha: 2025-02-01, valor: 0.60)   -- 0.60% en febrero
+
+USO ESPERADO POR OTRAS IAs
+==========================
+
+FLUJO OBLIGATORIO DE VALIDACIÓN Y CARGA DE DATOS:
+
+1. Estructurar los datos:
+   - Crear (o reutilizar) una entrada en maestro para cada serie.
+   - Preparar las observaciones para maestro_precios.
+
+2. VALIDAR FECHAS:
+   - Verificar que TODAS las fechas en maestro_precios sean fechas válidas antes de continuar.
+   - Rechazar cualquier fila con fecha inválida o nula.
+
+3. GENERAR ARCHIVO EXCEL DE PRUEBA:
+   - Crear un DataFrame con los datos estructurados (maestro + maestro_precios).
+   - Exportar a Excel en el directorio principal del proyecto con dos hojas:
+     * Hoja "maestro"
+     * Hoja "maestro_precios"
+   - Mostrar al usuario la ubicación del archivo generado.
+
+4. SOLICITAR NOMBRE DE ARCHIVO Y CONFIRMACIÓN:
+   - Preguntar al usuario cómo quiere llamar el archivo que contendrá los datos del maestro.
+   - Mostrar un resumen de los datos que se van a insertar.
+   - Solicitar confirmación explícita del usuario.
+
+5. VALIDACIÓN DEL USUARIO:
+   - Esperar a que el usuario revise el Excel generado.
+   - Esperar confirmación explícita del usuario antes de proceder.
+
+6. INSERCIÓN EN BASE DE DATOS (SOLO SI EL USUARIO CONFIRMA):
+   - Solo después de la validación y confirmación del usuario, insertar los datos en las tablas maestro y maestro_precios.
+   - Si el usuario NO confirma, NO insertar nada en la base de datos.
+
+REGLAS ADICIONALES:
+
+- Respetar los códigos:
+  - tipo: P/S/M.
+  - periodicidad: D/W/M.
+- Documentar consistentemente la fuente en maestro.fuente.
+- NUNCA insertar datos sin validación previa de fechas y sin confirmación explícita del usuario.
+
+FLUJO DE OBTENCIÓN DE ARCHIVOS FUENTE
+=====================================
+
+Este proyecto asume que muchas series de tiempo provienen de archivos fuente (por ejemplo, Excel) publicados por terceros
+(organismos oficiales, reguladores, etc.). Para mantener un flujo consistente y automatizable se define el siguiente esquema:
+
+CARPETA `data_raw`
+------------------
+
+- `data_raw/` es la carpeta donde se guardan **todos los archivos fuente crudos** (por ejemplo, Excels descargados).
+- Estos archivos son insumos temporales/operativos:
+  - La **fuente de verdad estructurada** sigue siendo la base de datos (`maestro` + `maestro_precios`).
+  - Los scripts pueden volver a usarlos para reprocesar o regenerar datos si es necesario.
+- Convención sugerida de nombres:
+  - `precios_hacienda_inac.xlsx`
+  - `tipo_cambio_bcu.xlsx`
+  - `ipc_general_ine.xlsx`
+  - etc.
+
+FLUJO PRINCIPAL: PANDAS PRIMERO, SELENIUM COMO FALLBACK
+=======================================================
+
+Los scripts en `precios/update/` (y `macro/update/`) siguen esta lógica:
+
+1. **INTENTO INICIAL CON PANDAS**:
+   - Siempre intentar primero leer directamente desde la URL con `pandas.read_excel(URL, ...)`.
+   - Si funciona: estructurar los datos, validar fechas, generar Excel de prueba, pedir confirmación del usuario e insertar en la base de datos.
+
+2. **SI PANDAS FALLA**:
+   - El sistema DEBE:
+     a) Avisar claramente al usuario que `pandas` no funciona (mostrar el error específico, por ejemplo: 404, timeout, etc.).
+     b) Informar al usuario que se utilizará Selenium y que habrá 2 archivos:
+        - Un archivo en `precios/download/productos/` (o `servicios/` o `macro/download/`) para descargar.
+        - Un archivo en `precios/update/productos/` (o `servicios/` o `macro/update/`) para actualizar.
+     c) Solicitar confirmación explícita del usuario antes de proceder con el cambio a Selenium.
+   - Si el usuario confirma:
+     - ELIMINAR completamente el código de pandas del script de `update`.
+     - Crear o modificar el script correspondiente en `download` para usar Selenium + Chrome.
+     - Modificar el script de `update` para leer desde `data_raw/` en lugar de la URL directa.
+   - Si el usuario NO confirma, NO proceder con el cambio.
+
+3. **NOMENCLATURA DE ARCHIVOS CON SELENIUM**:
+   - Cuando una serie requiere Selenium, los archivos se llaman **IGUAL** en `download` y `update`.
+   - Ejemplo para productos:
+     - `precios/download/productos/novillo_hacienda.py` (descarga con Selenium)
+     - `precios/update/productos/novillo_hacienda.py` (lee desde `data_raw/` y actualiza DB)
+   - Ejemplo para servicios:
+     - `precios/download/servicios/tarifa_electricidad.py` (descarga con Selenium)
+     - `precios/update/servicios/tarifa_electricidad.py` (lee desde `data_raw/` y actualiza DB)
+   - Ejemplo para macro:
+     - `macro/download/tipo_cambio_bcu.py` (descarga con Selenium)
+     - `macro/update/tipo_cambio_bcu.py` (lee desde `data_raw/` y actualiza DB)
+
+ESTRUCTURA DE SCRIPTS CON SELENIUM
+-----------------------------------
+
+Cuando una serie requiere Selenium, se crean DOS archivos con el mismo nombre:
+
+**Script de descarga** (`precios/download/productos/` o `servicios/`, o `macro/download/`):
+- Usa Selenium + Chrome para abrir la página web correspondiente.
+- Navega y hace clic en el enlace de descarga del archivo.
+- Guarda el archivo en `data_raw/` con un nombre conocido y consistente.
+- No realiza validaciones ni inserciones en la base de datos.
+
+**Script de actualización** (`precios/update/productos/` o `servicios/`, o `macro/update/`):
+- Lee el archivo local desde `data_raw/` (generado previamente por el script de `download`).
+- Estructura los datos según las reglas del modelo (`maestro` / `maestro_precios`).
+- Valida fechas (regla obligatoria).
+- Genera el Excel de prueba (hojas `maestro` y `maestro_precios`) en la raíz del proyecto.
+- Solicita confirmación explícita del usuario.
+- Solo después de la confirmación, inserta en las tablas `maestro` y `maestro_precios`.
+
+REGLAS ESPECÍFICAS PARA EL FLUJO DE OBTENCIÓN
+---------------------------------------------
+
+- Intentar siempre **primero** la lectura directa con `pandas` cuando exista una URL estable.
+- Si la lectura directa falla:
+  - Registrar claramente el error (por ejemplo, 404, timeout, etc.).
+  - Avisar al usuario y solicitar confirmación antes de cambiar a Selenium.
+  - Si el usuario confirma: eliminar código de pandas y crear/modificar scripts de download y update con Selenium.
+- Para cualquier flujo que utilice archivos de `data_raw/`:
+  - Validar fechas antes de insertar en `maestro_precios` (regla obligatoria).
+  - Generar el Excel de prueba (hojas `maestro` y `maestro_precios`) en la raíz del proyecto.
+  - Solicitar confirmación explícita del usuario antes de insertar en la base de datos.
+- Nomenclatura: cuando se usa Selenium, el mismo nombre de archivo en `download` y `update`.
+
+DEPENDENCIAS ADICIONALES PARA FLUJOS CON SELENIUM
+-------------------------------------------------
+
+- Para los scripts en `precios/download/` y `macro/download/` que usen Selenium + Chrome se requieren, típicamente:
+  - Paquete Python `selenium`.
+  - Un driver de Chrome (por ejemplo, gestionado con `webdriver-manager` u otra herramienta).
+- Cada script de `download` que use Selenium debe documentar:
+  - Qué página abre.
+  - Qué archivo descarga.
+  - A qué ruta de `data_raw/` lo guarda (nombre exacto del archivo).
+- Los scripts de `update` correspondientes deben leer ese mismo archivo desde `data_raw/` usando el nombre documentado.
+
+

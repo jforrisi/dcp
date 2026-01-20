@@ -1,0 +1,263 @@
+CÁLCULO DE ÍNDICES PARA VISUALIZACIÓN
+======================================
+
+OBJETIVO
+--------
+
+Este documento describe la metodología general de conversión de variables y cálculo de índices para la visualización del sistema.
+
+CONVERSIÓN DE VARIABLES A MENSUAL
+==================================
+
+Todas las variables deben ser convertidas a frecuencia **MENSUAL** para el análisis.
+
+Las reglas de conversión son las siguientes:
+
+1. **Variables DIARIAS (periodicidad = 'D')**:
+   - Se convierten al **promedio mensual**.
+   - Se agrupan todos los valores diarios de cada mes y se calcula el promedio.
+   - Ejemplo: Si hay 30 observaciones diarias en enero, se calcula el promedio de esas 30 observaciones.
+
+2. **Variables SEMANALES (periodicidad = 'W')**:
+   - Se convierten al **promedio mensual**.
+   - Se agrupan todas las observaciones semanales que caen dentro de cada mes y se calcula el promedio.
+   - Ejemplo: Si hay 4 observaciones semanales en enero, se calcula el promedio de esas 4 observaciones.
+
+3. **Variables MENSUALES (periodicidad = 'M')**:
+   - Se dejan **sin modificación**.
+   - Ya están en la frecuencia requerida.
+
+
+FÓRMULAS DE CÁLCULO DE ÍNDICES
+===============================
+
+Los índices se calculan para normalizar los precios y permitir comparaciones temporales eliminando el efecto de la inflación y el tipo de cambio.
+
+FÓRMULA GENERAL (Mayoría de productos)
+---------------------------------------
+
+Para la mayoría de los productos, el índice se calcula como:
+
+```
+Índice = (Precio × Tipo de Cambio USD/UYU) / IPC
+```
+
+Donde:
+- **Precio**: Precio del producto en USD (dólar estadounidense)
+- **Tipo de Cambio USD/UYU**: Tipo de cambio dólar estadounidense vs peso uruguayo
+- **IPC**: Índice de Precios al Consumo (inflación)
+
+Esta fórmula convierte el precio de dólares a pesos uruguayos y luego lo deflacta por el IPC para obtener un valor real constante.
+
+CASO ESPECIAL: CELULOSA
+------------------------
+
+Para el caso de la celulosa, la relación es diferente:
+
+```
+Índice Celulosa = (Precio × Tipo de Cambio EUR/UYU) / IPC
+```
+
+Donde:
+- **Precio**: Precio de la celulosa en EUR (euro)
+- **Tipo de Cambio EUR/UYU**: Tipo de cambio euro vs peso uruguayo
+- **IPC**: Índice de Precios al Consumo (inflación)
+
+La diferencia con la fórmula general es que se utiliza el tipo de cambio del **euro** en lugar del dólar estadounidense, ya que el precio de la celulosa está expresado en euros.
+
+EJEMPLOS DE APLICACIÓN
+======================
+
+Ejemplo 1: Producto con precio en USD
+-------------------------------------
+
+1. **Datos originales**: Precio diario de soja en USD/tonelada
+2. **Conversión a mensual**: Se calcula el promedio mensual de los precios diarios
+3. **Cálculo del índice**: 
+   - Precio mensual promedio: 500 USD/ton
+   - Tipo de cambio USD/UYU del mes: 40.5
+   - IPC del mes: 105.2 (base 100)
+   - Índice = (500 × 40.5) / 105.2 = 192.49
+
+Ejemplo 2: Celulosa (precio en EUR)
+------------------------------------
+
+1. **Datos originales**: Precio mensual de celulosa en EUR (ya en frecuencia mensual)
+2. **Conversión a mensual**: No requiere conversión (ya es mensual)
+3. **Cálculo del índice**:
+   - Precio mensual: 1200 EUR (índice base 100)
+   - Tipo de cambio EUR/UYU del mes: 44.2
+   - IPC del mes: 105.2 (base 100)
+   - Índice = (1200 × 44.2) / 105.2 = 503.99
+
+Ejemplo 3: Producto con precio semanal en USD
+----------------------------------------------
+
+1. **Datos originales**: Precio semanal de trigo en USD/tonelada
+2. **Conversión a mensual**: Se calcula el promedio mensual de los precios semanales
+3. **Cálculo del índice**:
+   - Precio mensual promedio: 300 USD/ton
+   - Tipo de cambio USD/UYU del mes: 40.5
+   - IPC del mes: 105.2 (base 100)
+   - Índice = (300 × 40.5) / 105.2 = 115.49
+
+NOTAS IMPORTANTES
+=================
+
+1. **Sincronización temporal**: Todas las variables (precio, tipo de cambio, IPC) deben estar alineadas en el mismo período mensual para el cálculo del índice.
+
+2. **Manejo de valores faltantes**: Si alguna variable requerida (precio, tipo de cambio o IPC) no está disponible para un mes determinado, el índice no puede calcularse para ese mes.
+
+3. **Unidades**: El resultado del índice es adimensional y permite comparaciones temporales eliminando el efecto de inflación y tipo de cambio.
+
+4. **Base del IPC**: El IPC utilizado debe tener una base consistente. Verificar que todos los cálculos usen la misma base (por ejemplo, Base Octubre 2022=100).
+
+5. **Tipo de cambio**: 
+   - Para la mayoría de productos: usar tipo de cambio USD/UYU
+   - Para celulosa: usar tipo de cambio EUR/UYU
+
+IMPLEMENTACIÓN
+==============
+
+Al implementar el cálculo de índices en el sistema:
+
+1. Identificar la periodicidad de cada variable (D/W/M)
+2. Convertir todas las variables a mensual según las reglas descritas
+3. Identificar si el producto es celulosa o no
+4. Aplicar la fórmula correspondiente:
+   - General (precios en USD): `precio_usd × tc_usd_uyu / ipc`
+   - Celulosa (precio en EUR): `precio_eur × tc_eur_uyu / ipc`
+5. Alinear temporalmente todas las series (precio, tipo de cambio, IPC) por mes
+6. Calcular el índice para cada mes disponible
+
+DOMINANT CURRENCY PARADIGM
+==========================
+
+Esta sección describe la metodología de visualización y normalización de índices en el sistema, aplicando el paradigma de moneda dominante para facilitar la comparación de series temporales.
+
+NORMALIZACIÓN A BASE 100
+-------------------------
+
+Para la visualización en gráficos, **todos los índices deben normalizarse a base 100** al inicio de la serie visible según los filtros aplicados por el usuario.
+
+**Proceso de normalización:**
+
+1. **Aplicar filtros**: El usuario selecciona un rango de fechas (fecha_desde, fecha_hasta) y productos específicos.
+
+2. **Identificar el primer valor**: Para cada serie de índice calculada, se identifica el primer valor disponible dentro del rango de fechas filtrado.
+
+3. **Calcular factor de normalización**: 
+   ```
+   Factor = 100 / Valor_inicial
+   ```
+   Donde `Valor_inicial` es el primer valor del índice en el rango filtrado.
+
+4. **Aplicar normalización**: Todos los valores de la serie se multiplican por el factor:
+   ```
+   Índice_normalizado[t] = Índice_original[t] × Factor
+   ```
+   Esto garantiza que el primer valor visible siempre sea 100.
+
+**Ejemplo de normalización:**
+
+Supongamos que tenemos una serie de índices calculados:
+- Enero 2024: 150.5
+- Febrero 2024: 152.3
+- Marzo 2024: 148.9
+- Abril 2024: 155.2
+
+Si el usuario filtra desde febrero 2024:
+- Valor inicial (febrero): 152.3
+- Factor = 100 / 152.3 = 0.6567
+- Serie normalizada:
+  - Febrero 2024: 152.3 × 0.6567 = 100.0
+  - Marzo 2024: 148.9 × 0.6567 = 97.8
+  - Abril 2024: 155.2 × 0.6567 = 101.8
+
+**Ventajas de la normalización:**
+
+1. **Comparabilidad**: Permite comparar fácilmente la evolución relativa de diferentes productos, independientemente de sus niveles absolutos.
+
+2. **Interpretación intuitiva**: Un valor de 100 representa el punto de partida, valores mayores a 100 indican incrementos porcentuales, valores menores a 100 indican decrementos.
+
+3. **Visualización clara**: Facilita la identificación de tendencias y patrones en gráficos con múltiples series.
+
+**Consideraciones importantes:**
+
+- La normalización se aplica **después** de aplicar los filtros de fecha y productos.
+- Cada serie se normaliza independientemente según su propio valor inicial en el rango filtrado.
+- Si el usuario cambia los filtros, la normalización se recalcula automáticamente.
+- El valor inicial debe ser válido (no nulo, no cero) para poder calcular el factor.
+
+EXPORTACIÓN A EXCEL
+-------------------
+
+El sistema debe permitir descargar las series de índices normalizados en formato Excel.
+
+**Funcionalidad requerida:**
+
+1. **Botón de descarga**: Debe existir un botón o enlace en la interfaz de visualización que permita descargar los datos.
+
+2. **Formato del archivo Excel**:
+   - **Hoja 1: "Índices Normalizados"**
+     - Columna A: Fecha (formato fecha)
+     - Columnas siguientes: Una columna por cada producto/serie seleccionada
+     - Primera fila: Encabezados con nombres de productos
+     - Valores: Índices normalizados (base 100)
+   
+   - **Hoja 2: "Índices Originales"** (opcional, para referencia)
+     - Misma estructura que la hoja 1
+     - Valores: Índices calculados antes de la normalización
+   
+   - **Hoja 3: "Metadatos"** (opcional)
+     - Información sobre:
+       - Rango de fechas exportado
+       - Productos incluidos
+       - Fecha de exportación
+       - Fórmulas aplicadas (USD/UYU o EUR/UYU según producto)
+
+3. **Datos incluidos**:
+   - Solo los datos visibles según los filtros aplicados (fecha_desde, fecha_hasta, productos seleccionados)
+   - Índices normalizados a base 100 (según el primer valor del rango filtrado)
+   - Fechas en formato legible (dd/mm/yyyy o similar)
+
+4. **Nombre del archivo**:
+   - Formato sugerido: `indices_dominant_currency_YYYYMMDD_HHMMSS.xlsx`
+   - Ejemplo: `indices_dominant_currency_20250115_143022.xlsx`
+
+**Implementación técnica:**
+
+- El backend debe proporcionar un endpoint que genere el archivo Excel con las series filtradas y normalizadas.
+- El frontend debe permitir la descarga del archivo generado.
+- Se recomienda usar bibliotecas como `pandas` (Python) o `xlsxwriter` para generar el Excel.
+- El archivo debe generarse dinámicamente según los filtros actuales del usuario.
+
+**Ejemplo de estructura Excel:**
+
+```
+Hoja "Índices Normalizados":
+Fecha       | Soja  | Trigo | Arroz | Celulosa
+2024-02-01  | 100.0 | 100.0 | 100.0 | 100.0
+2024-03-01  | 97.8  | 102.3 | 98.5  | 101.2
+2024-04-01  | 101.8 | 105.1 | 99.2  | 103.5
+...
+```
+
+FLUJO COMPLETO DE VISUALIZACIÓN
+================================
+
+1. **Usuario aplica filtros**: Selecciona productos y rango de fechas.
+
+2. **Sistema calcula índices**: 
+   - Convierte variables a mensual
+   - Aplica fórmula de índice (precio × tc / ipc)
+   - Filtra por rango de fechas seleccionado
+
+3. **Sistema normaliza a base 100**:
+   - Identifica primer valor de cada serie en el rango
+   - Calcula factor de normalización
+   - Aplica normalización a toda la serie
+
+4. **Sistema muestra gráfico**: Visualiza las series normalizadas.
+
+5. **Usuario puede exportar**: Descarga Excel con los datos normalizados.

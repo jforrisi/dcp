@@ -617,6 +617,24 @@ function SummaryTable({ data, fechaDesde, fechaHasta }) {
         fechaFinal = formatFecha(fechaHasta);
     }
 
+    // Formatear intervalo como MM/YY - MM/YY
+    const formatIntervalo = (fechaInicialStr, fechaFinalStr) => {
+        if (!fechaInicialStr || !fechaFinalStr) return 'N/A';
+        try {
+            const fechaInicial = fechaInicialStr.includes('T') ? new Date(fechaInicialStr) : new Date(fechaInicialStr + 'T00:00:00');
+            const fechaFinal = fechaFinalStr.includes('T') ? new Date(fechaFinalStr) : new Date(fechaFinalStr + 'T00:00:00');
+            
+            const mesInicial = String(fechaInicial.getMonth() + 1).padStart(2, '0');
+            const añoInicial = String(fechaInicial.getFullYear()).slice(-2);
+            const mesFinal = String(fechaFinal.getMonth() + 1).padStart(2, '0');
+            const añoFinal = String(fechaFinal.getFullYear()).slice(-2);
+            
+            return `${mesInicial}/${añoInicial} - ${mesFinal}/${añoFinal}`;
+        } catch (e) {
+            return 'N/A';
+        }
+    };
+
     // Debug: ver qué datos llegan
     console.log('SummaryTable recibió datos:', data);
     
@@ -634,6 +652,7 @@ function SummaryTable({ data, fechaDesde, fechaHasta }) {
         })
         .map(product => ({
             nombre: product.product_name,
+            intervalo: formatIntervalo(product.summary.fecha_inicial, product.summary.fecha_final),
             precioInicial: product.summary.precio_inicial,
             precioFinal: product.summary.precio_final,
             moneda: product.moneda || 'uyu',
@@ -735,6 +754,15 @@ function SummaryTable({ data, fechaDesde, fechaHasta }) {
                             </div>
                         </th>
                         <th 
+                            className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            onClick={() => handleSort('intervalo')}
+                        >
+                            <div className="flex items-center justify-center">
+                                Intervalo
+                                <SortIcon columnKey="intervalo" />
+                            </div>
+                        </th>
+                        <th 
                             className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                             onClick={() => handleSort('precioInicial')}
                         >
@@ -804,6 +832,9 @@ function SummaryTable({ data, fechaDesde, fechaHasta }) {
                         <tr key={index} className="hover:bg-gray-50">
                             <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                                 {row.nombre}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-center">
+                                {row.intervalo}
                             </td>
                             <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">
                                 {row.precioInicial.toFixed(2)}
@@ -1074,8 +1105,13 @@ function DCPPage() {
                         ) : dcpData.length > 0 ? (
                             <>
                                 <div className={`card ${fullscreen ? 'fixed inset-2 z-50 bg-white shadow-2xl' : ''}`}>
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h2 className={`font-semibold text-gray-900 ${fullscreen ? 'text-2xl' : 'text-xl'}`}>Gráfico en pesos uruguayos reales</h2>
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <h2 className={`font-semibold text-gray-900 ${fullscreen ? 'text-2xl' : 'text-xl'}`}>Gráfico en pesos uruguayos reales</h2>
+                                            <p className="text-sm text-gray-600 mt-1">
+                                                <strong>Fórmula:</strong> Precio internacional × TC / IPC
+                                            </p>
+                                        </div>
                                         <div className="flex gap-2">
                                             {fullscreen && (
                                                 <button 
@@ -1104,10 +1140,18 @@ function DCPPage() {
                                     <div style={{ height: fullscreen ? 'calc(100vh - 120px)' : '600px' }}>
                                         <DCPChart data={dcpData} fullscreen={fullscreen} />
                                     </div>
-                                    {/* Mostrar fórmula debajo del gráfico */}
-                                    <div className="mt-4 text-sm text-gray-600 text-center">
-                                        <strong>Precio internacional × TC / IPC</strong>
-                                    </div>
+                                    {/* Mostrar fuentes únicas al pie del gráfico */}
+                                    {dcpData.length > 0 && (() => {
+                                        const fuentesUnicas = [...new Set(dcpData.map(item => item.product_source).filter(f => f && f.trim() !== ''))];
+                                        if (fuentesUnicas.length > 0) {
+                                            return (
+                                                <div className="mt-2 text-xs text-gray-500 text-center">
+                                                    <span className="font-medium">Fuentes:</span> {fuentesUnicas.join(', ')}
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    })()}
                                 </div>
                                 
                                 {/* Tabla de resumen - solo mostrar si no está en pantalla completa */}

@@ -460,6 +460,262 @@ function DCPChart({ data, fullscreen = false }) {
     return <canvas ref={chartRef}></canvas>;
 }
 
+// Componente de Tabla de Resumen de Índices
+function SummaryTable({ data, fechaDesde, fechaHasta }) {
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+    
+    // Formatear fechas para mostrar
+    const formatFecha = (fechaStr) => {
+        if (!fechaStr) return '';
+        try {
+            // Si es formato YYYY-MM-DD, agregar hora para evitar problemas de zona horaria
+            let fecha = fechaStr.includes('T') ? new Date(fechaStr) : new Date(fechaStr + 'T00:00:00');
+            return fecha.toLocaleDateString('es-UY', { year: 'numeric', month: 'long', day: 'numeric' });
+        } catch (e) {
+            return fechaStr;
+        }
+    };
+    
+    // Obtener fechas del summary (fechas reales del producto) o del filtro como fallback
+    let fechaInicial = '';
+    let fechaFinal = '';
+    
+    // Priorizar fechas del summary si están disponibles (son las fechas reales del producto)
+    if (data.length > 0 && data[0].summary) {
+        if (data[0].summary.fecha_inicial) {
+            fechaInicial = formatFecha(data[0].summary.fecha_inicial);
+        }
+        if (data[0].summary.fecha_final) {
+            fechaFinal = formatFecha(data[0].summary.fecha_final);
+        }
+    }
+    
+    // Si no hay fechas del summary, usar las del filtro como fallback
+    if (!fechaInicial && fechaDesde) {
+        fechaInicial = formatFecha(fechaDesde);
+    }
+    if (!fechaFinal && fechaHasta) {
+        fechaFinal = formatFecha(fechaHasta);
+    }
+
+    // Debug: ver qué datos llegan
+    console.log('SummaryTable recibió datos:', data);
+    
+    // Preparar datos para la tabla
+    const tableData = data
+        .filter(product => {
+            const hasSummary = product.summary !== null && product.summary !== undefined;
+            const hasPrecioInicial = hasSummary && product.summary.precio_inicial !== null && product.summary.precio_inicial !== undefined;
+            if (!hasSummary) {
+                console.log('Producto sin summary:', product.product_name, product);
+            } else if (!hasPrecioInicial) {
+                console.log('Producto sin precio_inicial:', product.product_name, product.summary);
+            }
+            return hasPrecioInicial;
+        })
+        .map(product => ({
+            nombre: product.product_name,
+            precioInicial: product.summary.precio_inicial,
+            precioFinal: product.summary.precio_final,
+            moneda: product.moneda || 'uyu',
+            variacionPrecioNominal: product.summary.variacion_precio_nominal || 0.0,
+            variacionTc: product.summary.variacion_tc,
+            variacionIpc: product.summary.variacion_ipc,
+            variacionReal: product.summary.variacion_real
+        }));
+    
+    console.log('TableData procesado:', tableData);
+
+    // Función de ordenamiento
+    const handleSort = (key) => {
+        let direction = 'asc';
+        if (sortConfig.key === key && sortConfig.direction === 'asc') {
+            direction = 'desc';
+        }
+        setSortConfig({ key, direction });
+    };
+
+    // Aplicar ordenamiento
+    const sortedData = [...tableData].sort((a, b) => {
+        if (sortConfig.key === null) return 0;
+        
+        let aVal = a[sortConfig.key];
+        let bVal = b[sortConfig.key];
+        
+        if (typeof aVal === 'string') {
+            aVal = aVal.toLowerCase();
+            bVal = bVal.toLowerCase();
+        }
+        
+        if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    const SortIcon = ({ columnKey }) => {
+        if (sortConfig.key !== columnKey) {
+            return <span className="text-gray-400 ml-1 text-xs">↕</span>;
+        }
+        return sortConfig.direction === 'asc' 
+            ? <span className="text-indigo-600 ml-1 text-xs">↑</span>
+            : <span className="text-indigo-600 ml-1 text-xs">↓</span>;
+    };
+
+    const formatMoneda = (moneda) => {
+        const monedas = {
+            'usd': 'USD',
+            'eur': 'EUR',
+            'uyu': 'UYU'
+        };
+        return monedas[moneda] || moneda.toUpperCase();
+    };
+
+    const formatVariacion = (valor, esPorcentaje = true) => {
+        if (valor === 0 || Math.abs(valor) < 0.01) {
+            return esPorcentaje ? '0.00%' : '0.00';
+        }
+        const signo = valor >= 0 ? '+' : '';
+        return esPorcentaje ? `${signo}${valor.toFixed(2)}%` : `${signo}${valor.toFixed(2)}`;
+    };
+
+    const getVariacionColor = (valor) => {
+        if (valor === 0 || Math.abs(valor) < 0.01) return 'text-gray-600';
+        return valor >= 0 ? 'text-green-600' : 'text-red-600';
+    };
+
+    if (tableData.length === 0) {
+        return (
+            <div className="text-center py-8 text-gray-500">
+                <p>No hay datos de resumen disponibles para mostrar.</p>
+                <p className="text-sm mt-2">Verifica que los productos tengan datos en el rango seleccionado.</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="mt-6">
+            <div className="mb-4">
+                <h4 className="text-base font-semibold text-gray-900">Resumen a precios reales</h4>
+                {(fechaInicial || fechaFinal) && (
+                    <p className="text-sm text-gray-600 mt-1">
+                        del {fechaInicial} al {fechaFinal}
+                    </p>
+                )}
+            </div>
+            <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+                <thead className="bg-gray-50">
+                    <tr>
+                        <th 
+                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            onClick={() => handleSort('nombre')}
+                        >
+                            <div className="flex items-center">
+                                Nombre
+                                <SortIcon columnKey="nombre" />
+                            </div>
+                        </th>
+                        <th 
+                            className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            onClick={() => handleSort('precioInicial')}
+                        >
+                            <div className="flex items-center justify-end">
+                                Precio Inicial
+                                <SortIcon columnKey="precioInicial" />
+                            </div>
+                        </th>
+                        <th 
+                            className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            onClick={() => handleSort('precioFinal')}
+                        >
+                            <div className="flex items-center justify-end">
+                                Precio Final
+                                <SortIcon columnKey="precioFinal" />
+                            </div>
+                        </th>
+                        <th 
+                            className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            onClick={() => handleSort('moneda')}
+                        >
+                            <div className="flex items-center justify-center">
+                                Moneda
+                                <SortIcon columnKey="moneda" />
+                            </div>
+                        </th>
+                        <th 
+                            className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            onClick={() => handleSort('variacionPrecioNominal')}
+                        >
+                            <div className="flex items-center justify-end">
+                                Var. precio nominal (%)
+                                <SortIcon columnKey="variacionPrecioNominal" />
+                            </div>
+                        </th>
+                        <th 
+                            className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            onClick={() => handleSort('variacionTc')}
+                        >
+                            <div className="flex items-center justify-end">
+                                Var. TC (%)
+                                <SortIcon columnKey="variacionTc" />
+                            </div>
+                        </th>
+                        <th 
+                            className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            onClick={() => handleSort('variacionIpc')}
+                        >
+                            <div className="flex items-center justify-end">
+                                Var. Inflación (%)
+                                <SortIcon columnKey="variacionIpc" />
+                            </div>
+                        </th>
+                        <th 
+                            className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                            onClick={() => handleSort('variacionReal')}
+                        >
+                            <div className="flex items-center justify-end">
+                                Var. Real (%)
+                                <SortIcon columnKey="variacionReal" />
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                    {sortedData.map((row, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                            <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {row.nombre}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">
+                                {row.precioInicial.toFixed(2)}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">
+                                {row.precioFinal.toFixed(2)}
+                            </td>
+                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-center">
+                                {formatMoneda(row.moneda)}
+                            </td>
+                            <td className={`px-4 py-3 whitespace-nowrap text-sm text-right font-medium ${getVariacionColor(row.variacionPrecioNominal)}`}>
+                                {formatVariacion(row.variacionPrecioNominal)}
+                            </td>
+                            <td className={`px-4 py-3 whitespace-nowrap text-sm text-right font-medium ${getVariacionColor(row.variacionTc)}`}>
+                                {formatVariacion(row.variacionTc)}
+                            </td>
+                            <td className={`px-4 py-3 whitespace-nowrap text-sm text-right font-medium ${getVariacionColor(row.variacionIpc)}`}>
+                                {formatVariacion(row.variacionIpc)}
+                            </td>
+                            <td className={`px-4 py-3 whitespace-nowrap text-sm text-right font-medium ${getVariacionColor(row.variacionReal)}`}>
+                                {formatVariacion(row.variacionReal)}
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    );
+}
+
 // Página de Índices de Precios Relativos
 function DCPPage() {
     const [products, setProducts] = useState([]);
@@ -697,42 +953,57 @@ function DCPPage() {
                                 </div>
                             </div>
                         ) : dcpData.length > 0 ? (
-                            <div className={`card ${fullscreen ? 'fixed inset-2 z-50 bg-white shadow-2xl' : ''}`}>
-                                <div className="flex justify-between items-center mb-4">
-                                    <h2 className={`font-semibold text-gray-900 ${fullscreen ? 'text-2xl' : 'text-xl'}`}>Gráfico en pesos uruguayos reales</h2>
-                                    <div className="flex gap-2">
-                                        {fullscreen && (
-                                            <button 
-                                                onClick={() => setFullscreen(false)} 
-                                                className="px-3 py-1.5 rounded-lg font-medium transition-all bg-gray-200 text-gray-700 hover:bg-gray-300 text-sm"
-                                                title="Salir de pantalla completa"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        )}
-                                        {!fullscreen && (
-                                            <button 
-                                                onClick={() => setFullscreen(true)} 
-                                                className="px-3 py-1.5 rounded-lg font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
-                                                title="Pantalla completa"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                                </svg>
-                                            </button>
-                                        )}
+                            <>
+                                <div className={`card ${fullscreen ? 'fixed inset-2 z-50 bg-white shadow-2xl' : ''}`}>
+                                    <div className="flex justify-between items-center mb-4">
+                                        <h2 className={`font-semibold text-gray-900 ${fullscreen ? 'text-2xl' : 'text-xl'}`}>Gráfico en pesos uruguayos reales</h2>
+                                        <div className="flex gap-2">
+                                            {fullscreen && (
+                                                <button 
+                                                    onClick={() => setFullscreen(false)} 
+                                                    className="px-3 py-1.5 rounded-lg font-medium transition-all bg-gray-200 text-gray-700 hover:bg-gray-300 text-sm"
+                                                    title="Salir de pantalla completa"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            )}
+                                            {!fullscreen && (
+                                                <button 
+                                                    onClick={() => setFullscreen(true)} 
+                                                    className="px-3 py-1.5 rounded-lg font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
+                                                    title="Pantalla completa"
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                                                    </svg>
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div style={{ height: fullscreen ? 'calc(100vh - 120px)' : '600px' }}>
+                                        <DCPChart data={dcpData} fullscreen={fullscreen} />
+                                    </div>
+                                    {/* Mostrar fórmula debajo del gráfico */}
+                                    <div className="mt-4 text-sm text-gray-600 text-center">
+                                        <strong>Precio internacional × TC / IPC</strong>
                                     </div>
                                 </div>
-                                <div style={{ height: fullscreen ? 'calc(100vh - 120px)' : '600px' }}>
-                                    <DCPChart data={dcpData} fullscreen={fullscreen} />
-                                </div>
-                                {/* Mostrar fórmula debajo del gráfico */}
-                                <div className="mt-4 text-sm text-gray-600 text-center">
-                                    <strong>Precio internacional × TC / IPC</strong>
-                                </div>
-                            </div>
+                                
+                                {/* Tabla de resumen - solo mostrar si no está en pantalla completa */}
+                                {!fullscreen && (
+                                    <div className="card mt-6">
+                                        {dcpData.length > 0 ? (
+                                            <SummaryTable data={dcpData} fechaDesde={fechaDesde} fechaHasta={fechaHasta} />
+                                        ) : (
+                                            <div className="text-center py-4 text-gray-500">
+                                                <p>No hay datos disponibles para mostrar en la tabla.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </>
                         ) : (
                             <div className="card">
                                 <div className="flex items-center justify-center" style={{ height: '600px' }}>

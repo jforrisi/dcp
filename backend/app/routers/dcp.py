@@ -164,15 +164,15 @@ def get_macro_series(maestro_id: int, fecha_desde: date, fecha_hasta: date) -> D
     
     periodicidad = maestro_info['periodicidad']
     
-    # Obtener datos de la serie
+    # Obtener datos de la serie FILTRADOS POR EL RANGO COMPLETO
     query = """
         SELECT fecha, valor
         FROM maestro_precios
-        WHERE maestro_id = ? AND fecha <= ?
+        WHERE maestro_id = ? AND fecha >= ? AND fecha <= ?
         ORDER BY fecha ASC
     """
     try:
-        raw_data = execute_query(query, (maestro_id, fecha_hasta))
+        raw_data = execute_query(query, (maestro_id, fecha_desde, fecha_hasta))
     except Exception as e:
         # Si hay error, retornar dict vacío
         return {}
@@ -183,8 +183,25 @@ def get_macro_series(maestro_id: int, fecha_desde: date, fecha_hasta: date) -> D
     # Convertir a mensual (la función convert_to_monthly maneja la conversión de fechas)
     monthly_data = convert_to_monthly(raw_data, periodicidad)
     
-    # Convertir a dict con fecha como key
-    return {item['fecha']: item['valor'] for item in monthly_data}
+    # Filtrar por rango usando comparación de año-mes
+    fecha_desde_ym = (fecha_desde.year, fecha_desde.month)
+    fecha_hasta_ym = (fecha_hasta.year, fecha_hasta.month)
+    
+    filtered_data = {}
+    for item in monthly_data:
+        mes_fecha = item['fecha']
+        # Asegurar que sea date
+        if not isinstance(mes_fecha, date):
+            if isinstance(mes_fecha, str):
+                mes_fecha = date.fromisoformat(mes_fecha)
+            else:
+                continue
+        
+        mes_fecha_ym = (mes_fecha.year, mes_fecha.month)
+        if mes_fecha_ym >= fecha_desde_ym and mes_fecha_ym <= fecha_hasta_ym:
+            filtered_data[mes_fecha] = item['valor']
+    
+    return filtered_data
 
 
 @bp.route('/dcp/indices', methods=['GET'])
@@ -280,11 +297,24 @@ def get_dcp_indices():
             # Usar comparación de año-mes para asegurar que se incluya el último mes del rango
             fecha_desde_ym = (fecha_desde.year, fecha_desde.month)
             fecha_hasta_ym = (fecha_hasta.year, fecha_hasta.month)
-            prices_monthly_filtered = [
-                p for p in prices_monthly 
-                if (p['fecha'].year, p['fecha'].month) >= fecha_desde_ym
-                and (p['fecha'].year, p['fecha'].month) <= fecha_hasta_ym
-            ]
+            
+            # Asegurar que todas las fechas sean objetos date antes de filtrar
+            prices_monthly_filtered = []
+            for p in prices_monthly:
+                mes_fecha = p['fecha']
+                # Convertir a date si es necesario
+                if not isinstance(mes_fecha, date):
+                    if isinstance(mes_fecha, str):
+                        mes_fecha = date.fromisoformat(mes_fecha)
+                    else:
+                        continue
+                
+                mes_fecha_ym = (mes_fecha.year, mes_fecha.month)
+                if mes_fecha_ym >= fecha_desde_ym and mes_fecha_ym <= fecha_hasta_ym:
+                    p['fecha'] = mes_fecha  # Actualizar la fecha en el diccionario
+                    prices_monthly_filtered.append(p)
+            
+            print(f"[DCP] Producto {product_id} ({product_name}): {len(prices_monthly)} precios mensuales, {len(prices_monthly_filtered)} filtrados")
             
             # Determinar qué tipo de cambio usar basándose en la moneda del producto
             if moneda == 'eur':
@@ -366,11 +396,144 @@ def get_dcp_indices():
                 for idx in indices_filtered
             ]
             
+            # Calcular información para la tabla de resumen
+            # Precio inicial y final en moneda original
+            precio_inicial = None
+            precio_final = None
+            fecha_inicial_producto = None
+            fecha_final_producto = None
+            variacion_precio_nominal = 0.0
+            
+            if prices_monthly_filtered and len(prices_monthly_filtered) > 0:
+                try:
+                    precio_inicial = float(prices_monthly_filtered[0]['valor'])
+                    precio_final = float(prices_monthly_filtered[-1]['valor'])
+                    fecha_inicial_producto = prices_monthly_filtered[0]['fecha']
+                    fecha_final_producto = prices_monthly_filtered[-1]['fecha']
+                    
+                    # Calcular variación del precio nominal
+                    if precio_inicial > 0:
+                        variacion_precio_nominal = ((precio_final - precio_inicial) / precio_inicial) * 100
+                    
+                    print(f"[DCP] Producto {product_id} ({product_name}): precio_inicial={precio_inicial}, precio_final={precio_final}")
+                    print(f"[DCP] Variación precio nominal: {variacion_precio_nominal}%")
+                    print(f"[DCP] Fechas producto: {fecha_inicial_producto} a {fecha_final_producto}")
+                except (ValueError, KeyError, IndexError) as e:
+                    print(f"[DCP] ERROR calculando precios para producto {product_id}: {str(e)}")
+                    precio_inicial = None
+                    precio_final = None
+            else:
+                print(f"[DCP] WARNING: No hay precios filtrados para producto {product_id} ({product_name})")
+            
+            # Filtrar series macro por el rango del producto ANTES de calcular variaciones
+            # Usar las fechas reales del producto (no el rango completo del filtro)
+            variacion_tc = 0.0
+            variacion_ipc = 0.0
+            
+            if fecha_inicial_producto and fecha_final_producto:
+                # Rango real del producto (por año-mes), dentro del rango que pidió el usuario
+                # Ej: si usuario pide hasta dic-2025 pero el producto llega a set-2025, end_ym = (2025, 9)
+                start_ym = (fecha_inicial_producto.year, fecha_inicial_producto.month)
+                end_ym = (fecha_final_producto.year, fecha_final_producto.month)
+
+                # Filtrar TC según la moneda del producto
+                # Nota: las series macro suelen estar en fechas date(year, month, 1).
+                # Para ser robustos, calculamos variación por año-mes, tomando el primer y último mes disponibles.
+                if moneda == 'uyu' or moneda is None:
+                    variacion_tc = 0.0
+                else:
+                    tc_series = None
+                    if moneda == 'eur':
+                        tc_series = tc_eur_monthly
+                    elif moneda == 'usd':
+                        tc_series = tc_usd_monthly
+
+                    if tc_series:
+                        tc_by_ym = {(f.year, f.month): float(v) for f, v in tc_series.items() if isinstance(f, date)}
+                        tc_ym_in_range = sorted([ym for ym in tc_by_ym.keys() if start_ym <= ym <= end_ym])
+                        if len(tc_ym_in_range) >= 2:
+                            tc_inicial = tc_by_ym[tc_ym_in_range[0]]
+                            tc_final = tc_by_ym[tc_ym_in_range[-1]]
+                            if tc_inicial > 0:
+                                variacion_tc = ((tc_final / tc_inicial) - 1.0) * 100
+                            print(f"[DCP] Variación TC: {variacion_tc}% (de {tc_ym_in_range[0]} a {tc_ym_in_range[-1]})")
+                        else:
+                            variacion_tc = 0.0
+                    else:
+                        variacion_tc = 0.0
+                
+                # Variación de IPC en el período (usando fechas filtradas del producto)
+                nominal_real_norm = (nominal_real or 'n')
+                if isinstance(nominal_real_norm, str):
+                    nominal_real_norm = nominal_real_norm.strip().lower()
+                else:
+                    nominal_real_norm = 'n'
+
+                if nominal_real_norm != 'n':
+                    # Variable real => no aplica IPC
+                    variacion_ipc = 0.0
+                else:
+                    # Variable nominal => usar (IPC_final / IPC_inicial - 1) * 100
+                    if ipc_monthly:
+                        ipc_by_ym = {(f.year, f.month): float(v) for f, v in ipc_monthly.items() if isinstance(f, date)}
+                        ipc_ym_in_range = sorted([ym for ym in ipc_by_ym.keys() if start_ym <= ym <= end_ym])
+                        if len(ipc_ym_in_range) >= 2:
+                            ipc_inicial = ipc_by_ym[ipc_ym_in_range[0]]
+                            ipc_final = ipc_by_ym[ipc_ym_in_range[-1]]
+                            if ipc_inicial > 0:
+                                variacion_ipc = ((ipc_final / ipc_inicial) - 1.0) * 100
+                            print(f"[DCP] Variación IPC: {variacion_ipc}% (de {ipc_ym_in_range[0]} a {ipc_ym_in_range[-1]})")
+                        else:
+                            variacion_ipc = 0.0
+                    else:
+                        variacion_ipc = 0.0
+            
+            # Variación real del índice DCP
+            variacion_real = 0.0
+            if indices_normalized and len(indices_normalized) >= 2:
+                indice_inicial = indices_normalized[0]['valor']
+                indice_final = indices_normalized[-1]['valor']
+                if indice_inicial > 0:
+                    variacion_real = ((indice_final - indice_inicial) / indice_inicial) * 100
+            
+            # Validar fórmula: (1+var_precio_nominal) * (1+var_tc) / (1+var_inflacion) = (1+var_real)
+            if precio_inicial and precio_final:
+                var_precio_decimal = variacion_precio_nominal / 100.0
+                var_tc_decimal = variacion_tc / 100.0
+                var_inflacion_decimal = variacion_ipc / 100.0
+                var_real_decimal = variacion_real / 100.0
+                
+                # Evitar división por cero si var_inflacion es -100%
+                if var_inflacion_decimal != -1.0:
+                    lado_izquierdo = (1 + var_precio_decimal) * (1 + var_tc_decimal) / (1 + var_inflacion_decimal)
+                    lado_derecho = 1 + var_real_decimal
+                    
+                    diferencia = abs(lado_izquierdo - lado_derecho)
+                    if diferencia > 0.01:  # Tolerancia de 0.01 (1%)
+                        print(f"[DCP] WARNING: Fórmula no se cumple para producto {product_id} ({product_name})")
+                        print(f"[DCP]   (1+var_precio)* (1+var_tc)/(1+var_inflacion) = {lado_izquierdo:.6f}")
+                        print(f"[DCP]   (1+var_real) = {lado_derecho:.6f}")
+                        print(f"[DCP]   Diferencia: {diferencia:.6f}")
+                    else:
+                        print(f"[DCP] ✓ Fórmula validada para producto {product_id} ({product_name})")
+            
             result.append({
                 'product_id': product_id,
                 'product_name': product_name,
                 'product_source': product_source,
-                'data': indices_normalized
+                'moneda': moneda or 'uyu',
+                'nominal_real': nominal_real,
+                'data': indices_normalized,
+                'summary': {
+                    'precio_inicial': precio_inicial,
+                    'precio_final': precio_final,
+                    'variacion_precio_nominal': variacion_precio_nominal,
+                    'variacion_tc': variacion_tc,
+                    'variacion_ipc': variacion_ipc,
+                    'variacion_real': variacion_real,
+                    'fecha_inicial': fecha_inicial_producto.isoformat() if fecha_inicial_producto else None,
+                    'fecha_final': fecha_final_producto.isoformat() if fecha_final_producto else None
+                }
             })
         
         print(f"[DCP] Total productos procesados exitosamente: {len(result)}")

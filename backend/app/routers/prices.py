@@ -1,22 +1,23 @@
 """API routes for price data."""
-from datetime import date
+from datetime import date, datetime
 from typing import List, Optional
 from io import BytesIO
 from flask import Blueprint, request, jsonify, abort, send_file
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill
 from ..database import execute_query, execute_query_single
+from .dcp import get_macro_series, convert_to_monthly, get_product_currency, TC_USD_ID, TC_EUR_ID, IPC_ID
 
 bp = Blueprint('prices', __name__)
 
 
 @bp.route('/products', methods=['GET'])
 def get_products():
-    """Get all active products (tipo='P')."""
+    """Get all active products/services, incluyendo internos (P, S, M)."""
     query = """
         SELECT id, nombre, tipo, unidad, categoria, fuente, periodicidad, activo
         FROM maestro
-        WHERE tipo = 'P' AND activo = 1
+        WHERE tipo IN ('P', 'S', 'M') AND activo = 1
         ORDER BY nombre
     """
     results = execute_query(query)
@@ -160,7 +161,7 @@ def get_multiple_products_prices():
 
 @bp.route('/variations', methods=['GET'])
 def get_price_variations():
-    """Calculate price variations for all products in a date range."""
+    """Calculate DCP index variations for all products in a date range."""
     fecha_desde = request.args.get('fecha_desde', type=str)
     fecha_hasta = request.args.get('fecha_hasta', type=str)
     order_by = request.args.get('order_by', default='desc', type=str)
@@ -172,71 +173,697 @@ def get_price_variations():
         order_by = 'desc'
     
     # Convert string dates to date objects
-    fecha_desde = date.fromisoformat(fecha_desde)
-    fecha_hasta = date.fromisoformat(fecha_hasta)
+    try:
+        fecha_desde = date.fromisoformat(fecha_desde)
+        fecha_hasta = date.fromisoformat(fecha_hasta)
+    except ValueError as e:
+        abort(400, description=f"Invalid date format: {str(e)}")
     
-    query = """
-        WITH precios_iniciales AS (
-            SELECT 
-                mp1.maestro_id, 
-                mp1.valor as precio_inicial,
-                mp1.fecha as fecha_inicial
-            FROM maestro_precios mp1
-            WHERE mp1.fecha = (
-                SELECT MIN(mp2.fecha)
-                FROM maestro_precios mp2
-                WHERE mp2.maestro_id = mp1.maestro_id
-                  AND mp2.fecha >= ?
-                  AND mp2.fecha <= ?
-            )
-        ),
-        precios_finales AS (
-            SELECT 
-                mp1.maestro_id, 
-                mp1.valor as precio_final,
-                mp1.fecha as fecha_final
-            FROM maestro_precios mp1
-            WHERE mp1.fecha = (
-                SELECT MAX(mp2.fecha)
-                FROM maestro_precios mp2
-                WHERE mp2.maestro_id = mp1.maestro_id
-                  AND mp2.fecha >= ?
-                  AND mp2.fecha <= ?
-            )
-        )
-        SELECT 
-            m.id,
-            m.nombre,
-            m.unidad,
-            pi.precio_inicial,
-            pf.precio_final,
-            CASE 
-                WHEN pi.precio_inicial > 0 THEN
-                    ((pf.precio_final - pi.precio_inicial) / pi.precio_inicial * 100.0)
-                ELSE 0.0
-            END as variacion_percent
-        FROM maestro m
-        INNER JOIN precios_iniciales pi ON m.id = pi.maestro_id
-        INNER JOIN precios_finales pf ON m.id = pf.maestro_id
-        WHERE m.tipo = 'P' AND m.activo = 1
-        ORDER BY variacion_percent """ + ("DESC" if order_by == "desc" else "ASC")
+        # Obtener todos los productos y servicios activos (incluye nominal_real/moneda)
+        query_products = """
+            SELECT id, nombre, periodicidad, unidad, moneda, nominal_real
+            FROM maestro
+            WHERE tipo IN ('P', 'S') AND activo = 1
+            ORDER BY nombre
+        """
+    products = execute_query(query_products)
     
-    params = (fecha_desde, fecha_hasta, fecha_desde, fecha_hasta)
-    results = execute_query(query, params)
+    if not products:
+        return jsonify({'variations': [], 'omitted_products': []})
     
-    # Format response to match expected structure
-    formatted_results = []
-    for row in results:
-        formatted_results.append({
-            'id': row['id'],
-            'nombre': row['nombre'],
-            'unidad': row['unidad'],
-            'precio_inicial': row['precio_inicial'],
-            'precio_final': row['precio_final'],
-            'variacion_percent': row['variacion_percent']
+    # Obtener TC e IPC mensuales
+    tc_usd_monthly = get_macro_series(TC_USD_ID, fecha_desde, fecha_hasta)
+    tc_eur_monthly = get_macro_series(TC_EUR_ID, fecha_desde, fecha_hasta)
+    ipc_monthly = get_macro_series(IPC_ID, fecha_desde, fecha_hasta)
+    
+    if not ipc_monthly:
+        abort(400, description="IPC data not available for the selected date range")
+    
+    result = []
+    omitted_products = []
+    
+    # Procesar cada producto
+    for product in products:
+        product_id = product['id']
+        product_name = product['nombre']
+        periodicidad = product['periodicidad']
+        unidad = product.get('unidad')
+        
+        # Obtener precios del producto (ampliar rango para encontrar última fecha disponible)
+        query_prices = """
+            SELECT fecha, valor
+            FROM maestro_precios
+            WHERE maestro_id = ? AND fecha <= ?
+            ORDER BY fecha ASC
+        """
+        try:
+            raw_prices = execute_query(query_prices, (product_id, fecha_hasta))
+        except Exception as e:
+            print(f"[VARIATIONS] Error obteniendo precios para producto {product_id} ({product_name}): {e}")
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': f"Error al obtener precios: {str(e)}",
+                'fecha_ultimo_dato': None
+            })
+            continue
+        
+        if not raw_prices:
+            # Buscar última fecha disponible fuera del rango
+            query_last_date = """
+                SELECT MAX(fecha) as ultima_fecha
+                FROM maestro_precios
+                WHERE maestro_id = ?
+            """
+            try:
+                last_date_result = execute_query_single(query_last_date, (product_id,))
+                last_date = last_date_result['ultima_fecha'] if last_date_result and last_date_result['ultima_fecha'] else None
+            except:
+                last_date = None
+            
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': "No hay datos de precios en el rango seleccionado",
+                'fecha_ultimo_dato': str(last_date) if last_date else None
+            })
+            continue
+        
+        # Convertir precios a mensual
+        prices_monthly = convert_to_monthly(raw_prices, periodicidad)
+        
+        # Determinar qué tipo de cambio usar basándose en la moneda del producto
+        moneda = (product.get('moneda') or get_product_currency(product_id))
+        nominal_real = (product.get('nominal_real') or 'n').lower()
+        if moneda == 'eur':
+            tc_monthly = tc_eur_monthly
+        elif moneda == 'usd':
+            tc_monthly = tc_usd_monthly
+        elif moneda == 'uyu' or moneda is None:
+            # Para productos en UYU o sin moneda definida, usar TC = 1.0
+            tc_monthly = {fecha: 1.0 for fecha in ipc_monthly.keys()}
+        else:
+            # Moneda desconocida, usar USD por defecto
+            tc_monthly = tc_usd_monthly
+        
+        if not tc_monthly:
+            if moneda == 'eur':
+                tc_type = "EUR/UYU"
+            elif moneda == 'usd':
+                tc_type = "USD/UYU"
+            else:
+                tc_type = "USD/UYU"
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': f"No hay datos de tipo de cambio {tc_type} disponibles en el rango seleccionado",
+                'fecha_ultimo_dato': None
+            })
+            continue
+        
+        # Calcular índices con nominal/real:
+        # base = precio × TC; si nominal_real == 'n' -> dividir por IPC; si 'r' -> no dividir
+        indices = []
+        for price_item in prices_monthly:
+            mes_fecha = price_item['fecha']
+            precio = float(price_item['valor'])
+            
+            # Asegurar que mes_fecha sea un objeto date
+            if not isinstance(mes_fecha, date):
+                if isinstance(mes_fecha, str):
+                    mes_fecha = date.fromisoformat(mes_fecha)
+                else:
+                    continue
+            
+            # Verificar que exista TC (y si es nominal, IPC) para este mes
+            if mes_fecha in tc_monthly:
+                tc_valor = float(tc_monthly[mes_fecha])
+                base_valor = precio * tc_valor
+                
+                if nominal_real == 'r':
+                    indices.append({'fecha': mes_fecha, 'valor': base_valor})
+                else:
+                    if mes_fecha in ipc_monthly:
+                        ipc_valor = float(ipc_monthly[mes_fecha])
+                        if ipc_valor > 0:
+                            indices.append({'fecha': mes_fecha, 'valor': base_valor / ipc_valor})
+        
+        if len(indices) < 2:
+            # Buscar última fecha con índice calculado
+            last_index_date = max([idx['fecha'] for idx in indices]) if indices else None
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': "Menos de 2 índices calculados (faltan datos de IPC o TC para algunos meses)",
+                'fecha_ultimo_dato': str(last_index_date) if last_index_date else None
+            })
+            continue
+        
+        # Filtrar índices dentro del rango de fechas (igual que en DCP)
+        indices_filtered = [idx for idx in indices if idx['fecha'] >= fecha_desde and idx['fecha'] <= fecha_hasta]
+        
+        if len(indices_filtered) < 2:
+            # Buscar última fecha con índice en el rango
+            last_index_date = max([idx['fecha'] for idx in indices_filtered]) if indices_filtered else None
+            if not last_index_date:
+                # Usar última fecha de todos los índices calculados
+                last_index_date = max([idx['fecha'] for idx in indices]) if indices else None
+            
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': f"Menos de 2 índices dentro del rango seleccionado",
+                'fecha_ultimo_dato': str(last_index_date) if last_index_date else None
+            })
+            continue
+        
+        # Ordenar por fecha
+        indices_filtered.sort(key=lambda x: x['fecha'])
+        
+        # Obtener primer y último índice del rango filtrado
+        indice_inicial = indices_filtered[0]['valor']
+        indice_final = indices_filtered[-1]['valor']
+        fecha_inicial = indices_filtered[0]['fecha']
+        fecha_final = indices_filtered[-1]['fecha']
+        
+        if indice_inicial == 0 or indice_inicial is None:
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': "Índice inicial es cero o nulo, no se puede calcular variación",
+                'fecha_ultimo_dato': str(fecha_inicial) if fecha_inicial else None
+            })
+            continue
+        
+        # Calcular variación porcentual
+        variacion_percent = ((indice_final - indice_inicial) / indice_inicial) * 100.0
+        
+        # Log para debugging
+        print(f"[VARIATIONS] Producto {product_id} ({product_name}): "
+              f"Rango {fecha_inicial} a {fecha_final}, "
+              f"Índice inicial: {indice_inicial:.2f}, final: {indice_final:.2f}, "
+              f"Variación: {variacion_percent:.2f}%")
+        
+        result.append({
+            'id': product_id,
+            'nombre': product_name,
+            'unidad': unidad,
+            'precio_inicial': indice_inicial,  # Mantener nombre para compatibilidad con frontend
+            'precio_final': indice_final,  # Mantener nombre para compatibilidad con frontend
+            'variacion_percent': variacion_percent
         })
     
-    return jsonify(formatted_results)
+    # Ordenar resultados
+    result.sort(key=lambda x: x['variacion_percent'], reverse=(order_by == 'desc'))
+    
+    # Log para debugging
+    print(f"[VARIATIONS] Total productos procesados: {len(products)}")
+    print(f"[VARIATIONS] Productos con variación calculada: {len(result)}")
+    print(f"[VARIATIONS] Productos omitidos: {len(omitted_products)}")
+    for omitted in omitted_products:
+        print(f"[VARIATIONS] Omitido - {omitted['nombre']}: {omitted['razon']}")
+    
+    return jsonify({
+        'variations': result,
+        'omitted_products': omitted_products
+    })
+
+
+@bp.route('/variations/export', methods=['GET'])
+def export_variations_to_excel():
+    """Export variations data to Excel with complete calculation details."""
+    fecha_desde_str = request.args.get('fecha_desde', type=str)
+    fecha_hasta_str = request.args.get('fecha_hasta', type=str)
+    order_by = request.args.get('order_by', default='desc', type=str)
+    
+    if not fecha_desde_str or not fecha_hasta_str:
+        abort(400, description="fecha_desde and fecha_hasta are required")
+    
+    try:
+        fecha_desde = date.fromisoformat(fecha_desde_str)
+        fecha_hasta = date.fromisoformat(fecha_hasta_str)
+    except ValueError as e:
+        abort(400, description=f"Invalid date format: {str(e)}")
+    
+        # Obtener todos los productos y servicios activos (incluye nominal_real/moneda)
+        query_products = """
+            SELECT id, nombre, periodicidad, unidad, moneda, nominal_real
+            FROM maestro
+            WHERE tipo IN ('P', 'S') AND activo = 1
+            ORDER BY nombre
+        """
+    products = execute_query(query_products)
+    
+    if not products:
+        abort(400, description="No products found")
+    
+    # Obtener TC e IPC mensuales
+    tc_usd_monthly = get_macro_series(TC_USD_ID, fecha_desde, fecha_hasta)
+    tc_eur_monthly = get_macro_series(TC_EUR_ID, fecha_desde, fecha_hasta)
+    ipc_monthly = get_macro_series(IPC_ID, fecha_desde, fecha_hasta)
+    
+    if not ipc_monthly:
+        abort(400, description="IPC data not available for the selected date range")
+    
+    # Estilos
+    header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
+    header_font = Font(bold=True, color="FFFFFF", size=12)
+    header_alignment = Alignment(horizontal="center", vertical="center")
+    data_alignment = Alignment(horizontal="right", vertical="center")
+    
+    wb = Workbook()
+    
+    # Datos para las hojas
+    summary_data = []  # Resumen variaciones
+    all_indices_calculated = {}  # {product_id: [(fecha, indice), ...]}
+    all_indices_original = {}  # {product_id: [(fecha, indice), ...]}
+    all_prices_original = {}  # {product_id: [(fecha, precio), ...]}
+    product_names = {}  # {product_id: nombre}
+    omitted_products = []
+    
+    # Procesar cada producto (similar a /variations pero guardando más datos)
+    for product in products:
+        product_id = product['id']
+        product_name = product['nombre']
+        periodicidad = product['periodicidad']
+        unidad = product.get('unidad')
+        product_names[product_id] = product_name
+        
+        # Obtener precios hasta fecha_hasta inclusive (para mostrar datos hasta donde hay disponibles)
+        query_prices = """
+            SELECT fecha, valor
+            FROM maestro_precios
+            WHERE maestro_id = ? AND fecha <= ?
+            ORDER BY fecha ASC
+        """
+        try:
+            raw_prices = execute_query(query_prices, (product_id, fecha_hasta))
+        except Exception as e:
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': f"Error al obtener precios: {str(e)}"
+            })
+            continue
+        
+        if not raw_prices:
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': "No hay datos de precios en el rango seleccionado"
+            })
+            continue
+        
+        # Convertir precios a mensual
+        prices_monthly = convert_to_monthly(raw_prices, periodicidad)
+        
+        # Guardar precios mensuales (estos son los que se usan para calcular índices)
+        for price_item in prices_monthly:
+            mes_fecha = price_item['fecha']
+            precio = float(price_item['valor'])
+            
+            if not isinstance(mes_fecha, date):
+                if isinstance(mes_fecha, str):
+                    mes_fecha = date.fromisoformat(mes_fecha)
+                else:
+                    continue
+            
+            if product_id not in all_prices_original:
+                all_prices_original[product_id] = []
+            all_prices_original[product_id].append((mes_fecha, precio))
+        
+        # Determinar qué tipo de cambio usar basándose en la moneda del producto
+        moneda = (product.get('moneda') or get_product_currency(product_id))
+        nominal_real = (product.get('nominal_real') or 'n').lower()
+        if moneda == 'eur':
+            tc_monthly = tc_eur_monthly
+        elif moneda == 'usd':
+            tc_monthly = tc_usd_monthly
+        elif moneda == 'uyu' or moneda is None:
+            # Para productos en UYU o sin moneda definida, usar TC = 1.0
+            tc_monthly = {fecha: 1.0 for fecha in ipc_monthly.keys()}
+        else:
+            # Moneda desconocida, usar USD por defecto
+            tc_monthly = tc_usd_monthly
+        
+        if not tc_monthly:
+            if moneda == 'eur':
+                tc_type = "EUR/UYU"
+            elif moneda == 'usd':
+                tc_type = "USD/UYU"
+            else:
+                tc_type = "USD/UYU"
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': f"No hay datos de tipo de cambio {tc_type} disponibles"
+            })
+            continue
+        
+        # Calcular índices con nominal/real:
+        # base = precio × TC; si nominal_real == 'n' -> dividir por IPC; si 'r' -> no dividir
+        indices = []
+        indices_original = []
+        for price_item in prices_monthly:
+            mes_fecha = price_item['fecha']
+            precio = float(price_item['valor'])
+            
+            if not isinstance(mes_fecha, date):
+                if isinstance(mes_fecha, str):
+                    mes_fecha = date.fromisoformat(mes_fecha)
+                else:
+                    continue
+            
+            if mes_fecha in tc_monthly:
+                tc_valor = float(tc_monthly[mes_fecha])
+                base_valor = precio * tc_valor
+                if nominal_real == 'r':
+                    indices.append({'fecha': mes_fecha, 'valor': base_valor})
+                    indices_original.append((mes_fecha, base_valor))
+                else:
+                    if mes_fecha in ipc_monthly:
+                        ipc_valor = float(ipc_monthly[mes_fecha])
+                        if ipc_valor > 0:
+                            indice = base_valor / ipc_valor
+                            indices.append({'fecha': mes_fecha, 'valor': indice})
+                            indices_original.append((mes_fecha, indice))
+        
+        if len(indices) < 2:
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': "Menos de 2 índices calculados"
+            })
+            continue
+        
+        # Filtrar índices dentro del rango
+        indices_filtered = [idx for idx in indices if idx['fecha'] >= fecha_desde and idx['fecha'] <= fecha_hasta]
+        
+        if len(indices_filtered) < 2:
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': "Menos de 2 índices dentro del rango seleccionado"
+            })
+            continue
+        
+        # Ordenar por fecha
+        indices_filtered.sort(key=lambda x: x['fecha'])
+        
+        # Obtener primer y último índice
+        indice_inicial = indices_filtered[0]['valor']
+        indice_final = indices_filtered[-1]['valor']
+        fecha_inicial = indices_filtered[0]['fecha']
+        fecha_final = indices_filtered[-1]['fecha']
+        
+        if indice_inicial == 0 or indice_inicial is None:
+            omitted_products.append({
+                'id': product_id,
+                'nombre': product_name,
+                'razon': "Índice inicial es cero o nulo"
+            })
+            continue
+        
+        # Calcular variación
+        variacion_percent = ((indice_final - indice_inicial) / indice_inicial) * 100.0
+        
+        # Guardar datos para Excel
+        summary_data.append({
+            'product_id': product_id,
+            'nombre': product_name,
+            'unidad': unidad,
+            'variacion_percent': variacion_percent,
+            'indice_inicial': indice_inicial,
+            'indice_final': indice_final,
+            'fecha_inicial': fecha_inicial,
+            'fecha_final': fecha_final
+        })
+        
+        # Guardar índices calculados (filtrados)
+        all_indices_calculated[product_id] = [(idx['fecha'], idx['valor']) for idx in indices_filtered]
+        
+        # Guardar índices originales (todos los calculados)
+        all_indices_original[product_id] = indices_original
+    
+    # Ordenar resumen
+    summary_data.sort(key=lambda x: x['variacion_percent'], reverse=(order_by == 'desc'))
+    
+    # Hoja 1: Resumen Variaciones
+    ws1 = wb.active
+    ws1.title = "Resumen Variaciones"
+    
+    headers1 = ['Producto', 'Unidad', 'Variación %', 'Índice Inicial', 'Índice Final', 'Fecha Inicial', 'Fecha Final']
+    for col, header in enumerate(headers1, 1):
+        cell = ws1.cell(row=1, column=col)
+        cell.value = header
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = header_alignment
+    
+    for row_idx, item in enumerate(summary_data, 2):
+        ws1.cell(row=row_idx, column=1).value = item['nombre']
+        ws1.cell(row=row_idx, column=2).value = item['unidad'] or ''
+        ws1.cell(row=row_idx, column=3).value = item['variacion_percent']
+        ws1.cell(row=row_idx, column=3).number_format = '0.00'
+        ws1.cell(row=row_idx, column=4).value = item['indice_inicial']
+        ws1.cell(row=row_idx, column=4).number_format = '0.00'
+        ws1.cell(row=row_idx, column=5).value = item['indice_final']
+        ws1.cell(row=row_idx, column=5).number_format = '0.00'
+        ws1.cell(row=row_idx, column=6).value = item['fecha_inicial']
+        ws1.cell(row=row_idx, column=7).value = item['fecha_final']
+        ws1.cell(row=row_idx, column=4).alignment = data_alignment
+        ws1.cell(row=row_idx, column=5).alignment = data_alignment
+        ws1.cell(row=row_idx, column=3).alignment = data_alignment
+    
+    # Hoja 2: Índices Calculados (filtrados)
+    ws2 = wb.create_sheet("Índices Calculados")
+    ws2['A1'] = 'Fecha'
+    ws2['A1'].fill = header_fill
+    ws2['A1'].font = header_font
+    ws2['A1'].alignment = header_alignment
+    
+    col = 2
+    for product_id in sorted(all_indices_calculated.keys()):
+        cell = ws2.cell(row=1, column=col)
+        cell.value = product_names[product_id]
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = header_alignment
+        col += 1
+    
+    all_dates_calc = set()
+    for indices in all_indices_calculated.values():
+        all_dates_calc.update([idx[0] for idx in indices])
+    sorted_dates_calc = sorted(all_dates_calc)
+    
+    row = 2
+    for fecha in sorted_dates_calc:
+        ws2.cell(row=row, column=1).value = fecha
+        col = 2
+        for product_id in sorted(all_indices_calculated.keys()):
+            indices = all_indices_calculated[product_id]
+            valor = next((idx[1] for idx in indices if idx[0] == fecha), None)
+            if valor is not None:
+                cell = ws2.cell(row=row, column=col)
+                cell.value = valor
+                cell.number_format = '0.00'
+                cell.alignment = data_alignment
+            col += 1
+        row += 1
+    
+    # Hoja 3: Índices Originales (todos los calculados)
+    ws3 = wb.create_sheet("Índices Originales")
+    ws3['A1'] = 'Fecha'
+    ws3['A1'].fill = header_fill
+    ws3['A1'].font = header_font
+    ws3['A1'].alignment = header_alignment
+    
+    col = 2
+    for product_id in sorted(all_indices_original.keys()):
+        cell = ws3.cell(row=1, column=col)
+        cell.value = product_names[product_id]
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = header_alignment
+        col += 1
+    
+    all_dates_orig = set()
+    for indices in all_indices_original.values():
+        all_dates_orig.update([idx[0] for idx in indices])
+    sorted_dates_orig = sorted(all_dates_orig)
+    
+    row = 2
+    for fecha in sorted_dates_orig:
+        ws3.cell(row=row, column=1).value = fecha
+        col = 2
+        for product_id in sorted(all_indices_original.keys()):
+            indices = all_indices_original[product_id]
+            valor = next((idx[1] for idx in indices if idx[0] == fecha), None)
+            if valor is not None:
+                cell = ws3.cell(row=row, column=col)
+                cell.value = valor
+                cell.number_format = '0.00'
+                cell.alignment = data_alignment
+            col += 1
+        row += 1
+    
+    # Hoja 4: Precios Originales (con componentes: productos, IPC, TC USD/UYU, TC EUR/UYU)
+    ws4 = wb.create_sheet("Precios Originales")
+    ws4['A1'] = 'Fecha'
+    ws4['A1'].fill = header_fill
+    ws4['A1'].font = header_font
+    ws4['A1'].alignment = header_alignment
+    
+    # Encabezados: primero productos, luego IPC, TC USD/UYU, TC EUR/UYU
+    col = 2
+    for product_id in sorted(all_prices_original.keys()):
+        cell = ws4.cell(row=1, column=col)
+        cell.value = product_names[product_id]
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = header_alignment
+        col += 1
+    
+    # Agregar IPC
+    ws4.cell(row=1, column=col).value = 'IPC'
+    ws4.cell(row=1, column=col).fill = header_fill
+    ws4.cell(row=1, column=col).font = header_font
+    ws4.cell(row=1, column=col).alignment = header_alignment
+    ipc_col = col
+    col += 1
+    
+    # Agregar TC USD/UYU
+    ws4.cell(row=1, column=col).value = 'TC USD/UYU'
+    ws4.cell(row=1, column=col).fill = header_fill
+    ws4.cell(row=1, column=col).font = header_font
+    ws4.cell(row=1, column=col).alignment = header_alignment
+    tc_usd_col = col
+    col += 1
+    
+    # Agregar TC EUR/UYU
+    ws4.cell(row=1, column=col).value = 'TC EUR/UYU'
+    ws4.cell(row=1, column=col).fill = header_fill
+    ws4.cell(row=1, column=col).font = header_font
+    ws4.cell(row=1, column=col).alignment = header_alignment
+    tc_eur_col = col
+    
+    # Obtener todas las fechas (de precios, IPC y TC)
+    all_dates_prices = set()
+    for prices in all_prices_original.values():
+        all_dates_prices.update([p[0] for p in prices])
+    all_dates_prices.update(ipc_monthly.keys())
+    all_dates_prices.update(tc_usd_monthly.keys())
+    all_dates_prices.update(tc_eur_monthly.keys())
+    sorted_dates_prices = sorted(all_dates_prices)
+    
+    row = 2
+    for fecha in sorted_dates_prices:
+        ws4.cell(row=row, column=1).value = fecha
+        
+        # Escribir precios de productos
+        col = 2
+        for product_id in sorted(all_prices_original.keys()):
+            prices = all_prices_original[product_id]
+            valor = next((p[1] for p in prices if p[0] == fecha), None)
+            if valor is not None:
+                cell = ws4.cell(row=row, column=col)
+                cell.value = valor
+                cell.number_format = '0.00'
+                cell.alignment = data_alignment
+            col += 1
+        
+        # Escribir IPC
+        ipc_valor = ipc_monthly.get(fecha)
+        if ipc_valor is not None:
+            cell = ws4.cell(row=row, column=ipc_col)
+            cell.value = ipc_valor
+            cell.number_format = '0.00'
+            cell.alignment = data_alignment
+        
+        # Escribir TC USD/UYU
+        tc_usd_valor = tc_usd_monthly.get(fecha)
+        if tc_usd_valor is not None:
+            cell = ws4.cell(row=row, column=tc_usd_col)
+            cell.value = tc_usd_valor
+            cell.number_format = '0.00'
+            cell.alignment = data_alignment
+        
+        # Escribir TC EUR/UYU
+        tc_eur_valor = tc_eur_monthly.get(fecha)
+        if tc_eur_valor is not None:
+            cell = ws4.cell(row=row, column=tc_eur_col)
+            cell.value = tc_eur_valor
+            cell.number_format = '0.00'
+            cell.alignment = data_alignment
+        
+        row += 1
+    
+    # Hoja 5: Metadatos
+    ws5 = wb.create_sheet("Metadatos")
+    ws5['A1'] = 'Campo'
+    ws5['A1'].fill = header_fill
+    ws5['A1'].font = header_font
+    ws5['B1'] = 'Valor'
+    ws5['B1'].fill = header_fill
+    ws5['B1'].font = header_font
+    
+    metadata = [
+        ('Fecha de exportación', datetime.now().strftime('%Y-%m-%d %H:%M:%S')),
+        ('Rango de fechas', f'{fecha_desde} a {fecha_hasta}'),
+        ('Productos incluidos', ', '.join([product_names[pid] for pid in sorted(all_indices_calculated.keys())])),
+        ('Productos omitidos', ', '.join([p['nombre'] for p in omitted_products]) if omitted_products else 'Ninguno'),
+        ('Fórmula aplicada', 'Precio internacional × TC / IPC'),
+    ]
+    
+    row = 2
+    for campo, valor in metadata:
+        ws5.cell(row=row, column=1).value = campo
+        ws5.cell(row=row, column=2).value = valor
+        row += 1
+    
+    # Agregar razones de omisión
+    if omitted_products:
+        ws5.cell(row=row, column=1).value = 'Razones de omisión'
+        ws5.cell(row=row, column=1).font = Font(bold=True)
+        row += 1
+        for omitted in omitted_products:
+            ws5.cell(row=row, column=1).value = omitted['nombre']
+            ws5.cell(row=row, column=2).value = omitted['razon']
+            row += 1
+    
+    # Ajustar anchos de columna
+    for ws in [ws1, ws2, ws3]:
+        ws.column_dimensions['A'].width = 15
+        for col in range(2, len(all_indices_calculated) + 2):
+            ws.column_dimensions[chr(64 + col)].width = 25
+    
+    # Para ws4 (Precios Originales), ajustar considerando productos + IPC + TC USD + TC EUR
+    ws4.column_dimensions['A'].width = 15
+    num_product_cols = len(all_prices_original)
+    for col in range(2, num_product_cols + 2):
+        ws4.column_dimensions[chr(64 + col)].width = 25
+    # IPC, TC USD/UYU, TC EUR/UYU
+    for col in range(num_product_cols + 2, num_product_cols + 5):
+        ws4.column_dimensions[chr(64 + col)].width = 15
+    
+    ws5.column_dimensions['A'].width = 30
+    ws5.column_dimensions['B'].width = 50
+    
+    # Guardar a BytesIO
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+    
+    # Nombre de archivo
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f'variaciones_dcp_{timestamp}.xlsx'
+    
+    return send_file(
+        output,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name=filename
+    )
 
 
 @bp.route('/stats/<int:product_id>', methods=['GET'])

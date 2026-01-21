@@ -32,12 +32,12 @@ EXCEL_PRUEBA_NAME = "prueba_ipc_ine.xlsx"
 # Datos del maestro según especificación del usuario
 MAESTRO_IPC = {
     "id": 11,  # siguiente ID disponible
-    "nombre": "IPC general - Total País (Base Octubre 2022=100)",
+    "nombre": "IPC",
     "tipo": "M",  # variable macro
-    "fuente": "INE_IPC",
+    "fuente": "INE",
     "periodicidad": "M",  # mensual
-    "unidad": "Índice base Octubre 2022=100",
-    "categoria": "Macro - Inflación",
+    "unidad": "Indice",
+    "categoria": "Macro",
     "activo": True,
 }
 
@@ -485,9 +485,32 @@ def generar_excel_prueba(df_maestro: pd.DataFrame, df_precios: pd.DataFrame) -> 
     print("\n[INFO] Generando archivo Excel de prueba...")
 
     excel_path = os.path.join(os.getcwd(), EXCEL_PRUEBA_NAME)
-    with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
-        df_maestro.to_excel(writer, sheet_name="maestro", index=False)
-        df_precios.to_excel(writer, sheet_name="maestro_precios", index=False)
+    
+    # Si el archivo existe y está abierto, intentar eliminarlo o usar nombre alternativo
+    if os.path.exists(excel_path):
+        try:
+            os.remove(excel_path)
+        except PermissionError:
+            # Si no se puede eliminar (está abierto), usar nombre con timestamp
+            import datetime
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            base_name = EXCEL_PRUEBA_NAME.replace(".xlsx", "")
+            excel_path = os.path.join(os.getcwd(), f"{base_name}_{timestamp}.xlsx")
+            print(f"[WARN] Archivo original está abierto, usando nombre alternativo: {excel_path}")
+    
+    try:
+        with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
+            df_maestro.to_excel(writer, sheet_name="maestro", index=False)
+            df_precios.to_excel(writer, sheet_name="maestro_precios", index=False)
+    except PermissionError:
+        # Si aún falla, usar nombre con timestamp
+        import datetime
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        base_name = EXCEL_PRUEBA_NAME.replace(".xlsx", "")
+        excel_path = os.path.join(os.getcwd(), f"{base_name}_{timestamp}.xlsx")
+        with pd.ExcelWriter(excel_path, engine="openpyxl") as writer:
+            df_maestro.to_excel(writer, sheet_name="maestro", index=False)
+            df_precios.to_excel(writer, sheet_name="maestro_precios", index=False)
 
     print(f"[OK] Archivo Excel generado: {excel_path}")
     print(f"   - Hoja 'maestro': {len(df_maestro)} fila(s)")
@@ -637,25 +660,9 @@ def main():
     excel_path = generar_excel_prueba(df_maestro, df_precios)
     mostrar_resumen(df_maestro, df_precios)
 
-    print("\nIMPORTANTE: Revisa el archivo Excel generado antes de continuar:")
-    print(f"   {excel_path}")
-
-    respuesta = (
-        input(
-            "\n¿Confirmás que los datos son correctos y querés insertarlos en la BD? (sí/no): "
-        )
-        .strip()
-        .lower()
-    )
-
-    if respuesta in ["sí", "si", "yes", "y", "s"]:
-        insertar_en_bd(df_maestro, df_precios)
-    else:
-        print(
-            "\n[INFO] Insercion cancelada por el usuario. "
-            "Los datos NO fueron insertados en la BD."
-        )
-        print("   Podés revisar el Excel y ejecutar el script nuevamente cuando estés listo.")
+    print("\n[INFO] Actualizando base de datos automáticamente...")
+    print(f"[INFO] Archivo Excel generado: {excel_path}")
+    insertar_en_bd(df_maestro, df_precios)
 
 
 if __name__ == "__main__":

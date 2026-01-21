@@ -553,21 +553,8 @@ def main():
 
     mostrar_resumen(df_maestro, df_precios)
 
-    respuesta = (
-        input(
-            "\n¿Confirmás que los datos son correctos y querés insertarlos en la BD? (sí/no): "
-        )
-        .strip()
-        .lower()
-    )
-
-    if respuesta in ["sí", "si", "yes", "y", "s"]:
-        insertar_en_bd(df_maestro, df_precios)
-    else:
-        print(
-            "\n[INFO] Insercion cancelada por el usuario. "
-            "Los datos NO fueron insertados en la BD."
-        )
+    print("\n[INFO] Actualizando base de datos automáticamente...")
+    insertar_en_bd(df_maestro, df_precios)
 
 
 if __name__ == "__main__":

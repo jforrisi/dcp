@@ -594,25 +594,9 @@ def main():
     excel_path = generar_excel_prueba(df_maestro, df_precios)
     mostrar_resumen(df_maestro, df_precios)
 
-    print("\nIMPORTANTE: Revisa el archivo Excel generado antes de continuar:")
-    print(f"   {excel_path}")
-
-    respuesta = (
-        input(
-            "\n¿Confirmás que los datos son correctos y querés insertarlos en la BD? (sí/no): "
-        )
-        .strip()
-        .lower()
-    )
-
-    if respuesta in ["sí", "si", "yes", "y", "s"]:
-        insertar_en_bd(df_maestro, df_precios)
-    else:
-        print(
-            "\n[INFO] Insercion cancelada por el usuario. "
-            "Los datos NO fueron insertados en la BD."
-        )
-        print("   Podés revisar el Excel y ejecutar el script nuevamente cuando estés listo.")
+    print("\n[INFO] Actualizando base de datos automáticamente...")
+    print(f"[INFO] Archivo Excel generado: {excel_path}")
+    insertar_en_bd(df_maestro, df_precios)
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ const { useState, useEffect } = React;
 const API_BASE = 'http://localhost:8000/api';
 
 // Componente de Selector de Productos
-function ProductSelector({ selectedProducts, onSelectionChange, products }) {
+function ProductSelector({ selectedProducts, onSelectionChange, products, allProducts }) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -19,11 +19,11 @@ function ProductSelector({ selectedProducts, onSelectionChange, products }) {
         }
     };
 
+    // Usar allProducts si está disponible, sino usar products
+    const productsForDisplay = allProducts || products;
+
     return (
         <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-                Productos
-            </label>
             <div
                 onClick={() => setIsOpen(!isOpen)}
                 className="input-field cursor-pointer flex items-center justify-between"
@@ -77,7 +77,7 @@ function ProductSelector({ selectedProducts, onSelectionChange, products }) {
 
             {selectedProducts.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                    {products.filter(p => selectedProducts.includes(p.id)).map((product) => (
+                    {productsForDisplay.filter(p => selectedProducts.includes(p.id)).map((product) => (
                         <span
                             key={product.id}
                             className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-indigo-100 text-indigo-700 border border-indigo-200"
@@ -147,6 +147,16 @@ function MonthYearPicker({ fechaDesde, fechaHasta, onFechaDesdeChange, onFechaHa
     );
 }
 
+// Parsear "YYYY-MM-DD" como fecha LOCAL (evita corrimiento por zona horaria)
+function parseISODateLocal(isoDateStr) {
+    if (!isoDateStr) return null;
+    // Soporta "YYYY-MM-DD" y también "YYYY-MM-DDTHH:MM:SS"
+    const datePart = String(isoDateStr).split('T')[0].split(' ')[0];
+    const [y, m, d] = datePart.split('-').map(n => parseInt(n, 10));
+    if (!y || !m || !d) return null;
+    return new Date(y, m - 1, d);
+}
+
 // Componente de Gráfico de Líneas
 function TimeSeriesChart({ data, fullscreen = false }) {
     const chartRef = React.useRef(null);
@@ -172,18 +182,18 @@ function TimeSeriesChart({ data, fullscreen = false }) {
 
         // Colores para las líneas - definidos fuera del map para que todas las series tengan colores distintos
         const colors = [
-            'rgb(99, 102, 241)', // indigo
-            'rgb(139, 92, 246)', // purple
-            'rgb(16, 185, 129)', // green
-            'rgb(239, 68, 68)',  // red
-            'rgb(245, 158, 11)', // amber
-            'rgb(6, 182, 212)',  // cyan
-            'rgb(236, 72, 153)', // pink
-            'rgb(20, 184, 166)', // teal
-            'rgb(168, 85, 247)', // violet
-            'rgb(34, 197, 94)',  // emerald
-            'rgb(251, 146, 60)', // orange
-            'rgb(14, 165, 233)', // sky
+            'rgb(59, 130, 246)',   // azul brillante
+            'rgb(239, 68, 68)',    // rojo
+            'rgb(34, 197, 94)',    // verde
+            'rgb(245, 158, 11)',   // amarillo/naranja
+            'rgb(168, 85, 247)',   // púrpura
+            'rgb(236, 72, 153)',   // rosa
+            'rgb(6, 182, 212)',    // cyan
+            'rgb(251, 146, 60)',   // naranja
+            'rgb(99, 102, 241)',   // índigo
+            'rgb(20, 184, 166)',   // teal
+            'rgb(220, 38, 127)',   // fucsia
+            'rgb(14, 165, 233)',   // sky
         ];
 
         const datasets = data.map((series, index) => {
@@ -211,7 +221,7 @@ function TimeSeriesChart({ data, fullscreen = false }) {
             type: 'line',
             data: {
                 labels: sortedDates.map(d => {
-                    const date = new Date(d);
+                    const date = parseISODateLocal(d) || new Date(d);
                     return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
                 }),
                 datasets: datasets,
@@ -287,7 +297,7 @@ function TimeSeriesChart({ data, fullscreen = false }) {
     return <canvas ref={chartRef}></canvas>;
 }
 
-// Componente de Gráfico DCP
+// Componente de Gráfico de Índices de Precios Relativos
 function DCPChart({ data, fullscreen = false }) {
     const chartRef = React.useRef(null);
     const chartInstanceRef = React.useRef(null);
@@ -310,18 +320,18 @@ function DCPChart({ data, fullscreen = false }) {
 
         // Colores para las líneas
         const colors = [
-            'rgb(99, 102, 241)', // indigo
-            'rgb(139, 92, 246)', // purple
-            'rgb(16, 185, 129)', // green
-            'rgb(239, 68, 68)',  // red
-            'rgb(245, 158, 11)', // amber
-            'rgb(6, 182, 212)',  // cyan
-            'rgb(236, 72, 153)', // pink
-            'rgb(20, 184, 166)', // teal
-            'rgb(168, 85, 247)', // violet
-            'rgb(34, 197, 94)',  // emerald
-            'rgb(251, 146, 60)', // orange
-            'rgb(14, 165, 233)', // sky
+            'rgb(59, 130, 246)',   // azul brillante
+            'rgb(239, 68, 68)',    // rojo
+            'rgb(34, 197, 94)',    // verde
+            'rgb(245, 158, 11)',   // amarillo/naranja
+            'rgb(168, 85, 247)',   // púrpura
+            'rgb(236, 72, 153)',   // rosa
+            'rgb(6, 182, 212)',    // cyan
+            'rgb(251, 146, 60)',   // naranja
+            'rgb(99, 102, 241)',   // índigo
+            'rgb(20, 184, 166)',   // teal
+            'rgb(220, 38, 127)',   // fucsia
+            'rgb(14, 165, 233)',   // sky
         ];
 
         const datasets = data.map((series, index) => {
@@ -366,7 +376,7 @@ function DCPChart({ data, fullscreen = false }) {
             type: 'line',
             data: {
                 labels: sortedDates.map(d => {
-                    const date = new Date(d);
+                    const date = parseISODateLocal(d) || new Date(d);
                     return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
                 }),
                 datasets: datasets,
@@ -414,7 +424,7 @@ function DCPChart({ data, fullscreen = false }) {
                         },
                         title: {
                             display: true,
-                            text: 'Índice DCP (base 100)',
+                            text: 'Índice de precios en pesos uruguayos reales (base 100)',
                             font: {
                                 size: fullscreen ? 16 : 14,
                                 weight: 'bold',
@@ -450,10 +460,11 @@ function DCPChart({ data, fullscreen = false }) {
     return <canvas ref={chartRef}></canvas>;
 }
 
-// Página de DCP
+// Página de Índices de Precios Relativos
 function DCPPage() {
     const [products, setProducts] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
+    const [tipoFilter, setTipoFilter] = useState('Todos'); // Filtro Producto/Servicio/Interno
     const [fechaDesde, setFechaDesde] = useState(() => {
         const date = new Date();
         date.setMonth(date.getMonth() - 6);
@@ -472,6 +483,7 @@ function DCPPage() {
     const [loading, setLoading] = useState(false);
     const [applyFilters, setApplyFilters] = useState(false);
     const [fullscreen, setFullscreen] = useState(false);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         fetch(`${API_BASE}/products`)
@@ -492,6 +504,7 @@ function DCPPage() {
 
         setLoading(true);
         setApplyFilters(true);
+        setError(null); // Limpiar error previo
 
         try {
             const params = new URLSearchParams();
@@ -502,16 +515,32 @@ function DCPPage() {
             const response = await fetch(`${API_BASE}/dcp/indices?${params}`);
             
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ message: 'Error desconocido' }));
-                throw new Error(errorData.message || errorData.description || `Error ${response.status}`);
+                let errorMessage = `Error ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorData.description || errorData.error || errorMessage;
+                } catch (e) {
+                    // Si no se puede parsear como JSON, intentar leer como texto
+                    try {
+                        const errorText = await response.text();
+                        if (errorText) {
+                            errorMessage = errorText;
+                        }
+                    } catch (e2) {
+                        // Si todo falla, usar el mensaje por defecto
+                    }
+                }
+                throw new Error(errorMessage);
             }
             
             const data = await response.json();
             setDcpData(data);
+            setError(null); // Limpiar error si todo está bien
         } catch (error) {
-            console.error('Error loading DCP indices:', error);
+            console.error('Error loading indices:', error);
             const errorMessage = error.message || 'Error al cargar los datos';
-            alert(`Error al cargar los datos: ${errorMessage}`);
+            setError(errorMessage);
+            setDcpData([]); // Limpiar datos en caso de error
         } finally {
             setLoading(false);
         }
@@ -544,7 +573,7 @@ function DCPPage() {
             a.href = url;
             
             const contentDisposition = response.headers.get('Content-Disposition');
-            let filename = 'indices_dcp.xlsx';
+            let filename = 'indices_precios_relativos.xlsx';
             if (contentDisposition) {
                 const filenameMatch = contentDisposition.match(/filename="?(.+)"?/i);
                 if (filenameMatch) {
@@ -564,11 +593,10 @@ function DCPPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gray-50 p-2">
+            <div className="w-full">
                 <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">DCP</h1>
-                    <p className="text-gray-600">Índices normalizados eliminando efectos de inflación y tipo de cambio</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Analiza la evolución de los precios relativos</h1>
                 </div>
 
                 <div className={`grid grid-cols-1 gap-6 ${fullscreen ? '' : 'lg:grid-cols-4'}`}>
@@ -579,12 +607,36 @@ function DCPPage() {
                                 <div className="space-y-6">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Productos
+                                            Tipo
+                                        </label>
+                                        <select
+                                            value={tipoFilter}
+                                            onChange={(e) => setTipoFilter(e.target.value)}
+                                            className="input-field"
+                                        >
+                                            <option value="Todos">Todos</option>
+                                            <option value="Producto">Producto (exportación)</option>
+                                            <option value="Servicio">Servicio (exportación)</option>
+                                            <option value="Interno">Producto/Servicio interno</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Selecciona producto o servicio
                                         </label>
                                         <ProductSelector
                                             selectedProducts={selectedProducts}
                                             onSelectionChange={setSelectedProducts}
-                                            products={products}
+                                            products={tipoFilter === 'Todos' 
+                                                ? products 
+                                                : products.filter(p => {
+                                                    if (tipoFilter === 'Producto') return p.tipo === 'P';
+                                                    if (tipoFilter === 'Servicio') return p.tipo === 'S';
+                                                    if (tipoFilter === 'Interno') return p.tipo === 'M';
+                                                    return true;
+                                                })
+                                            }
+                                            allProducts={products}
                                         />
                                     </div>
 
@@ -632,10 +684,22 @@ function DCPPage() {
                                     <div className="text-gray-500">Cargando datos...</div>
                                 </div>
                             </div>
+                        ) : error ? (
+                            <div className="card">
+                                <div className="flex items-center justify-center h-96">
+                                    <div className="text-center text-red-600">
+                                        <p className="font-bold mb-2">Error al cargar los datos:</p>
+                                        <p className="text-sm">{error}</p>
+                                        <p className="text-sm text-gray-500 mt-2">
+                                            Por favor, verifica los filtros y la disponibilidad de datos.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         ) : dcpData.length > 0 ? (
                             <div className={`card ${fullscreen ? 'fixed inset-2 z-50 bg-white shadow-2xl' : ''}`}>
                                 <div className="flex justify-between items-center mb-4">
-                                    <h2 className={`font-semibold text-gray-900 ${fullscreen ? 'text-2xl' : 'text-xl'}`}>Gráfico DCP</h2>
+                                    <h2 className={`font-semibold text-gray-900 ${fullscreen ? 'text-2xl' : 'text-xl'}`}>Gráfico en pesos uruguayos reales</h2>
                                     <div className="flex gap-2">
                                         {fullscreen && (
                                             <button 
@@ -664,6 +728,10 @@ function DCPPage() {
                                 <div style={{ height: fullscreen ? 'calc(100vh - 120px)' : '600px' }}>
                                     <DCPChart data={dcpData} fullscreen={fullscreen} />
                                 </div>
+                                {/* Mostrar fórmula debajo del gráfico */}
+                                <div className="mt-4 text-sm text-gray-600 text-center">
+                                    <strong>Precio internacional × TC / IPC</strong>
+                                </div>
                             </div>
                         ) : (
                             <div className="card">
@@ -680,7 +748,7 @@ function DCPPage() {
                                             <>
                                                 <p className="text-gray-500 mb-2">Selecciona productos y fechas</p>
                                                 <p className="text-sm text-gray-400">
-                                                    Luego haz clic en "Aplicar Filtros" para visualizar los índices DCP
+                                                    Luego haz clic en "Aplicar Filtros" para visualizar la evolución del producto/servicio en pesos uruguayos reales
                                                 </p>
                                             </>
                                         )}
@@ -699,6 +767,7 @@ function DCPPage() {
 function TimeSeriesPage() {
     const [products, setProducts] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
+    const [tipoFilter, setTipoFilter] = useState('Todos'); // Filtro Producto/Servicio/Interno
     const [fechaDesde, setFechaDesde] = useState(() => {
         const date = new Date();
         date.setMonth(date.getMonth() - 6);
@@ -803,8 +872,8 @@ function TimeSeriesPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gray-50 p-2">
+            <div className="w-full">
                 <div className="mb-6">
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Precios Corrientes</h1>
                     <p className="text-gray-600">Visualiza la evolución de precios a lo largo del tiempo</p>
@@ -818,12 +887,36 @@ function TimeSeriesPage() {
                                 <div className="space-y-6">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            Tipo
+                                        </label>
+                                        <select
+                                            value={tipoFilter}
+                                            onChange={(e) => setTipoFilter(e.target.value)}
+                                            className="input-field"
+                                        >
+                                            <option value="Todos">Todos</option>
+                                            <option value="Producto">Producto (exportación)</option>
+                                            <option value="Servicio">Servicio (exportación)</option>
+                                            <option value="Interno">Producto/Servicio interno</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
                                             Productos
                                         </label>
                                         <ProductSelector
                                             selectedProducts={selectedProducts}
                                             onSelectionChange={setSelectedProducts}
-                                            products={products}
+                                            products={tipoFilter === 'Todos'
+                                                ? products
+                                                : products.filter(p => {
+                                                    if (tipoFilter === 'Producto') return p.tipo === 'P';
+                                                    if (tipoFilter === 'Servicio') return p.tipo === 'S';
+                                                    if (tipoFilter === 'Interno') return p.tipo === 'M';
+                                                    return true;
+                                                })
+                                            }
+                                            allProducts={products}
                                         />
                                     </div>
 
@@ -874,7 +967,7 @@ function TimeSeriesPage() {
                         ) : timeSeriesData.length > 0 ? (
                             <div className={`card ${fullscreen ? 'fixed inset-2 z-50 bg-white shadow-2xl' : ''}`}>
                                 <div className="flex justify-between items-center mb-4">
-                                    <h2 className={`font-semibold text-gray-900 ${fullscreen ? 'text-2xl' : 'text-xl'}`}>Gráfico de DCP</h2>
+                                    <h2 className={`font-semibold text-gray-900 ${fullscreen ? 'text-2xl' : 'text-xl'}`}>Gráfico de Precios</h2>
                                     <div className="flex gap-2">
                                         {fullscreen && (
                                             <button 
@@ -934,305 +1027,12 @@ function TimeSeriesPage() {
     );
 }
 
-// Componente de Gráfico de Barras
-function VariationBarChart({ data, fullscreen = false }) {
-    const chartRef = React.useRef(null);
-    const chartInstanceRef = React.useRef(null);
-
-    React.useEffect(() => {
-        if (!data || data.length === 0) return;
-
-        if (chartInstanceRef.current) {
-            chartInstanceRef.current.destroy();
-        }
-
-        const labels = data.map(item => 
-            item.nombre.length > (fullscreen ? 40 : 20) ? item.nombre.substring(0, fullscreen ? 40 : 20) + '...' : item.nombre
-        );
-        const variations = data.map(item => Number(item.variacion_percent.toFixed(2)));
-        const colors = variations.map(v => v >= 0 ? 'rgb(16, 185, 129)' : 'rgb(239, 68, 68)');
-
-        const ctx = chartRef.current.getContext('2d');
-        chartInstanceRef.current = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Variación (%)',
-                    data: variations,
-                    backgroundColor: colors,
-                    borderColor: colors,
-                    borderWidth: fullscreen ? 2 : 1,
-                }],
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false,
-                    },
-                    tooltip: {
-                        titleFont: {
-                            size: fullscreen ? 14 : 12,
-                        },
-                        bodyFont: {
-                            size: fullscreen ? 13 : 11,
-                        },
-                        callbacks: {
-                            label: function(context) {
-                                const item = data[context.dataIndex];
-                                return `${item.nombre}: ${context.parsed.x.toFixed(2)}%`;
-                            },
-                        },
-                    },
-                },
-                scales: {
-                    x: {
-                        ticks: {
-                            font: {
-                                size: fullscreen ? 14 : 12,
-                            },
-                            callback: function(value) {
-                                return value + '%';
-                            },
-                        },
-                        title: {
-                            display: true,
-                            text: 'Variación (%)',
-                            font: {
-                                size: fullscreen ? 16 : 14,
-                                weight: 'bold',
-                            },
-                        },
-                    },
-                    y: {
-                        ticks: {
-                            font: {
-                                size: fullscreen ? 13 : 11,
-                            },
-                        },
-                    },
-                },
-            },
-        });
-
-        return () => {
-            if (chartInstanceRef.current) {
-                chartInstanceRef.current.destroy();
-            }
-        };
-    }, [data, fullscreen]);
-
-    if (!data || data.length === 0) {
-        return (
-            <div className="flex items-center justify-center h-full bg-gray-50 rounded-lg">
-                <p className="text-gray-500">No hay datos para mostrar</p>
-            </div>
-        );
-    }
-
-    return <canvas ref={chartRef}></canvas>;
-}
-
-// Página de Variaciones
-function VariationComparisonPage() {
-    const [fechaDesde, setFechaDesde] = useState(() => {
-        const date = new Date();
-        date.setMonth(date.getMonth() - 6);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        return `${year}-${month}-01`;
-    });
-    const [fechaHasta, setFechaHasta] = useState(() => {
-        const date = new Date();
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const lastDay = new Date(year, date.getMonth() + 1, 0).getDate();
-        return `${year}-${month}-${String(lastDay).padStart(2, '0')}`;
-    });
-    const [orderBy, setOrderBy] = useState('desc');
-    const [variations, setVariations] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [applyFilters, setApplyFilters] = useState(false);
-    const [fullscreen, setFullscreen] = useState(false);
-
-    const handleApplyFilters = async () => {
-        if (!fechaDesde || !fechaHasta) {
-            alert('Por favor selecciona un rango de fechas');
-            return;
-        }
-
-        setLoading(true);
-        setApplyFilters(true);
-
-        try {
-            const params = new URLSearchParams({
-                fecha_desde: fechaDesde,
-                fecha_hasta: fechaHasta,
-                order_by: orderBy,
-            });
-
-            const response = await fetch(`${API_BASE}/variations?${params}`);
-            const data = await response.json();
-            setVariations(data);
-        } catch (error) {
-            console.error('Error loading variations:', error);
-            alert('Error al cargar los datos');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const formatVariation = (variation) => {
-        const sign = variation >= 0 ? '+' : '';
-        return `${sign}${variation.toFixed(2)}%`;
-    };
-
-    return (
-        <div className="min-h-screen bg-gray-50 p-6">
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Variación de DCP</h1>
-                    <p className="text-gray-600">Compara la variación de DCP entre productos</p>
-                </div>
-
-                <div className={`grid grid-cols-1 gap-6 ${fullscreen ? '' : 'lg:grid-cols-4'}`}>
-                    {/* Panel de controles a la izquierda - oculto en pantalla completa */}
-                    {!fullscreen && (
-                        <div className="lg:col-span-1">
-                            <div className="card sticky top-6">
-                                <div className="space-y-6">
-                                    <MonthYearPicker
-                                        fechaDesde={fechaDesde}
-                                        fechaHasta={fechaHasta}
-                                        onFechaDesdeChange={setFechaDesde}
-                                        onFechaHastaChange={setFechaHasta}
-                                    />
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Ordenar por:
-                                        </label>
-                                        <div className="flex flex-col gap-2">
-                                            <button
-                                                onClick={() => setOrderBy('desc')}
-                                                className={`px-4 py-2 rounded-lg font-medium transition-all w-full ${
-                                                    orderBy === 'desc'
-                                                        ? 'bg-indigo-600 text-white'
-                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
-                                            >
-                                                Mayor a Menor
-                                            </button>
-                                            <button
-                                                onClick={() => setOrderBy('asc')}
-                                                className={`px-4 py-2 rounded-lg font-medium transition-all w-full ${
-                                                    orderBy === 'asc'
-                                                        ? 'bg-indigo-600 text-white'
-                                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                                }`}
-                                            >
-                                                Menor a Mayor
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-col gap-2">
-                                        <button onClick={handleApplyFilters} className="btn-primary w-full">
-                                            {applyFilters ? 'Actualizar' : 'Aplicar Filtros'}
-                                        </button>
-                                        {applyFilters && variations.length > 0 && (
-                                            <button 
-                                                onClick={() => setFullscreen(true)} 
-                                                className="px-4 py-2 rounded-lg font-medium transition-all bg-gray-200 text-gray-700 hover:bg-gray-300 w-full"
-                                            >
-                                                Pantalla Completa
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Área del gráfico - ocupa todo en pantalla completa */}
-                    <div className={fullscreen ? 'col-span-1' : 'lg:col-span-3'}>
-                        {loading ? (
-                            <div className="card">
-                                <div className="flex items-center justify-center" style={{ height: '600px' }}>
-                                    <div className="text-gray-500">Cargando datos...</div>
-                                </div>
-                            </div>
-                        ) : variations.length > 0 ? (
-                            <div className={`card ${fullscreen ? 'fixed inset-2 z-50 bg-white shadow-2xl' : ''}`}>
-                                <div className="flex justify-between items-center mb-4">
-                                    <h2 className={`font-semibold text-gray-900 ${fullscreen ? 'text-2xl' : 'text-xl'}`}>Gráfico de Variaciones</h2>
-                                    <div className="flex gap-2">
-                                        {fullscreen && (
-                                            <button 
-                                                onClick={() => setFullscreen(false)} 
-                                                className="px-3 py-1.5 rounded-lg font-medium transition-all bg-gray-200 text-gray-700 hover:bg-gray-300 text-sm"
-                                                title="Salir de pantalla completa"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                </svg>
-                                            </button>
-                                        )}
-                                        {!fullscreen && (
-                                            <button 
-                                                onClick={() => setFullscreen(true)} 
-                                                className="px-3 py-1.5 rounded-lg font-medium transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 text-sm"
-                                                title="Pantalla completa"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                                                </svg>
-                                            </button>
-                                        )}
-                                    </div>
-                                </div>
-                                <div style={{ height: fullscreen ? 'calc(100vh - 120px)' : '600px' }}>
-                                    <VariationBarChart data={variations} fullscreen={fullscreen} />
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="card">
-                                <div className="flex items-center justify-center" style={{ height: '600px' }}>
-                                    <div className="text-center">
-                                        {applyFilters ? (
-                                            <>
-                                                <p className="text-gray-500 mb-2">No se encontraron datos</p>
-                                                <p className="text-sm text-gray-400">
-                                                    Intenta ajustar el rango de fechas
-                                                </p>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <p className="text-gray-500 mb-2">Selecciona un rango de fechas</p>
-                                                <p className="text-sm text-gray-400">
-                                                    Luego haz clic en "Aplicar Filtros" para visualizar las variaciones
-                                                </p>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
 
 // Componente de Navegación
 function Navigation({ currentPage, onPageChange }) {
     return (
         <nav className="bg-white border-b border-gray-200 shadow-sm">
-            <div className="max-w-7xl mx-auto px-6 py-4">
+            <div className="w-full px-2 py-2">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
@@ -1241,7 +1041,7 @@ function Navigation({ currentPage, onPageChange }) {
                             </svg>
                         </div>
                         <h1 className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                            DCP
+                            Índice de precios relativos
                         </h1>
                     </div>
 
@@ -1254,17 +1054,7 @@ function Navigation({ currentPage, onPageChange }) {
                                     : 'text-gray-700 hover:bg-gray-100'
                             }`}
                         >
-                            DCP
-                        </button>
-                        <button
-                            onClick={() => onPageChange('variations')}
-                            className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                                currentPage === 'variations'
-                                    ? 'bg-indigo-600 text-white'
-                                    : 'text-gray-700 hover:bg-gray-100'
-                            }`}
-                        >
-                            Variaciones
+                            Índice de precios relativos
                         </button>
                         <button
                             onClick={() => onPageChange('series')}
@@ -1290,7 +1080,7 @@ function App() {
     return (
         <div className="min-h-screen bg-gray-50">
             <Navigation currentPage={currentPage} onPageChange={setCurrentPage} />
-            {currentPage === 'dcp' ? <DCPPage /> : currentPage === 'variations' ? <VariationComparisonPage /> : <TimeSeriesPage />}
+            {currentPage === 'dcp' ? <DCPPage /> : <TimeSeriesPage />}
         </div>
     );
 }

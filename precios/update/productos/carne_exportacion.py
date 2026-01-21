@@ -272,22 +272,46 @@ def insertar_en_bd(df_maestro: pd.DataFrame, df_precios: pd.DataFrame) -> None:
         maestro_id = int(df_maestro.iloc[0]["id"])
         maestro_row = df_maestro.iloc[0]
         
-        cursor.execute(
-            """
-            INSERT OR IGNORE INTO maestro (id, nombre, tipo, fuente, periodicidad, unidad, categoria, activo)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                maestro_id,
-                maestro_row["nombre"],
-                maestro_row["tipo"],
-                maestro_row["fuente"],
-                maestro_row["periodicidad"],
-                maestro_row["unidad"],
-                maestro_row["categoria"],
-                maestro_row["activo"],
+        # Verificar si existe la columna mercado
+        cursor.execute("PRAGMA table_info(maestro)")
+        columnas = [col[1] for col in cursor.fetchall()]
+        tiene_mercado = "mercado" in columnas
+        
+        if tiene_mercado:
+            cursor.execute(
+                """
+                INSERT OR IGNORE INTO maestro (id, nombre, tipo, fuente, periodicidad, unidad, categoria, activo, mercado)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    maestro_id,
+                    maestro_row["nombre"],
+                    maestro_row["tipo"],
+                    maestro_row["fuente"],
+                    maestro_row["periodicidad"],
+                    maestro_row["unidad"],
+                    maestro_row.get("categoria", None),
+                    maestro_row["activo"],
+                    maestro_row.get("mercado", None),
+                )
             )
-        )
+        else:
+            cursor.execute(
+                """
+                INSERT OR IGNORE INTO maestro (id, nombre, tipo, fuente, periodicidad, unidad, categoria, activo)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    maestro_id,
+                    maestro_row["nombre"],
+                    maestro_row["tipo"],
+                    maestro_row["fuente"],
+                    maestro_row["periodicidad"],
+                    maestro_row["unidad"],
+                    maestro_row.get("categoria", None),
+                    maestro_row["activo"],
+                )
+            )
         
         if cursor.rowcount > 0:
             print(f"[OK] Insertado 1 registro en tabla 'maestro' (id={maestro_id})")
@@ -350,25 +374,11 @@ def main():
     excel_path = generar_excel_prueba(df_maestro, df_precios)
     mostrar_resumen(df_maestro, df_precios)
 
-    print("\nIMPORTANTE: Revisa el archivo Excel generado antes de continuar:")
-    print(f"   {excel_path}")
-
-    respuesta = (
-        input(
-            "\n¿Confirmás que los datos son correctos y querés insertarlos en la BD? (sí/no): "
-        )
-        .strip()
-        .lower()
-    )
-
-    if respuesta in ["sí", "si", "yes", "y", "s"]:
-        insertar_en_bd(df_maestro, df_precios)
-    else:
-        print(
-            "\n[INFO] Insercion cancelada por el usuario. "
-            "Los datos NO fueron insertados en la BD."
-        )
-        print("   Podés revisar el Excel y ejecutar el script nuevamente cuando estés listo.")
+    print("\n[INFO] Actualizando base de datos automáticamente...")
+    print(f"[INFO] Archivo Excel generado: {excel_path}")
+    
+    # Insertar automáticamente sin pedir confirmación
+    insertar_en_bd(df_maestro, df_precios)
 
 
 if __name__ == "__main__":

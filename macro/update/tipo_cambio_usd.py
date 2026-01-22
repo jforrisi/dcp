@@ -412,6 +412,63 @@ def obtener_tipo_cambio_usd():
         manejar_fallo_pandas(e)
 
 
+def completar_dias_faltantes(df: pd.DataFrame, columna_fecha: str = 'FECHA', columna_valor: str = 'TIPO_CAMBIO_USD') -> pd.DataFrame:
+    """
+    Completa días faltantes en una serie diaria usando forward fill.
+    
+    Para series diarias, garantiza que existan datos para todos los días del rango
+    (lunes a domingo). Si un día no tiene datos (feriados, fines de semana), 
+    usa el valor del día anterior.
+    
+    Args:
+        df: DataFrame con columnas de fecha y valor
+        columna_fecha: Nombre de la columna con fechas
+        columna_valor: Nombre de la columna con valores
+        
+    Returns:
+        DataFrame con todos los días completados (forward fill)
+    """
+    print("\n[INFO] Completando días faltantes en serie diaria...")
+    
+    # Asegurar que la columna de fecha sea datetime
+    df = df.copy()
+    df[columna_fecha] = pd.to_datetime(df[columna_fecha], dayfirst=True)
+    
+    # Ordenar por fecha
+    df = df.sort_values(columna_fecha).reset_index(drop=True)
+    
+    # Obtener rango completo de fechas
+    fecha_min = df[columna_fecha].min()
+    fecha_max = df[columna_fecha].max()
+    
+    # Crear rango completo de días
+    rango_completo = pd.date_range(start=fecha_min, end=fecha_max, freq='D')
+    df_completo = pd.DataFrame({columna_fecha: rango_completo})
+    
+    # Hacer merge con los datos originales
+    df_completo = df_completo.merge(
+        df[[columna_fecha, columna_valor]], 
+        on=columna_fecha, 
+        how='left'
+    )
+    
+    # Aplicar forward fill (usar valor del día anterior)
+    df_completo[columna_valor] = df_completo[columna_valor].ffill()
+    
+    # Contar cuántos días se completaron
+    dias_originales = len(df)
+    dias_completados = len(df_completo)
+    dias_agregados = dias_completados - dias_originales
+    
+    if dias_agregados > 0:
+        print(f"[INFO] Se completaron {dias_agregados} días faltantes (de {dias_originales} a {dias_completados} días)")
+        print(f"   Rango: {fecha_min.strftime('%d/%m/%Y')} a {fecha_max.strftime('%d/%m/%Y')}")
+    else:
+        print(f"[OK] No había días faltantes ({dias_originales} días en el rango)")
+    
+    return df_completo
+
+
 def validar_fechas(df: pd.DataFrame) -> pd.DataFrame:
     """Valida que todas las fechas sean válidas (OBLIGATORIO según README)."""
     print("\n[INFO] Validando fechas...")
@@ -585,6 +642,9 @@ def main():
     print(tc_df.head())
     print("\nÚltimos datos:")
     print(tc_df.tail())
+    
+    # COMPLETAR DÍAS FALTANTES (OBLIGATORIO para series diarias según README)
+    tc_df = completar_dias_faltantes(tc_df, columna_fecha='FECHA', columna_valor='TIPO_CAMBIO_USD')
     
     tc_df = validar_fechas(tc_df)
 

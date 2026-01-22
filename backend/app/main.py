@@ -2,7 +2,7 @@
 from flask import Flask, send_from_directory, send_file
 from flask_cors import CORS
 from pathlib import Path
-from .routers import prices, dcp
+from .routers import prices, dcp, cotizaciones
 
 # Create Flask app
 static_folder = Path(__file__).parent / 'static'
@@ -14,6 +14,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # Register blueprints
 app.register_blueprint(prices.bp, url_prefix='/api')
 app.register_blueprint(dcp.bp, url_prefix='/api')
+app.register_blueprint(cotizaciones.bp, url_prefix='/api')
 
 # Serve static files
 @app.route('/')

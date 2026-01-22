@@ -151,6 +151,15 @@ REGLAS PARA ESTRUCTURAR DATOS
    - D = diario.
    - W = semanal.
    - M = mensual.
+8. COMPLETAR DÍAS FALTANTES EN SERIES DIARIAS (OBLIGATORIO):
+   - Para series con periodicidad "D" (diaria), el sistema DEBE garantizar que existan datos para TODOS los días del rango (lunes a domingo).
+   - Si un día no tiene datos (por ejemplo, feriados, fines de semana, días sin publicación), se DEBE usar el valor del día anterior (forward fill).
+   - Esto asegura que siempre haya un valor disponible para cada día, facilitando cálculos y análisis posteriores.
+   - Ejemplo:
+     - Si hay datos para lunes (valor: 100) y martes (feriado, sin datos), el martes debe tener valor 100 (del lunes).
+     - Si hay datos para viernes (valor: 105) y sábado/domingo (sin datos), ambos deben tener valor 105 (del viernes).
+   - La función de completado debe ejecutarse ANTES de validar fechas y generar el Excel de prueba.
+   - Los días completados deben quedar claramente identificados en el resumen mostrado al usuario (opcional: marcar como "completado" vs "original").
 
 ESQUEMA SQL DE REFERENCIA
 =========================
@@ -363,5 +372,43 @@ DEPENDENCIAS ADICIONALES PARA FLUJOS CON SELENIUM
   - Qué archivo descarga.
   - A qué ruta de `data_raw/` lo guarda (nombre exacto del archivo).
 - Los scripts de `update` correspondientes deben leer ese mismo archivo desde `data_raw/` usando el nombre documentado.
+
+MÓDULO DE COTIZACIONES LATAM
+============================
+
+El sistema incluye un módulo especializado para visualizar cotizaciones diarias de tipos de cambio de países de Latinoamérica.
+
+CARACTERÍSTICAS DEL MÓDULO:
+---------------------------
+
+- **Datos de alta frecuencia**: Las cotizaciones se almacenan y visualizan con periodicidad diaria (D).
+- **Sin normalización**: A diferencia del módulo de índices DCP, este módulo muestra los valores crudos de las cotizaciones, sin índices normalizados ni cálculos adicionales.
+- **Visualización automática**: Al ingresar al módulo, el gráfico se carga automáticamente mostrando todos los tipos de cambio disponibles para los últimos 30 días.
+- **Filtro de fecha diario**: El selector de fechas permite elegir rangos diarios (no mensuales), permitiendo análisis de corto plazo y tendencias intradía.
+
+IDENTIFICACIÓN DE COTIZACIONES:
+--------------------------------
+
+Las cotizaciones LATAM se identifican en la tabla `maestro` mediante:
+- `tipo = 'M'` (variable macro)
+- `categoria LIKE '%Tipo de cambio%'` o mediante IDs específicos que identifiquen cotizaciones internacionales
+- `periodicidad = 'D'` (diario)
+
+Ejemplos de series incluidas:
+- ID 23: Tipo de cambio USD/BRL (Brasil)
+- ID 24: (otras cotizaciones LATAM según se agreguen)
+
+ENDPOINTS DEL MÓDULO:
+---------------------
+
+- `GET /api/cotizaciones`: Obtiene las cotizaciones diarias para un rango de fechas y países seleccionados.
+- `GET /api/cotizaciones/export`: Exporta las cotizaciones a Excel con hojas: "Cotizaciones", "Metadatos".
+
+COMPORTAMIENTO POR DEFECTO:
+---------------------------
+
+- Al cargar la página, automáticamente se muestran todos los tipos de cambio disponibles para los últimos 30 días.
+- El usuario puede ajustar el rango de fechas y seleccionar países específicos.
+- Los datos se muestran en su valor original (sin normalización a base 100).
 
 

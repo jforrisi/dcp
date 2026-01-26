@@ -442,10 +442,7 @@ def main():
     # Mostrar resumen
     mostrar_resumen(df_maestro, df_precios)
     
-    # Solicitar confirmación del usuario
-    solicitar_confirmacion_usuario(excel_path)
-
-    # Insertar en BD solo si el usuario confirma
+    # Insertar en BD - Sin confirmación en producción
     insertar_en_bd(df_maestro, df_precios)
 
 

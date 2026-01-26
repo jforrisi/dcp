@@ -402,14 +402,22 @@ def modificar_script_update_para_selenium():
 
 def obtener_tipo_cambio_usd():
     """
-    Implementa el flujo:
-    1) Intentar lectura directa desde URL.
-    2) Si falla, manejar según el README (avisar, pedir confirmación, crear scripts con Selenium si confirma).
+    Lee el Excel desde data_raw/ (descargado previamente con Selenium).
+    Si no existe, intenta leer desde URL directamente.
+    En producción, siempre usa data_raw/.
     """
     try:
-        return leer_excel_desde_url()
+        # Intentar leer desde data_raw primero (producción)
+        return leer_excel_desde_data_raw()
     except Exception as e:
-        manejar_fallo_pandas(e)
+        # Si falla data_raw, intentar desde URL (fallback)
+        print(f"[WARN] No se pudo leer desde data_raw/: {e}")
+        print("[INFO] Intentando leer desde URL directamente...")
+        try:
+            return leer_excel_desde_url()
+        except Exception as e2:
+            print(f"[ERROR] No se pudo leer ni desde data_raw/ ni desde URL: {e2}")
+            raise
 
 
 def completar_dias_faltantes(df: pd.DataFrame, columna_fecha: str = 'FECHA', columna_valor: str = 'TIPO_CAMBIO_USD') -> pd.DataFrame:

@@ -632,10 +632,7 @@ def main():
     # Mostrar resumen
     mostrar_resumen(df_maestro, df_precios)
     
-    # Solicitar confirmación del usuario
-    solicitar_confirmacion_usuario(excel_path)
-
-    # Insertar en BD (elimina duplicados priorizando Rava)
+    # Insertar en BD (elimina duplicados priorizando Rava) - Sin confirmación en producción
     insertar_en_bd(df_maestro, df_precios)
 
 

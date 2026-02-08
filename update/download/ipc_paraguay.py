@@ -6,6 +6,7 @@ Scrapea la página web para encontrar el enlace de descarga más reciente.
 """
 
 import os
+import sys
 import time
 import re
 import requests
@@ -15,6 +16,13 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+# Agregar el directorio raíz al path para importar utils
+root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
+
+from update.utils.logger import ScriptLogger
 
 # URL de la página del BCP con el IPC
 BCP_IPC_PAGE_URL = "https://www.bcp.gov.py/web/institucional/indice-precios-al-consumidor-ipc"
@@ -247,5 +255,128 @@ def descargar_excel_bcp():
         driver.quit()
 
 
+def main():
+    """Función principal con logging mejorado."""
+    script_name = "ipc_paraguay"
+    
+    with ScriptLogger(script_name) as logger:
+        try:
+            logger.info("=" * 80)
+            logger.info("DESCARGA DE IPC PARAGUAY - BCP")
+            logger.info("=" * 80)
+            
+            data_raw_path = asegurar_data_raw()
+            logger.info(f"Carpeta de descargas configurada en: {data_raw_path}")
+
+            # Limpiar archivos anteriores
+            logger.info("Limpiando archivos anteriores...")
+            limpiar_archivos_anteriores(data_raw_path)
+
+            # Configurar driver con logging
+            logger.info("Configurando Chrome/Chromium...")
+            logger.debug(f"CHROME_BIN={os.getenv('CHROME_BIN')}")
+            logger.debug(f"CHROMEDRIVER_PATH={os.getenv('CHROMEDRIVER_PATH')}")
+            logger.debug(f"RAILWAY_ENVIRONMENT={os.getenv('RAILWAY_ENVIRONMENT')}")
+            
+            driver = configurar_driver_descargas(download_dir=data_raw_path)
+            logger.info("Driver configurado exitosamente")
+
+            try:
+                logger.info(f"Navegando a: {BCP_IPC_PAGE_URL}")
+                driver.get(BCP_IPC_PAGE_URL)
+                logger.log_selenium_state(driver, "Después de navegar")
+                
+                # Esperar a que la página cargue completamente
+                logger.info("Esperando a que la página cargue...")
+                time.sleep(3)
+                
+                # Encontrar el enlace de descarga
+                logger.info("Buscando enlace de descarga...")
+                url_descarga = encontrar_enlace_descarga(driver)
+                
+                if not url_descarga:
+                    logger.error("No se pudo encontrar el enlace de descarga")
+                    logger.log_selenium_state(driver, "Estado al momento del error")
+                    raise RuntimeError("No se pudo encontrar el enlace de descarga")
+                
+                logger.info(f"Enlace encontrado: {url_descarga}")
+                logger.info("Descargando Excel...")
+                archivos_antes = set(os.listdir(data_raw_path))
+                
+                # Navegar directamente a la URL de descarga
+                driver.get(url_descarga)
+                
+                logger.info("Esperando a que termine la descarga...")
+                tiempo_inicio = time.time()
+                tiempo_max_espera = 30
+                
+                while True:
+                    time.sleep(1)
+                    archivos_ahora = set(os.listdir(data_raw_path))
+                    archivos_nuevos = archivos_ahora - archivos_antes
+                    
+                    excel_nuevos = [
+                        f for f in archivos_nuevos 
+                        if f.lower().endswith((".xls", ".xlsx"))
+                    ]
+                    
+                    if excel_nuevos:
+                        logger.info(f"Archivo descargado detectado: {excel_nuevos[0]}")
+                        break
+                    
+                    if time.time() - tiempo_inicio > tiempo_max_espera:
+                        logger.error(f"Timeout: No se detectó ningún archivo Excel descargado en {tiempo_max_espera} segundos")
+                        raise RuntimeError(f"Timeout: No se detectó ningún archivo Excel descargado en {tiempo_max_espera} segundos")
+
+                # Buscar el archivo más reciente
+                candidatos = [
+                    f for f in os.listdir(data_raw_path)
+                    if f.lower().endswith((".xls", ".xlsx"))
+                ]
+                
+                if not candidatos:
+                    logger.error("No se encontró ningún Excel descargado")
+                    raise RuntimeError("No se encontró ningún Excel descargado en data_raw.")
+
+                candidatos_paths = [os.path.join(data_raw_path, f) for f in candidatos]
+                ultimo = max(candidatos_paths, key=os.path.getmtime)
+                nombre_ultimo = os.path.basename(ultimo)
+
+                destino = os.path.join(data_raw_path, DEST_FILENAME)
+                
+                if os.path.abspath(ultimo) != os.path.abspath(destino):
+                    if os.path.exists(destino):
+                        os.remove(destino)
+                    os.replace(ultimo, destino)
+                    logger.info(f"Archivo '{nombre_ultimo}' renombrado a '{DEST_FILENAME}'")
+                else:
+                    logger.info(f"Archivo ya tiene el nombre correcto: '{DEST_FILENAME}'")
+
+                logger.info(f"Excel guardado como: {destino}")
+                logger.info("=" * 80)
+                logger.info("PROCESO COMPLETADO EXITOSAMENTE")
+                logger.info("=" * 80)
+                
+                return destino
+
+            except Exception as e:
+                logger.log_exception(e, "descargar_excel_bcp()")
+                if driver:
+                    logger.log_selenium_state(driver, "Estado al momento del error")
+                raise
+            finally:
+                if driver:
+                    try:
+                        logger.info("Cerrando navegador...")
+                        driver.quit()
+                        logger.info("Navegador cerrado")
+                    except Exception as e:
+                        logger.warn(f"Error al cerrar navegador: {e}")
+                        
+        except Exception as e:
+            logger.log_exception(e, "main()")
+            raise
+
+
 if __name__ == "__main__":
-    descargar_excel_bcp()
+    main()

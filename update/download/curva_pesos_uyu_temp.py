@@ -6,6 +6,7 @@ La tabla contiene la curva de pesos uruguayos nominales con diferentes plazos (1
 """
 
 import os
+import sys
 import time
 import pandas as pd
 from datetime import datetime, timedelta
@@ -15,6 +16,13 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+# Agregar el directorio raíz al path para importar utils
+root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
+
+from update.utils.logger import ScriptLogger
 
 # URL de la página BEVSA (ITLUP = nominales)
 BEVSA_URL = "https://web.bevsa.com.uy/CurvasVectorPrecios/CurvasIndices/Historico.aspx?I=ITLUP"
@@ -736,41 +744,82 @@ def actualizar_historico(download_path):
 
 
 def main():
-    print("=" * 60)
-    print("EXTRACCIÓN DE CURVA DE PESOS UYU - BEVSA")
-    print("=" * 60)
+    """Función principal con logging mejorado."""
+    script_name = "curva_pesos_uyu_temp"
     
-    download_path = asegurar_directorio()
-    driver = configurar_driver()
-    
-    try:
-        # Extraer tabla
-        df = extraer_tabla(driver)
-        
-        # Mostrar primeros y últimos datos
-        print("\n[INFO] Primeros datos:")
-        print(df.head())
-        print("\n[INFO] Últimos datos:")
-        print(df.tail())
-        
-        # Guardar como Excel temporal
-        destino = guardar_excel(df, download_path)
-        
-        # Actualizar archivo histórico
-        actualizar_historico(download_path)
-        
-        print(f"\n[SUCCESS] Proceso completado. Archivo guardado en: {destino}")
-        
-    except Exception as e:
-        print(f"\n[ERROR] Error durante la extracción: {e}")
-        import traceback
-        traceback.print_exc()
-        raise
-    
-    finally:
-        print("\n[INFO] Cerrando navegador...")
-        driver.quit()
-        print("[INFO] Navegador cerrado.")
+    with ScriptLogger(script_name) as logger:
+        try:
+            logger.info("=" * 80)
+            logger.info("EXTRACCIÓN DE CURVA DE PESOS UYU - BEVSA")
+            logger.info("=" * 80)
+            
+            download_path = asegurar_directorio()
+            logger.info(f"Carpeta de destino: {download_path}")
+            
+            # Configurar driver con logging
+            logger.info("Configurando Chrome/Chromium...")
+            logger.debug(f"CHROME_BIN={os.getenv('CHROME_BIN')}")
+            logger.debug(f"CHROMEDRIVER_PATH={os.getenv('CHROMEDRIVER_PATH')}")
+            logger.debug(f"RAILWAY_ENVIRONMENT={os.getenv('RAILWAY_ENVIRONMENT')}")
+            
+            driver = configurar_driver()
+            logger.info("Driver configurado exitosamente")
+            
+            # Navegar a la página
+            logger.info(f"Navegando a: {BEVSA_URL}")
+            driver.get(BEVSA_URL)
+            logger.log_selenium_state(driver, "Después de navegar")
+            
+            # Aceptar términos si es necesario
+            logger.info("Verificando términos y condiciones...")
+            aceptar_terminos(driver)
+            logger.log_selenium_state(driver, "Después de aceptar términos")
+            
+            # Esperar anti-bot si es necesario
+            logger.info("Verificando anti-bot/CAPTCHA...")
+            if detectar_anti_bot(driver):
+                logger.warn("Anti-bot detectado, esperando resolución...")
+                esperar_resolucion_anti_bot(driver)
+                logger.log_selenium_state(driver, "Después de anti-bot")
+            
+            # Extraer tabla
+            logger.info("Extrayendo tabla de datos...")
+            df = extraer_tabla(driver)
+            logger.info(f"Tabla extraída: {len(df)} filas, {len(df.columns)} columnas")
+            
+            # Mostrar primeros y últimos datos
+            logger.info("Primeros datos:")
+            logger.debug(f"\n{df.head()}")
+            logger.info("Últimos datos:")
+            logger.debug(f"\n{df.tail()}")
+            
+            # Guardar como Excel temporal
+            logger.info("Guardando Excel...")
+            destino = guardar_excel(df, download_path)
+            logger.info(f"Excel guardado: {destino}")
+            
+            # Actualizar archivo histórico
+            logger.info("Actualizando archivo histórico...")
+            actualizar_historico(download_path)
+            logger.info("Archivo histórico actualizado")
+            
+            logger.info("=" * 80)
+            logger.info("PROCESO COMPLETADO EXITOSAMENTE")
+            logger.info("=" * 80)
+            
+        except Exception as e:
+            logger.log_exception(e, "main()")
+            if 'driver' in locals():
+                logger.log_selenium_state(driver, "Estado al momento del error")
+            raise
+        finally:
+            if 'driver' in locals():
+                try:
+                    logger.info("Cerrando navegador...")
+                    driver.quit()
+                    logger.info("Navegador cerrado")
+                except Exception as e:
+                    logger.warn(f"Error al cerrar navegador: {e}")
 
 
 if __name__ == "__main__":

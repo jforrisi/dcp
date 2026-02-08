@@ -6,6 +6,7 @@ Scrapea la página web para encontrar el enlace de descarga más reciente.
 """
 
 import os
+import sys
 import time
 import re
 import requests
@@ -16,6 +17,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from urllib.parse import urljoin, urlparse
+
+# Agregar el directorio raíz al path para importar utils
+root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
+
+from update.utils.logger import ScriptLogger
 
 # URL de la página del DANE con el IPC
 DANE_IPC_PAGE_URL = "https://www.dane.gov.co/index.php/estadisticas-por-tema/precios-y-costos/indice-de-precios-al-consumidor-ipc"
@@ -205,49 +213,70 @@ def encontrar_enlace_excel(driver):
 
 
 def main():
-    """Función principal."""
-    print("=" * 80)
-    print("DESCARGA DE IPC COLOMBIA - DANE")
-    print("=" * 80)
+    """Función principal con logging mejorado."""
+    script_name = "ipc_colombia"
     
-    historicos_path = asegurar_historicos()
-    destino = os.path.join(historicos_path, DEST_FILENAME)
-    
-    print(f"[INFO] Carpeta de destino: {historicos_path}")
-    print(f"[INFO] Archivo destino: {DEST_FILENAME}")
-    print(f"[INFO] URL de la página: {DANE_IPC_PAGE_URL}")
-    print("=" * 80)
-    
-    driver = None
-    try:
-        # Configurar driver
-        driver = configurar_driver()
-        
-        # Navegar a la página
-        print(f"[INFO] Navegando a la página del DANE...")
-        driver.get(DANE_IPC_PAGE_URL)
-        
-        # Encontrar el enlace al Excel
-        excel_url = encontrar_enlace_excel(driver)
-        
-        if not excel_url:
-            raise RuntimeError("No se pudo encontrar el enlace al Excel en la página")
-        
-        # Descargar el Excel
-        if descargar_con_requests(excel_url, destino):
-            print(f"\n[SUCCESS] Proceso completado. Archivo guardado en: {destino}")
-        else:
-            raise RuntimeError("No se pudo descargar el archivo")
+    with ScriptLogger(script_name) as logger:
+        try:
+            logger.info("=" * 80)
+            logger.info("DESCARGA DE IPC COLOMBIA - DANE")
+            logger.info("=" * 80)
             
-    except Exception as e:
-        print(f"\n[ERROR] Error durante el proceso: {e}")
-        import traceback
-        traceback.print_exc()
-        raise
-    finally:
-        if driver:
-            driver.quit()
-            print("[INFO] Navegador cerrado")
+            historicos_path = asegurar_historicos()
+            destino = os.path.join(historicos_path, DEST_FILENAME)
+            
+            logger.info(f"Carpeta de destino: {historicos_path}")
+            logger.info(f"Archivo destino: {DEST_FILENAME}")
+            logger.info(f"URL de la página: {DANE_IPC_PAGE_URL}")
+            
+            driver = None
+            try:
+                # Configurar driver
+                logger.info("Configurando Chrome/Chromium...")
+                logger.debug(f"CHROME_BIN={os.getenv('CHROME_BIN')}")
+                logger.debug(f"CHROMEDRIVER_PATH={os.getenv('CHROMEDRIVER_PATH')}")
+                logger.debug(f"RAILWAY_ENVIRONMENT={os.getenv('RAILWAY_ENVIRONMENT')}")
+                
+                driver = configurar_driver()
+                logger.info("Driver configurado exitosamente")
+                
+                # Navegar a la página
+                logger.info(f"Navegando a la página del DANE...")
+                driver.get(DANE_IPC_PAGE_URL)
+                logger.log_selenium_state(driver, "Después de navegar")
+                
+                # Encontrar el enlace al Excel
+                logger.info("Buscando enlace al Excel...")
+                excel_url = encontrar_enlace_excel(driver)
+                
+                if not excel_url:
+                    logger.error("No se pudo encontrar el enlace al Excel")
+                    logger.log_selenium_state(driver, "Estado al momento del error")
+                    raise RuntimeError("No se pudo encontrar el enlace al Excel en la página")
+                
+                logger.info(f"Enlace encontrado: {excel_url}")
+                
+                # Descargar el Excel
+                logger.info("Descargando Excel...")
+                if descargar_con_requests(excel_url, destino):
+                    logger.info(f"Proceso completado. Archivo guardado en: {destino}")
+                else:
+                    logger.error("No se pudo descargar el archivo")
+                    raise RuntimeError("No se pudo descargar el archivo")
+                    
+            except Exception as e:
+                logger.log_exception(e, "main()")
+                if driver:
+                    logger.log_selenium_state(driver, "Estado al momento del error")
+                raise
+            finally:
+                if driver:
+                    try:
+                        logger.info("Cerrando navegador...")
+                        driver.quit()
+                        logger.info("Navegador cerrado")
+                    except Exception as e:
+                        logger.warn(f"Error al cerrar navegador: {e}")
 
 
 if __name__ == "__main__":

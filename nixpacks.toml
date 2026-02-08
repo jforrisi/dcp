@@ -4,7 +4,7 @@ nixPkgs = ["nodejs-18_x", "python311", "python311Packages.pip", "chromium", "chr
 [phases.install]
 cmds = [
   "cd frontend && npm install",
-  "cd backend && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
+  "cd backend && python3 -m venv venv && venv/bin/pip install -r requirements.txt"
 ]
 
 [phases.build]

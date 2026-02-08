@@ -5,7 +5,7 @@
     "buildCommand": "bash build.sh"
   },
   "deploy": {
-    "startCommand": "cd backend && venv/bin/python -m gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 app.main:app",
+    "startCommand": "cd backend && python3 -m gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 app.main:app",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }

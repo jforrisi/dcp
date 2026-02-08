@@ -5,6 +5,7 @@ from io import BytesIO
 from flask import Blueprint, request, jsonify, send_file
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill
+import pandas as pd
 from ...database import execute_query, execute_query_single
 
 bp = Blueprint('data_export', __name__)
@@ -152,7 +153,7 @@ def get_countries():
 
 @bp.route('/export/preview', methods=['GET'])
 def get_preview():
-    """Obtiene preview de las últimas 10 filas de datos."""
+    """Obtiene preview de datos en formato tidy (Variable, País, Fecha, Valor)."""
     try:
         variable_ids = request.args.getlist('variable_ids[]', type=int)
         pais_ids = request.args.getlist('pais_ids[]', type=int)
@@ -180,6 +181,7 @@ def get_preview():
             where_clauses.append("mp.fecha <= ?")
             params.append(fecha_hasta)
         
+        # Query: obtener las últimas 10 filas
         query = f"""
             SELECT 
                 v.id_nombre_variable as variable,
@@ -196,20 +198,21 @@ def get_preview():
         
         results = execute_query(query, tuple(params))
         
-        # Asegurarse de que siempre devolvemos un array
-        if not isinstance(results, list):
-            results = []
+        if not results:
+            return jsonify([])
         
         return jsonify(results)
     except Exception as e:
         # En caso de error, devolver array vacío
         print(f"Error en get_preview: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify([])
 
 
 @bp.route('/export/download', methods=['GET'])
 def download_excel():
-    """Exporta datos a Excel."""
+    """Exporta datos a Excel en formato pivotado (fechas x países)."""
     try:
         variable_ids = request.args.getlist('variable_ids[]', type=int)
         pais_ids = request.args.getlist('pais_ids[]', type=int)
@@ -252,43 +255,64 @@ def download_excel():
         
         results = execute_query(query, tuple(params))
         
-        # Crear Excel
-        wb = Workbook()
-        ws = wb.active
-        ws.title = "Datos"
+        # Convertir a DataFrame para hacer pivot
+        df = pd.DataFrame(results)
         
-        # Headers
-        headers = ['Variable', 'País', 'Fecha', 'Valor']
-        ws.append(headers)
+        if df.empty:
+            return jsonify({'error': 'No hay datos para exportar'}), 400
         
-        # Estilo headers
-        header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
-        header_font = Font(bold=True, color="FFFFFF")
-        for cell in ws[1]:
-            cell.fill = header_fill
-            cell.font = header_font
-            cell.alignment = Alignment(horizontal="center")
-        
-        # Datos
-        for row in results:
-            ws.append([
-                row['variable'],
-                row['pais'],
-                row['fecha'],
-                row['valor']
-            ])
-        
-        # Ajustar ancho de columnas
-        ws.column_dimensions['A'].width = 30
-        ws.column_dimensions['B'].width = 20
-        ws.column_dimensions['C'].width = 12
-        ws.column_dimensions['D'].width = 15
-        
-        # Guardar en BytesIO
+        # Crear Excel con pandas
         output = BytesIO()
-        wb.save(output)
-        output.seek(0)
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            # Agrupar por variable
+            for variable in df['variable'].unique():
+                df_var = df[df['variable'] == variable]
+                
+                # Pivot: fechas en filas, países en columnas
+                df_pivot = df_var.pivot_table(
+                    index='fecha',
+                    columns='pais',
+                    values='valor',
+                    aggfunc='first'  # Por si hay duplicados
+                )
+                
+                # Resetear índice para que fecha sea columna
+                df_pivot = df_pivot.reset_index()
+                
+                # Convertir fecha a formato dd-mm-yyyy
+                df_pivot['fecha'] = pd.to_datetime(df_pivot['fecha']).dt.strftime('%d-%m-%Y')
+                
+                # Ordenar por fecha (convertir a datetime para ordenar, luego volver a string)
+                df_pivot['fecha_dt'] = pd.to_datetime(df_pivot['fecha'], format='%d-%m-%Y')
+                df_pivot = df_pivot.sort_values('fecha_dt')
+                df_pivot = df_pivot.drop('fecha_dt', axis=1)
+                
+                # Renombrar columna fecha a "Fecha"
+                df_pivot = df_pivot.rename(columns={'fecha': 'Fecha'})
+                
+                # Escribir a Excel
+                sheet_name = variable[:31]  # Limitar nombre a 31 chars (límite de Excel)
+                df_pivot.to_excel(writer, sheet_name=sheet_name, index=False)
+                
+                # Aplicar estilos a la hoja
+                worksheet = writer.sheets[sheet_name]
+                
+                # Estilo para headers
+                header_fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
+                header_font = Font(bold=True, color="FFFFFF")
+                
+                for cell in worksheet[1]:
+                    cell.fill = header_fill
+                    cell.font = header_font
+                    cell.alignment = Alignment(horizontal="center")
+                
+                # Ajustar ancho de columnas
+                worksheet.column_dimensions['A'].width = 12  # Fecha
+                for col_idx, col in enumerate(df_pivot.columns[1:], start=2):
+                    col_letter = worksheet.cell(row=1, column=col_idx).column_letter
+                    worksheet.column_dimensions[col_letter].width = 15
         
+        output.seek(0)
         filename = f"exportacion_datos_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
         return send_file(
             output,

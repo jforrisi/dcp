@@ -364,54 +364,47 @@ function DataExport() {
             {previewData.length > 0 && (
                 <div className="mb-6">
                     <h3 className="text-lg font-semibold mb-3">Últimas 10 filas</h3>
-                    <div className={previewData.length > 1 ? "grid grid-cols-2 gap-4" : ""}>
-                        {previewData.map((variableData, varIdx) => {
-                            if (!variableData.data || variableData.data.length === 0) return null;
-                            
-                            // Obtener todas las columnas (Fecha + países)
-                            const columns = Object.keys(variableData.data[0]);
-                            const countryColumns = columns.filter(col => col !== 'Fecha');
-                            
-                            return (
-                                <div key={varIdx} className={previewData.length > 1 ? "" : ""}>
-                                    {previewData.length > 1 && (
-                                        <h4 className="text-md font-medium mb-2 text-gray-700">
-                                            {variableData.variable}
-                                        </h4>
-                                    )}
-                                    <div className="overflow-x-auto">
-                                        <table className="min-w-full divide-y divide-gray-200 border border-gray-200">
-                                            <thead className="bg-gray-50">
-                                                <tr>
-                                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase border-r border-gray-200">Fecha</th>
-                                                    {countryColumns.map((country, idx) => (
-                                                        <th key={idx} className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                                                            {country}
-                                                        </th>
-                                                    ))}
-                                                </tr>
-                                            </thead>
-                                            <tbody className="bg-white divide-y divide-gray-200">
-                                                {variableData.data.map((row, idx) => (
-                                                    <tr key={idx}>
-                                                        <td className="px-4 py-2 text-sm border-r border-gray-200 font-medium">{row.Fecha}</td>
-                                                        {countryColumns.map((country, colIdx) => (
-                                                            <td key={colIdx} className="px-4 py-2 text-sm text-right">
-                                                                {row[country] !== null && row[country] !== undefined 
-                                                                    ? typeof row[country] === 'number' 
-                                                                        ? row[country].toLocaleString('es-ES', {minimumFractionDigits: 2, maximumFractionDigits: 2})
-                                                                        : row[country]
-                                                                    : '-'}
-                                                            </td>
-                                                        ))}
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200 border border-gray-300">
+                            <thead className="bg-gray-50">
+                                <tr>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border border-gray-300">
+                                        Variable
+                                    </th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border border-gray-300">
+                                        País
+                                    </th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border border-gray-300">
+                                        Fecha
+                                    </th>
+                                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider border border-gray-300">
+                                        Valor
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {previewData.map((row, rowIdx) => (
+                                    <tr key={rowIdx} className="hover:bg-gray-50">
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 border border-gray-300">
+                                            {row.variable || '-'}
+                                        </td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 border border-gray-300">
+                                            {row.pais || '-'}
+                                        </td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 border border-gray-300">
+                                            {row.fecha || '-'}
+                                        </td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 border border-gray-300">
+                                            {row.valor !== null && row.valor !== undefined 
+                                                ? typeof row.valor === 'number' 
+                                                    ? row.valor.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                                    : row.valor
+                                                : '-'}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             )}

@@ -8,6 +8,7 @@ npm run build
 
 echo "Copying frontend build to backend static folder..."
 cd ..
+mkdir -p backend/app/static
 rm -rf backend/app/static/*
 cp -r frontend/dist/* backend/app/static/
 

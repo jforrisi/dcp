@@ -1,5 +1,6 @@
 """API routers package."""
 import importlib.util
+import sys
 from pathlib import Path
 
 # Import blueprints from numbered folders using importlib.util
@@ -10,11 +11,27 @@ def load_module_from_path(module_name, folder_name):
     """Load a module from a numbered folder using file path."""
     routers_dir = Path(__file__).parent
     init_file = routers_dir / folder_name / '__init__.py'
-    spec = importlib.util.spec_from_file_location(module_name, init_file)
+    
+    # Use full package path for sys.modules registration
+    full_module_name = f'app.routers.{folder_name}'
+    
+    spec = importlib.util.spec_from_file_location(full_module_name, init_file)
     if spec is None or spec.loader is None:
         raise ImportError(f"Cannot load module {module_name} from {init_file}")
+    
     module = importlib.util.module_from_spec(spec)
+    
+    # Register in sys.modules with full package name
+    sys.modules[full_module_name] = module
+    
+    # Set __package__ and __name__ for relative imports to work
+    module.__package__ = full_module_name
+    module.__name__ = full_module_name
+    module.__file__ = str(init_file)
+    
+    # Execute the module
     spec.loader.exec_module(module)
+    
     return module
 
 ticker_000 = load_module_from_path('ticker_000', '000_ticker')

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Gestión de Base de Datos</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <!-- Utils -->
+    <script type="text/babel" src="/static/admin/utils/api.js"></script>
+    
+    <!-- Components -->
+    <script type="text/babel" src="/static/admin/components/CRUDTable.js"></script>
+    <script type="text/babel" src="/static/admin/components/FamiliaForm.js"></script>
+    <script type="text/babel" src="/static/admin/components/SubFamiliaForm.js"></script>
+    <script type="text/babel" src="/static/admin/components/VariableForm.js"></script>
+    <script type="text/babel" src="/static/admin/components/MaestroForm.js"></script>
+    <script type="text/babel" src="/static/admin/components/GraphForm.js"></script>
+    <script type="text/babel" src="/static/admin/components/FiltrosForm.js"></script>
+    
+    <!-- Main App -->
+    <script type="text/babel" src="/static/admin/admin.js"></script>
+</body>
+</html>

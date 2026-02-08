@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación de pesos uruguayo constantes - Visualización</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .card {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f1f5f9;
+            padding: 1.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #6366f1, #8b5cf6);
+            color: white;
+            padding: 0.625rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: scale(1.05);
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #6366f1;
+            border-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <!-- Utilidades -->
+    <script type="text/babel" src="/static/utils/api.js"></script>
+    <!-- Componentes -->
+    <script type="text/babel" src="/static/components/VariableSelector.js"></script>
+    <script type="text/babel" src="/static/components/DateRangePicker.js"></script>
+    <script type="text/babel" src="/static/components/MonthYearPicker.js"></script>
+    <script type="text/babel" src="/static/components/100BaseChart.js"></script>
+    <script type="text/babel" src="/static/components/CombinateChart.js"></script>
+    <script type="text/babel" src="/static/components/SummaryTableDCP.js"></script>
+    <script type="text/babel" src="/static/components/SummaryTablePrices.js"></script>
+    <script type="text/babel" src="/static/components/Ticker.js"></script>
+    <script type="text/babel" src="/static/components/DataExport.js"></script>
+    <script type="text/babel" src="/static/components/Navigation.js"></script>
+    <!-- Páginas -->
+    <script type="text/babel" src="/static/pages/HomePage.js"></script>
+    <script type="text/babel" src="/static/pages/DCPPage.js"></script>
+    <script type="text/babel" src="/static/pages/TimeSeriesPage.js"></script>
+    <script type="text/babel" src="/static/pages/CotizacionesPage.js"></script>
+    <script type="text/babel" src="/static/pages/InflacionDolaresPage.js"></script>
+    <script type="text/babel" src="/static/pages/YieldCurvePage.js"></script>
+    <script type="text/babel" src="/static/pages/DataExportPage.js"></script>
+    <script type="text/babel" src="/static/pages/LicitacionesLRMPage.js"></script>
+    <!-- App Principal -->
+    <script type="text/babel" src="/static/app.js"></script>
+</body>
+</html>

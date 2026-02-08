@@ -1,0 +1,84 @@
+================================================================================
+REPORTE DE ACTUALIZACIÓN DE BASE DE DATOS
+================================================================================
+Fecha/Hora de ejecución: 2026-02-05 11:28:09
+
+RESUMEN GENERAL
+--------------------------------------------------------------------------------
+Total de scripts ejecutados: 34
+  - FASE 1 (Descargas): 6
+  - FASE 2 (Actualizaciones): 28
+
+Exitosos: 33
+  - FASE 1: 6
+  - FASE 2: 27
+
+Fallidos: 1
+  - FASE 1: 0
+  - FASE 2: 1
+
+Tiempo total: 485.62 segundos (8.09 minutos)
+
+FASE 1 - SCRIPTS DE DESCARGA EJECUTADOS EXITOSAMENTE
+--------------------------------------------------------------------------------
+  [OK] download/carne_exportacion.py (14.86s)
+  [OK] download/instrumentos_emitidos_bcu_y_gobierno_central.py (12.97s)
+  [OK] download/ipc_paraguay.py (20.10s)
+  [OK] download/leche_polvo_entera.py (21.45s)
+  [OK] download/novillo_hacienda.py (17.08s)
+  [OK] download/precio_leche_productor.py (18.00s)
+
+FASE 2 - SCRIPTS DE ACTUALIZACIÓN EJECUTADOS EXITOSAMENTE
+--------------------------------------------------------------------------------
+  [OK] direct/001_carne_exportacion.py (2.45s)
+  [OK] direct/002_celulosa_pulp.py (3.76s)
+  [OK] direct/003_leche_polvo_entera.py (2.25s)
+  [OK] direct/004_novillo_hacienda.py (2.61s)
+  [OK] direct/005_precio_arroz_wb.py (4.06s)
+  [OK] direct/006_precio_leche_productor.py (1.99s)
+  [OK] direct/007_precio_soja_wb.py (3.29s)
+  [OK] direct/008_precio_trigo_wb.py (2.98s)
+  [OK] direct/009_queso_export.py (3.82s)
+  [OK] direct/010_arquitectura.py (4.02s)
+  [OK] direct/011_bookkeeping.py (3.08s)
+  [OK] direct/012_contabilidad.py (3.53s)
+  [OK] direct/013_ingenieria.py (2.72s)
+  [OK] direct/014_software.py (3.87s)
+  [OK] direct/015_combustibles_miem.py (2.28s)
+  [OK] direct/016_ipc.py (3.39s)
+  [OK] direct/017_ipc_multipais.py (20.50s)
+  [OK] direct/018_ipc_paraguay.py (2.43s)
+  [OK] direct/019_nxr_argy_cargar_historico.py (21.16s)
+  [OK] direct/021_nxr_bcch_multipais.py (123.63s)
+  [OK] direct/022_nxr_bra.py (3.49s)
+  [OK] direct/023_nxr_chile.py (146.43s)
+  [OK] direct/024_nxr_peru.py (3.29s)
+  [OK] direct/025_salario_real.py (2.27s)
+  [OK] direct/026_tipo_cambio_eur.py (3.27s)
+  [OK] direct/027_tipo_cambio_usd.py (3.01s)
+  [OK] calculate/001_servicios_no_tradicionales.py (1.32s)
+
+================================================================================
+ERRORES EN FASE 2 (ACTUALIZACIONES)
+================================================================================
+
+ERROR #1: direct/019_nxr_argy.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 0.20s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\019_nxr_argy.py", line 1, in <module>
+    en # -*- coding: utf-8 -*-
+    ^^
+NameError: name 'en' is not defined. Did you mean: 'len'?
+    en # -*- coding: utf-8 -*-
+    ^^
+NameError: name 'en' is not defined. Did you mean: 'len'?
+
+================================================================================
+
+================================================================================
+Fin del reporte - 2026-02-05 11:28:09
+================================================================================

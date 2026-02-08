@@ -14,6 +14,15 @@ def get_db_connection() -> sqlite3.Connection:
     return conn
 
 
+def _convert_value(value):
+    """Convert bytes to string for JSON serialization."""
+    if isinstance(value, bytes):
+        try:
+            return value.decode('utf-8')
+        except UnicodeDecodeError:
+            return value.decode('utf-8', errors='replace')
+    return value
+
 def execute_query(query: str, params: tuple = ()) -> list:
     """Execute a SELECT query and return results as list of dicts."""
     conn = get_db_connection()
@@ -21,7 +30,14 @@ def execute_query(query: str, params: tuple = ()) -> list:
     cursor.execute(query, params)
     rows = cursor.fetchall()
     conn.close()
-    return [dict(row) for row in rows]
+    # Convert rows to dicts and handle bytes
+    result = []
+    for row in rows:
+        row_dict = {}
+        for key in row.keys():
+            row_dict[key] = _convert_value(row[key])
+        result.append(row_dict)
+    return result
 
 
 def execute_query_single(query: str, params: tuple = ()) -> Optional[dict]:
@@ -31,4 +47,30 @@ def execute_query_single(query: str, params: tuple = ()) -> Optional[dict]:
     cursor.execute(query, params)
     row = cursor.fetchone()
     conn.close()
-    return dict(row) if row else None
+    if not row:
+        return None
+    # Convert row to dict and handle bytes
+    result = {}
+    for key in row.keys():
+        result[key] = _convert_value(row[key])
+    return result
+
+
+def execute_update(query: str, params: tuple = ()) -> tuple[bool, Optional[str], Optional[int]]:
+    """
+    Execute an INSERT, UPDATE, or DELETE query.
+    Returns: (success: bool, error_message: Optional[str], lastrowid: Optional[int])
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(query, params)
+        conn.commit()
+        lastrowid = cursor.lastrowid
+        conn.close()
+        return (True, None, lastrowid)
+    except Exception as e:
+        conn.rollback()
+        error_msg = str(e)
+        conn.close()
+        return (False, error_msg, None)

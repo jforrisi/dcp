@@ -1,0 +1,8973 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+}
+
+.clear {
+    clear: both;
+}
+
+
+header {
+    width: 100%;
+}
+
+    header img {
+        margin-left: 20px;
+        margin-top: 5px;
+    }
+
+.contenedorPaginas {
+    width: 98%;
+    padding: 1%;
+}
+
+.breadcrumb {
+    font-family: Roboto;
+    font-size: 10px;
+    font-weight: 400;
+    color: #0D125E;
+    width: 100%;
+    float: left;
+}
+
+#principal {
+    width: 96%;
+    background-color: #0D125E;
+    padding-left: 2%;
+    padding-right: 2%;
+}
+
+    #principal ul li {
+        float: left;
+        list-style: none;
+        width: 12%;
+        text-align: center;
+        border-right: #FFF solid 1px;
+        height: 44px;
+    }
+
+        #principal ul li:nth-child(4) {
+            width: 25%;
+        }
+
+        #principal ul li:last-child {
+            border-right: 0;
+        }
+
+        #principal ul li a {
+            font-family: Roboto;
+            color: #FFF;
+            font-weight: 400;
+            font-size: 14px;
+            text-decoration: none;
+            display: block;
+            padding-top: 14px;
+            padding-bottom: 13px;
+        }
+
+            #principal ul li a:hover {
+                background-color: #437EC0;
+            }
+
+    #principal li:hover {
+        background-color: #437EC0;
+    }
+
+#principal_noticiasynovedades{
+    font-size: 14px;
+    text-align: center;
+    text-decoration:underline;
+}
+
+.sector_der_header {
+    float: right;
+    width: 600px;
+}
+
+.componentes .enteCombobox {
+    width: fit-content;
+    flex-grow: 1;
+}
+
+.feriados-section {
+    display: flex;
+    align-items: center;
+}
+
+.feriados-label-combobox {
+    flex-grow: 5; /* Allows the combobox to grow and fill the space */
+    display: flex;
+    align-items: center;
+}
+
+#secundario {
+    float: right;
+    padding-top: 13px;
+    padding-right: 20px;
+}
+
+    #secundario ul li {
+        float: right;
+        margin-left: 15px;
+        list-style: none;
+    }
+
+        #secundario ul li a i {
+            margin-left: 5px;
+        }
+
+        #secundario ul li a {
+            font-family: Roboto;
+            text-decoration: none;
+            color: #0D125E;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+            #secundario ul li a:hover {
+                color: #9C9C9C;
+            }
+
+.usuarios {
+    float: right;
+    margin-top: 15px;
+    margin-right: 20px;
+}
+
+    .usuarios, .usuarios a {
+        font-family: Roboto;
+        font-size: 14px;
+        color: #000000;
+        text-decoration: none;
+        font-weight: 400;
+    }
+
+        .usuarios a:hover {
+            color: #BBB;
+        }
+
+.botonSalir {
+    color: #0D125E !important;
+    font-weight: 700 !important;
+    margin-left: 10px;
+}
+
+#principal {
+    height: 44px;
+    z-index: 9999;
+}
+
+    #principal ul li .subMenuGeneral {
+        display: none;
+        top: 0px;
+    }
+
+    #principal li:hover > .subMenuGeneral {
+        display: block;
+    }
+
+
+    #principal ul li .subMenuGeneral {
+        background-color: #437EC0;
+        float: left;
+        position: relative;
+        z-index: 9999;
+    }
+
+
+.subMenuMercado {
+    width: 1150px;
+    left: -255px;
+    min-height: 390px;
+}
+
+#calculadoraUP{
+    height: 44px!important;
+}
+
+
+.subMenuCurvas {
+    width: 680px;
+    left: -188px;
+}
+
+#vectordeprecios{
+    width:240px;
+}
+
+#vectordeprecios ul li {
+    width:190px!important;
+}
+
+.subMenuCurvasPrivado {
+    width: 875px !important;
+}
+
+.subMenuComunicaciones {
+    /*width: 390px;
+    left: -226px;*/ /*FSS ocultar OtrosInformesPrivados*/
+     width: 226px;
+    left: 0px;
+}
+
+.subMenuComunicacionesPrivado {
+    /*width: 571px;
+    left: -226px;*/ /*FSS ocultar OtrosInformesPrivados*/
+    width: 420px;
+    left: -160px;
+}
+
+.subMenuComunicacionesBevsa {
+    width: 178px !important;
+}
+
+.submenuCargarPublicacionClass {
+    width: 178px !important;
+}
+
+
+.subMenuEmisiones {
+    width: 700px;
+    left: -380px;
+    height: 300px;
+}
+
+
+.subMenuBevsa {
+    /*width: 611px; FSS*/
+    width: 1020px;
+    left: 0px;
+    height: 420px !important;
+}
+
+    .subMenuBevsa .subMenu {
+        height: 350px !important;
+    }
+
+#principal ul li .subMenuGeneral .subMenu {
+    float: left;
+    margin: 5px;
+    list-style: none;
+    border-right: #FFF solid 1px;
+    min-height: 220px;
+}
+
+    #principal ul li .subMenuGeneral .subMenu:last-child {
+        border-right-width: 0px;
+    }
+
+    #principal ul li .subMenuGeneral .subMenu ul li {
+        list-style: none;
+        float: none;
+        text-align: left;
+        height: 24px;
+        border: none;
+    }
+
+        #principal ul li .subMenuGeneral .subMenu ul li:first-child, .titulosubmenu {
+            font-family: Roboto;
+            font-size: 14px;
+            font-weight: 700;
+            color: #FFF;
+            text-decoration: underline;
+            display: block;
+            width: 150px;
+            padding: 5px;
+            float: none;
+            text-align: left;
+            height: 30px;
+            border: none;
+        }
+
+.titulosubmenu {
+    margin-top: 10px;
+}
+
+#principal ul li .subMenuGeneral .subMenu ul li a:link, #principal ul li .subMenuGeneral .subMenu ul li a:visited {
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 400;
+    color: #FFF;
+    text-decoration: none;
+    display: block;
+    width: 150px;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+#principal ul li .subMenuCurvas .subMenu ul li a:link, #principal ul li .subMenuCurvas .subMenu ul li a:visited {
+    width: 177px !important;
+}
+
+#principal ul li .subMenuGeneral .subMenu ul li a:hover {
+    background-color: #0D125E;
+}
+
+.subMenuTransaccionesDiv {
+    width: 285px !Important;
+    min-height: 362px !Important;
+}
+
+.subMenuTransacciones {
+    width: 265px !Important;
+}
+
+.subMenuMercadoMercado {
+    width: 210px !Important;
+}
+
+.subMenuMercado .subMenu {
+    min-height: 362px !important;
+}
+
+.subMenuMercadoValores {
+    width: 370px !Important;
+}
+
+.button-margin {
+    margin-right: 50px; /* Adjust the value based on your desired spacing */
+}
+
+.subMenuMercadoRegistroOtc {
+    width: 370px !Important;
+}
+
+.subMenuMercadoAnalisis {
+    width: 180px !Important;
+}
+
+.subMenuMercadobevsa {
+    width: 310px !Important;
+}
+
+.subMenuSocio {
+    width: 195px !Important;
+}
+
+.subMenuEmisionesEmisiones {
+    width: 200px !Important;
+    margin-top: 0px !important;
+}
+
+
+
+.subMenuEducacion {
+    width: 740px;
+    left: -624px;
+}
+
+.subMenuEducacionEducacion {
+    width: 216px !Important;
+}
+
+
+h1 {
+    font-family: Roboto;
+    font-size: 20px;
+    font-weight: 700;
+    color: #B51E04;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    /*text-transform: uppercase;*/
+}
+
+h2 {
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0D125E;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+#ltlProspectos{
+    margin-left : 10px;
+}
+
+h3 {
+    font-family: Roboto;
+    /*font-size: 12px;*/
+    font-size: 15px;
+    font-weight: 700;
+    color: #0D125E;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-left: 60px;
+    width: 100%;
+}
+
+
+.cuadroGrisCUD {
+    width: 100px;
+    background-color: #5C5C5C;
+    height: 22px;
+    display: block;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    border-right: 1px solid #FFF;
+}
+
+.linea {
+    border-bottom-style: solid;
+    border-bottom-color: #AAA;
+    border-bottom-width: 1px;
+    margin-left: 10px;
+    margin-top: 43px;
+    margin-bottom: 17px;
+    display: block;
+    overflow: hidden;
+}
+
+.lineah2 {
+    border-bottom-style: solid;
+    border-bottom-color: #AAA;
+    border-bottom-width: 1px;
+    margin-left: 10px;
+    margin-top: 28px;
+    margin-bottom: 17px;
+    display: block;
+    overflow: hidden;
+}
+
+p, .label, html body .RadInput_Default .riTextBox, html body .RadInputMgr_Default {
+    font-family: Roboto;
+    font-size: 14px;
+    color: #000000;
+    font-weight: 400;
+    text-align: justify;
+}
+
+
+.estiloValidar {
+    font-family: roboto;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5c0000;
+}
+
+.estiloExito {
+    font-family: roboto;
+    font-size: 12px;
+    font-weight: 700;
+    color: #0e5804;
+}
+
+.label {
+    margin-right: 10px;
+}
+
+.detalle {
+    /*width: 50%; comentado 17/08/2017*/
+    width: 75%;
+    display: block;
+    float: left;
+    margin-bottom: 10px;
+}
+
+.referencia {
+    width: 40%;
+    display: block;
+    margin-bottom: 10px;
+    font-size: 10px;
+    margin-top: 10px;
+}
+
+.cuadroReferencia {
+    width: 10px;
+    height: 10px;
+    display: block;
+    float: left;
+    margin-right: 10px;
+    background-color: #6db3ee;
+}
+
+.botonEtica {
+    background-color: #5C5C5C;
+    color: #FFF;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    padding-left: 5px;
+    line-height: 25px;
+    width: 150px;
+    margin: 5px 5px 5px 0px;
+    text-decoration: none;
+
+    float:left; /*FSS*/
+}
+
+    .botonEtica i {
+        text-align: center;
+        background-color: #9C9C9C;
+        color: #FFF;
+        width: 20px;
+        float: right;
+        line-height: 25px;
+    }
+
+    .botonEtica:hover {
+        background-color: #9C9C9C;
+        color: #5C5C5C;
+    }
+
+.botonDocGralCurvas { /*FSS*/
+    background-color: #5C5C5C;
+    color: #FFF;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    padding-left: 5px;
+    line-height: 25px;
+    width: 225px;
+    margin: 5px 5px 5px 0px;
+    text-decoration: none;
+
+    float:left; 
+}
+
+    .botonDocGralCurvas i { /* FSS copia botonComun */
+        text-align: center;
+        background-color: #9C9C9C;
+        color: #FFF;
+        width: 20px;
+        float: right;
+        line-height: 25px;
+    }
+
+    .botonDocGralCurvas:hover { /* FSS copia botonComun */
+        background-color: #9C9C9C;
+        color: #5C5C5C;
+    }
+
+.botonDocExplicativoCurvas { /*FSS*/
+    background-color: #5C5C5C;
+    color: #FFF;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    padding-left: 5px;
+    line-height: 25px;
+    width: 270px;
+    margin: 5px 5px 5px 0px;
+    text-decoration: none;
+
+    float:left; 
+}
+
+    .botonDocExplicativoCurvas i { /* FSS copia botonComun */
+        text-align: center;
+        background-color: #9C9C9C;
+        color: #FFF;
+        width: 20px;
+        float: right;
+        line-height: 25px;
+    }
+
+    .botonDocExplicativoCurvas:hover { /* FSS copia botonComun */
+        background-color: #9C9C9C;
+        color: #5C5C5C;
+    }
+
+.botonProductosMercado { /*FSS*/
+    background-color: #5C5C5C;
+    color: #FFF;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    padding-left: 5px;
+    line-height: 25px;
+    width: 160px;
+    margin: 5px 5px 5px 0px;
+    text-decoration: none;
+
+    float:left; 
+}
+
+    .botonProductosMercado i { /* FSS copia botonComun */
+        text-align: center;
+        background-color: #9C9C9C;
+        color: #FFF;
+        width: 20px;
+        float: right;
+        line-height: 25px;
+    }
+
+    .botonProductosMercado:hover { /* FSS copia botonComun */
+        background-color: #9C9C9C;
+        color: #5C5C5C;
+    }
+
+.botonComun {
+    background-color: #5C5C5C;
+    color: #FFF;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    padding-left: 5px;
+    line-height: 25px;
+    width: 120px;
+    margin: 5px 5px 5px 0px;
+    text-decoration: none;
+
+    float:left; /*FSS*/
+}
+
+    .botonComun i {
+        text-align: center;
+        background-color: #9C9C9C;
+        color: #FFF;
+        width: 20px;
+        float: right;
+        line-height: 25px;
+    }
+
+    .botonComun:hover {
+        background-color: #9C9C9C;
+        color: #5C5C5C;
+    }
+
+.margenBotonFiltrar {
+    margin-left: 69px;
+}
+
+.contenedorBotonesGrandes {
+    float: right;
+    width: 50%;
+}
+
+.contenedorBotonesChicos { /*FSS*/
+    width: 680px;
+}
+
+.indiceAumento {
+    color: green !important;
+}
+
+.indiceMantuvo {
+    color: #0D125E !important;
+}
+
+.indiceBajo {
+    color: lightcoral !important;
+}
+
+.botonGrande {
+    background-color: #5C5C5C;
+    font-family: Roboto;
+    font-size: 12px;
+    color: #FFF;
+    width: 90px;
+    height: 40px;
+    text-decoration: none;
+    display: block;
+    float: right;
+    margin-right: 5px;
+    position: relative;
+    padding-right: 47px;
+    padding-top: 10px;
+    padding-left: 5px;
+    text-align: right;
+}
+
+    .botonGrande i {
+        text-align: center;
+        background-color: #FFF;
+        color: #0D125E;
+        width: 30px;
+        position: absolute;
+        top: 0;
+        right: 3px;
+        line-height: 50px;
+        margin-right: 5px;
+        font-size: 20px;
+        box-shadow: 0px 0px 5px 1px #AAA;
+        -moz-box-shadow: 0px 0px 5px 1px #AAA;
+        -webkit-box-shadow: 0px 0px 5px 1px #AAA;
+    }
+
+    .botonGrande:hover {
+        background-color: #9C9C9C;
+    }
+
+.fechas {
+    width: 224px;
+    float: left;
+    margin-top: 20px;
+}
+
+    .fechas table {
+        width: 243px;
+    }
+
+        .fechas table tbody tr td:nth-child(1) {
+            width: 69px;
+        }
+
+.graficaCUD {
+    width: 65%;
+    float: left;
+    margin-top: 20px;
+    margin-left: 50px;
+    
+}
+
+.graficaCUD_PAR {
+    width: 55%;
+    height: 450px;
+    float: left;  
+    /*margin-left: 10px;*/
+    margin-left: 25%;
+}
+
+
+.graficaCUD_PAR_HIST_NODO {
+    width: 40%;
+    float: left;
+    height: 450px;
+    margin-left: 10px;
+}
+
+.tablaCUD {
+    width: 100%;
+}
+
+.tituloCUD {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+
+.botonesTablaCUD {
+    width: 400px;
+    margin-top: 13px;
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    background-color: #FFF;
+}
+
+    .botonesTablaCUD .botonComun {
+        float: right;
+    }
+
+.contenedorBotonesGrandesCUD {
+    float: right;
+    width: 24%;
+    /*min-width: 445px;*/ /*comentado 17/08/2017*/
+}
+
+.detalleCUD {
+    width: 58%;
+    display: block;
+    float: left;
+    margin-bottom: 10px;
+}
+
+.detalleCUD_PAR {
+    width: 85%;
+    display: block;
+    float: left;
+    margin-bottom: 10px;
+}
+
+.tituloCALL, .datosCALL {
+    width: 100%;
+    float: left;
+}
+
+.inputCall {
+    width: 90%;
+    float: left;
+}
+
+    .inputCall table {
+        float: left;
+    }
+
+        .inputCall table tbody tr td:nth-child(3n) {
+            width: 60px;
+            padding-left: 20px;
+        }
+
+    .inputCall .botonComun {
+        float: left;
+        margin-left: 10px;
+    }
+
+.botonesChicosCall {
+    width: 10%;
+    float: left;
+    height: 50px;
+}
+
+.tablaCALL {
+    width: 60%;
+    margin: 0 auto;
+}
+
+.DATO_CALL {
+    width: 130px;
+    height: 60px;
+    border: 1px solid #0D125E;
+    background: linear-gradient(180deg, #FFF 50%, #CCC 100%);
+    margin-right: 10px;
+    float: left;
+    margin-top: 5px;
+}
+
+    .DATO_CALL h2 {
+        text-align: center;
+        border-bottom: 1px solid #0D125E;
+        width: 120px;
+        margin: 0 5px;
+        margin-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    .DATO_CALL p {
+        text-align: center;
+        margin-top: 30px;
+        font-weight: 700;
+    }
+
+.datosCALL .botonComun {
+    height: 50px;
+    float: right;
+    position: relative;
+    padding-right: 56px;
+    padding-top: 10px;
+    width: 62px;
+    text-align: right;
+}
+
+    .datosCALL .botonComun i {
+        line-height: 60px;
+        font-size: 30px;
+        width: 45px;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+.botonesChicosCall .botonComun {
+    float: right;
+}
+
+    .botonesChicosCall .botonComun:nth-child(1) {
+        margin-left: 110px;
+    }
+
+.precioCall, .montoCall {
+    width: 49%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-right: 1%;
+    float: left;
+}
+
+    .precioCall .botonComun, .montoCall .botonComun {
+        margin-left: 60px;
+    }
+
+
+
+/*Estos estilos son para que los input de CALL esten del mismo tamaño los de arriba con los de abajo*/
+
+#ctl00_ContentPlaceHolder1_Call_DateHasta_dateInput, #ctl00_ContentPlaceHolder1_Call_DateDesde_dateInput {
+    width: 239px;
+}
+
+#ContentPlaceHolder1_Call_Instrumento, #ContentPlaceHolder1_Call_Plazo {
+    width: 261px;
+}
+/*Estilos para Indice*/
+.textoIndice {
+    width: 70%;
+    float: left;
+    text-align: justify;
+}
+
+
+
+.botonIndicePresentacion {
+    margin-right: 145px !important;
+    width: 235px !important;
+}
+
+.botonesIndice {
+    margin-top: 20px;
+    margin-bottom: 12px;
+}
+
+.inputIndice {
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+
+    .inputIndice .label, .inputIndice .botonComun {
+        float: left;
+    }
+
+    .inputIndice .botonComun, .botonesIndice .botonComun {
+        margin-top: 0;
+    }
+
+#Indice_DateDesde, #Indice_DateHasta {
+    margin-right: 7px;
+    float: left;
+}
+
+.botonesIndice {
+    float: right !important;
+    margin-right: 0;
+    margin-left: 20px;
+}
+
+.tablaIndice {
+    width: 25%;
+    margin-right: 1%;
+    float: left;
+}
+
+.graficaIndice {
+    width: 65%;
+    float: left;
+}
+/*Estilos para CAlculadora de Valores*/
+.inputCalculadoraValores {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+    .inputCalculadoraValores .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 58px;
+    }
+    #ContentPlaceHolder1_ctl06{/*validador de S/C*/
+        margin-left:90px;
+    }
+    
+    #ContentPlaceHolder1_ctl02{ /*validador de selec clase*/
+        /*position:absolute;*/
+        top:223px;
+        left:318px;
+    }
+    #ContentPlaceHolder1_ctl03{
+        /*position:absolute;*/
+        top:223px;
+        left:556px;
+    }
+    .inputCalculadoraValores .labelSegundo {
+        margin-left: 14px !important;
+        width: 40px;
+    }
+
+
+    .inputCalculadoraValores .componentes {
+        float: left;
+        width: 174px !important;
+        margin-top: 5px;
+    }
+
+
+    .inputCalculadoraValores .label {
+        margin-left: 20px;
+    }
+
+        .inputCalculadoraValores .label:first-child {
+            margin-left: 0 !important;
+        }
+
+.calculadoraValoresDatos {
+    width: 29%;
+    margin-right: 2%;
+    float: left;
+}
+
+    .calculadoraValoresDatos .label {
+        width: 131px !important;
+        float: left;
+        margin-bottom: 10px !important;
+        margin-top: 9px !important;
+        clear: both;
+    }
+
+    .calculadoraValoresDatos .componentes, .calculadoraValoresDatos span {
+        float: left;
+        width: 136px !important;
+        margin-top: 5px;
+    }
+
+    .calculadoraValoresDatos .componentes {
+        background-color: #EEE !important;
+    }
+
+.calculadoraValoresCalculadora {
+    width: 33%;
+    float: left;
+    margin-right: 2%;
+}
+
+.calculadoraValoresTabla {
+    width: 34%;
+    float: left;
+}
+
+
+
+.titulosCamposCalculadora {
+    width: 132px;
+    float: left;
+    margin-left: 0;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+#ctl00_ContentPlaceHolder1_txtPrecioCC_wrapper {
+    margin-left: 10px;
+}
+
+.calculadoraValoresCalculadora .label {
+    display: block;
+    height: 19px;
+    width: 80px;
+    float: left;
+}
+
+.margentitulosCamposCalculadora {
+    margin-left: 90px;
+}
+
+.calculadoraValoresCalculadora span {
+    width: 110px;
+    float: left;
+    margin-bottom: 10px;
+}
+
+.calculadoraValoresCalculadora .calculadoraInputDatos {
+    margin-right: 10px;
+    background-color: #EEE !important;
+}
+
+#ctl00_ContentPlaceHolder1_txtPrecioSC {
+    background-color: #FFF !important;
+}
+
+.calculadoraValoresCalculadora p {
+    margin-top: 30px;
+    text-align: justify;
+    margin-right: 10px;
+}
+
+.grillaMercado {
+    width: 450px;
+}
+
+    .grillaMercado table thead tr th.rgHeader, .grillaMercado table tbody tr.rgRow td, .grillaMercado table tbody tr.rgAltRow td {
+        font-size: 13px !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+/*Estilos PAra Historico*/
+
+.inputHistorico {
+    float: left;
+}
+
+    .inputHistorico .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputHistorico .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputHistorico .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputHistorico .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesHistorico {
+    float: right;
+}
+
+    .botonesHistorico .botonComun {
+        float: right;
+    }
+
+
+.tablaHistorico, .tablaHistoricoCUD {
+    width: 80%;
+    margin: 0 10%;
+    margin-top: 20px;
+}
+
+.tablaHistorico_conGrafica{
+    width:100%;
+}
+
+.grillaHistorico_PAR{
+    width:70%;
+    margin-right:0px;
+    float:left;
+}
+
+.labelEvolucionHistorico_PAR{
+    margin-left:0px;
+}
+.selectorPlazoHistorico_PAR{
+    width:25%;
+    float:left;
+    margin-left:60px;
+    margin-top:15px;
+}
+
+.comboPlazoHistorico_PAR{
+    width:300px;
+}
+
+.graficoHistorico_PAR{
+    width:25%;
+    margin-top:10px;
+    margin-left:40px;
+    margin-right:0;
+    float:left;
+}
+
+#ctl00_ContentPlaceHolder1_Historico_DateDesde_wrapper, #ctl00_ContentPlaceHolder1_Historico_DateHasta_wrapper { /*tamaño de componentes en Historico CUD vs UST*/
+    width: 120px !important;
+}
+/*Estilos CUD vs UST*/
+.detalleCUDvsUST {
+    width: 85% !important;
+}
+
+.botonesCUDvsUST {
+    width: 15% !important;
+}
+
+.botonesTablaCUDvsUST {
+    width: 630px;
+    margin-top: 13px;
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    background-color: #FFF;
+    padding-left: 10px;
+}
+
+.HistoricoCUDsSelect{
+    width: 160px!important;
+}
+
+.HistoricoCUDvsUSTSelect {
+    margin-top: 5px;
+}
+
+.CUTIFSelect {
+    margin-top: 5px;
+}
+
+.botonesTablaCUDvsUST .botonComun {
+    float: right;
+}
+
+.botonesTablaCUDvsUST .label {
+    margin-top: 8px !important;
+    display: block;
+    float: left;
+}
+
+.tablaCUDvsUST {
+    width: 100%;
+}
+
+.tituloCUDvsUST {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+
+.graficaCUDvsUST {
+    width: 75%;
+    float: left;
+    margin-top: 20px;
+    margin-left: 1%;
+}
+
+
+.fechasCUDvsUST {
+    min-width: 224px;
+    width: 24%;
+    float: left;
+    margin-top: 20px;
+}
+
+    .fechasCUDvsUST table {
+        width: 243px;
+    }
+
+        .fechasCUDvsUST table tbody tr td:nth-child(1) {
+            width: 69px;
+        }
+
+/*CUI*/
+.fechasCUI {
+    min-width: 224px;
+    width: 24%;
+    float: left;
+    margin-top: 20px;
+}
+
+.graficaCUI {
+    width: 75%;
+    float: left;
+    margin-top: 20px;
+    margin-left: 1%;
+}
+
+.graficaCUP {
+    width: 75%;
+    float: left;
+    margin-top: 20px;
+    margin-left: 1%;
+}
+
+.tablaCUI {
+    width: 100%;
+}
+
+.tablaCUP {
+    width: 100%;
+}
+
+.tablaCEI {
+    width: 100%;
+}
+
+.tituloCUI {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+
+.botonesTablaCUI {
+    width: 400px;
+    margin-top: 13px;
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    background-color: #FFF;
+}
+
+    .botonesTablaCUI .botonComun {
+        float: right;
+    }
+
+.botonesTablaCUP {
+    width: 400px;
+    margin-top: 13px;
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    background-color: #FFF;
+}
+
+.botonesTablaCEI {
+    width: 400px;
+    margin-top: 13px;
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    background-color: #FFF;
+}
+
+    .botonesTablaCUP .botonComun {
+        float: right;
+    }
+
+.botonesTablaCEI .botonComun {
+    float: right;
+}
+
+.anchoDetalleCUI, .anchoDetalleITLUP {
+    width: 70% !important;
+}
+
+.anchoBotonesCUI, .anchoBotonesITLUP {
+    width: 30% !important;
+}
+/*IRUBEVSA*/
+.tablaIRUBEVSA {
+    width: 45%;
+    float: left;
+}
+
+.graficaIRUBEVSA {
+    width: 55%;
+    float: left;
+}
+
+.grillaIRUBEVSA1 {
+    border-width: 0px !important;
+}
+
+#ctl00_ContentPlaceHolder1_Grid2_IRUBEVSA_ctl00 thead tr th, #ctl00_ContentPlaceHolder1_Grid3_IRUBEVSA_ctl00 thead tr th, #ctl00_ContentPlaceHolder1_Grid1_IRUBEVSA_ctl00 thead tr th,
+#ctl00_ContentPlaceHolder1_Grid2_IRUBEVSA_ctl00 tbody tr td, #ctl00_ContentPlaceHolder1_Grid3_IRUBEVSA_ctl00 tbody tr td, #ctl00_ContentPlaceHolder1_Grid1_IRUBEVSA_ctl00 tbody tr td {
+    padding-left: 3px !important;
+    padding-right: 3px !important;
+}
+
+    #ctl00_ContentPlaceHolder1_Grid1_IRUBEVSA_ctl00 thead tr th:nth-child(4), #ctl00_ContentPlaceHolder1_Grid1_IRUBEVSA_ctl00 thead tr th:nth-child(5), #ctl00_ContentPlaceHolder1_Grid1_IRUBEVSA_ctl00 thead tr th:nth-child(6), #ctl00_ContentPlaceHolder1_Grid1_IRUBEVSA_ctl00 thead tr th:nth-child(7), #ctl00_ContentPlaceHolder1_Grid1_IRUBEVSA_ctl00 thead tr th:nth-child(8), #ctl00_ContentPlaceHolder1_Grid1_IRUBEVSA_ctl00 thead tr th:nth-child(9), #ctl00_ContentPlaceHolder1_Grid1_IRUBEVSA_ctl00 thead tr th:nth-child(10), #ctl00_ContentPlaceHolder1_Grid1_IRUBEVSA_ctl00 thead tr th:nth-child(11) {
+        font-weight: 400 !important;
+    }
+
+#tablaIRUBEVSA_1, #ctl00_ContentPlaceHolder1_Grid1_IRUBEVSA {
+    width: 120px;
+    float: left;
+}
+
+#tablaIRUBEVSA_2 {
+    width: 250px;
+    float: left;
+}
+
+#tablaIRUBEVSA_3 {
+    width: 50px;
+    float: left;
+}
+/*Calculadora divisas*/
+
+#calculadoraDivisasOtros, #calculadoraDivisasDolares {
+    position: absolute;
+    z-index: 10 !important;
+    background-color: #FFF;
+    top: -3px;
+    left: 0;
+    width: 100%;
+    box-shadow: 0px 4px 5px 1px #AAA;
+    -moz-box-shadow: 0px 4px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 4px 5px 1px #AAA;
+    border-radius: 1px 1px 1px 1px;
+    -moz-border-radius: 1px 1px 1px 1px;
+    -webkit-border-radius: 1px 1px 1px 1px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+#calculadoraDivisasOtros {
+    display: none;
+}
+
+#pestaniasCalculadoraDivisas {
+    position: relative;
+    margin-top: 100px;
+    min-height: 300px;
+}
+
+    #pestaniasCalculadoraDivisas .label {
+        margin-left: 28px;
+        clear: both;
+        float: left;
+        width: 150px;
+        margin-bottom: 10px;
+    }
+
+    #pestaniasCalculadoraDivisas .botonCalculadoraDivisasResetear {
+        position: absolute;
+        bottom: 10px;
+        left: 185px;
+    }
+
+    #pestaniasCalculadoraDivisas .botonCalculadoraDivisasCalcular {
+        position: absolute;
+        bottom: 10px;
+        left: 320px;
+    }
+
+#btncalculadoraDivisasDolares, #btncalculadoraDivisasOtros {
+    position: absolute;
+    width: 150px;
+    height: 60px;
+    display: block;
+    background-color: #FFF;
+    color: #0D125E;
+    font-family: Roboto;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0px 0px 5px 1px #AAA;
+    -moz-box-shadow: 0px 0px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 0px 5px 1px #AAA;
+    line-height: 60px;
+    text-align: center;
+    font-weight: 700;
+}
+
+#btncalculadoraDivisasDolares {
+    top: -60px;
+    left: 0px;
+    z-index: 2;
+}
+
+#btncalculadoraDivisasOtros {
+    top: -58px;
+    left: 150px;
+    z-index: 1;
+    background: linear-gradient(180deg, #FFF 16%, #BBB 70%);
+}
+
+.calculadoraDivisas, .calculadoraDivisasSelect {
+    float: left;
+    margin-bottom: 10px;
+    width: 180px;
+}
+
+.calculadoraDivisasSelect {
+    width: 184px;
+}
+/*Estilos para CUTIF*/
+.detalleCUTIF {
+    width: 85% !important;
+}
+
+.botonesCUTIF {
+    width: 15% !important;
+}
+
+.fechasCUTIF {
+    min-width: 224px;
+    width: 24%;
+    float: left;
+    margin-top: 20px;
+}
+
+    .fechasCUTIF table {
+        width: 243px;
+    }
+
+        .fechasCUTIF table tbody tr td:nth-child(1) {
+            width: 69px;
+        }
+
+.graficaCUTIF {
+    width: 75%;
+    float: left;
+    margin-top: 20px;
+    margin-left: 1%;
+}
+
+.graficaCUTIF1, .graficaCUTIF2 {
+    width: 50%;
+    float: left;
+}
+
+.tablaCUTIF {
+    width: 100%;
+}
+
+.tituloCUTIF {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+
+.CUTIFSelect {
+    margin-top: 5px;
+    width: 160px;
+}
+/*ESTILOS PARA ITLUP*/
+.fechasITLUP {
+    min-width: 224px;
+    width: 24%;
+    float: left;
+    margin-top: 20px;
+}
+
+    .fechasITLUP table {
+        width: 243px;
+    }
+
+        .fechasITLUP table tbody tr td:nth-child(1) {
+            width: 69px;
+        }
+
+.graficaITLUP {
+    width: 75%;
+    float: left;
+    margin-top: 20px;
+    margin-left: 1%;
+}
+
+
+.tablaITLUP {
+    width: 100%;
+}
+
+.tituloITLUP {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+
+.botonesTablaITLUP {
+    width: 400px;
+    margin-top: 13px;
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    background-color: #FFF;
+}
+
+    .botonesTablaITLUP .botonComun {
+        float: right;
+    }
+/*Estilos para Fair Values*/
+
+.detalleFairValues {
+    width: 80% !important;
+}
+
+.inputFairValues, .inputFairValuesVerMas {
+    float: left;
+    width: 585px;
+    margin-top: 10px;
+}
+
+.tamanioInputFairValues {
+    width: 162px !important;
+    margin-top: 5px;
+    float: left;
+    margin-right: 5px;
+}
+
+.tamanioInputFairValuesDate, .tamanioInputFairValuesVerMasDate {
+    width: 162px !important;
+    margin-top: 5px;
+    float: left;
+    margin-right: 5px;
+}
+
+.inputFairValues .label, .inputFairValuesVerMas .label {
+    width: 45px !important;
+    margin-top: 5px;
+    float: left;
+    display: block;
+}
+
+.inputFairValues .botonComun, .inputFairValuesVerMas .botonComun {
+    float: left;
+}
+
+.botonesFairValues {
+    width: 20% !important;
+}
+
+.botonesTablaFairValues {
+    width: 400px;
+    float: right;
+    margin-top: 40px;
+}
+
+    .botonesTablaFairValues .botonComun {
+        float: right;
+    }
+
+.tablaFairValue {
+    margin-top: 15px;
+}
+
+.fair_value_validador {
+    font-family: Roboto;
+    font-size: 14px;
+    color: red;
+    font-weight: 400;
+    text-align: justify;
+}
+
+/*Fair Value Ver Mas*/
+.tablaFariValueVerMas, .graficaFairValueVerMas {
+    width: 100%;
+}
+
+.tituloFairValueVerMas {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+
+.botonesTablaFairValueVerMas {
+    width: 270px;
+    margin-top: 13px;
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    background-color: #FFF;
+}
+
+    .botonesTablaFairValueVerMas .botonComun {
+        float: right;
+    }
+/*Estilos para Vector Precios*/
+.detalleVectorPrecio, .graficaVectorPreciosVerMas {
+    width: 100% !important;
+}
+
+
+.inputVectorPrecio, .inputVectorPreciosVerMas {
+    float: left;
+    width: 585px;
+    margin-top: 10px;
+}
+
+.tamanioInputVectorPrecio {
+    width: 120px !important;
+    margin-top: 5px;
+    float: left;
+    margin-right: 5px;
+}
+
+.tamanioInputVectorPrecioDate, tamanioVectorPreciosVerMasDate {
+    width: 116px !important;
+    margin-top: 5px;
+    float: left;
+    margin-right: 5px;
+}
+
+.inputVectorPrecio .label, .inputVectorPreciosVerMas .label {
+    width: 45px !important;
+    margin-top: 5px;
+    float: left;
+    display: block;
+}
+
+.inputVectorPrecio .botonComun, .inputVectorPreciosVerMas .botonComun {
+    float: left;
+}
+
+.botonesVectorPrecio {
+    width: 20% !important;
+}
+
+.botonesTablaVectorPrecio {
+    width: 400px;
+    float: right;
+    margin-top: 10px;
+}
+
+    .botonesTablaVectorPrecio .botonComun {
+        float: right;
+    }
+
+.tablaVectorPrecio {
+    margin-top: 15px;
+}
+/*vector precios Ver Mas*/
+
+.tituloVectorPreciosVerMas {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+
+.botonesTablaVectorPreciosVerMas {
+    width: 270px;
+    margin-top: 13px;
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    background-color: #FFF;
+}
+
+    .botonesTablaVectorPreciosVerMas .botonComun {
+        float: right;
+    }
+/*Estilos para Calculadora Mercado Dienro*/
+.contenidoMercadoDinero .label, .contenidoMercadoDinero .inputMercadoDinero {
+    float: left;
+    width: 150px;
+    margin-bottom: 10px;
+}
+
+.contenidoMercadoDinero .label {
+    clear: both;
+    width: 130px;
+}
+
+.botonCalculadoraMercadoResetear {
+    float: left;
+    margin-left: 140px;
+}
+
+.botonCalculadoraMercadoCalcular {
+    float: left;
+    margin-left: 10px;
+}
+/* CURVA PRIVADOS*/
+.detalleCURVAPRIVADOS {
+    width: 85% !important;
+}
+
+.botonesCURVAPRIVADOS {
+    width: 15% !important;
+}
+
+.grafica1_Curva_Privados, .grafica2_Curva_Privados {
+    width: 50%;
+    float: left;
+}
+
+.tablaCurvaPrivado {
+    width: 100% !important;
+}
+
+.tituloCurvaPrivado {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+
+.CURVAPRIVADO_select {
+    margin-top: 5px;
+}
+
+.inputsCurvaPrivados {
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+    .inputsCurvaPrivados .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .inputsCurvaPrivados .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+    .inputsCurvaPrivados .botonComun {
+        float: left;
+        margin-left: 20px;
+    }
+
+/*ERROR*/
+.error {
+    width: 400px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #AAA;
+    padding: 20px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #FFF 50px, #AAA 300px);
+    -webkit-background: linear-gradient(180deg, #FFF 50px, #AAA 300px);
+    -moz-background: linear-gradient(180deg, #FFF 50px, #AAA 300px);
+    margin-top: 30px;
+    box-shadow: #9C9C9C 3px 3px 8px;
+}
+
+    .error img, .error p {
+        float: left;
+    }
+
+    .error p {
+        width: 300px;
+    }
+
+    .error img {
+        width: 100px;
+    }
+
+    .error .botonComun {
+        margin-left: 100px;
+    }
+/*Estilso para mercado resumen transaccion*/
+.inputsResumenTransacciones {
+    float: left;
+    width: 860px;
+}
+
+    .inputsResumenTransacciones .botonComun {
+        float: right !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+    .inputsResumenTransacciones .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .inputsResumenTransacciones .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .inputsResumenTransacciones .comboInforme {
+        float: left;
+        width: 250px !important;
+    }
+
+.botonesArribaResumenTransacciones {
+    float: right;
+}
+
+    .botonesArribaResumenTransacciones .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+.TABLA_ResTrans_1, .TABLA_ResTrans_2, .TABLA_ResTrans_3, TABLA_ResTrans_4, TABLA_ResTrans_5, TABLA_ResTrans_6 {
+    width: 100%;
+}
+
+.tabla1 {
+    width: 50%;
+}
+
+/*Estilo resumen instrumento*/
+.inputsybotonesResumenInstrumento {
+    width: 100%;
+}
+
+    .inputsybotonesResumenInstrumento .botonComun, .inputsybotonesResumenInstrumento .label {
+        float: left;
+    }
+
+    .inputsybotonesResumenInstrumento .botonComun {
+        margin-top: 0px !important;
+    }
+
+    .inputsybotonesResumenInstrumento .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .inputsybotonesResumenInstrumento .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+.tabla1_resumenInstrumento, .tabla2_resumenInstrumento {
+    width: 49%;
+    margin-right: 1%;
+    float: left;
+    margin-top: 10px;
+}
+
+    .tabla2_resumenInstrumento p {
+        margin-left: 35px !important;
+    }
+
+    .tabla1_resumenInstrumento p {
+        margin-left: 50px !important;
+    }
+
+.tabla2_resumenInstrumento {
+    margin-right: 0;
+}
+
+.botonesResumeninstrumento, .botonesResumeninstrumento .botonComun {
+    float: right;
+}
+
+.tablaResumenInstrumento {
+    width: 100%;
+}
+
+.tabla1_resumenInstrumento p, .tabla2_resumenInstrumento p {
+    margin-left: 60px;
+    font-weight: 700;
+    color: #0D125E;
+}
+
+/*estilso informacion instrumentos*/
+.inputsInformacionInstrumento {
+    float: left;
+    width: 100%;
+}
+
+    .inputsInformacionInstrumento .botonComun {
+        float: left !important;
+        margin: 1px 5px 5px 10px !important;
+    }
+
+    .inputsInformacionInstrumento .label {
+        float: left;
+        margin-top: 4px !important;
+        width: 50px;
+    }
+
+    .inputsInformacionInstrumento .label, .botonesArribaInformacionInstrumento .label {
+        margin-left: 10px !important;
+    }
+
+    /* .inputsInformacionInstrumento .label:nth-of-type(3) {
+            width: 35px;
+            margin-left: 8px !important;
+        }
+
+        .inputsInformacionInstrumento .label:nth-of-type(5) {
+            width: 72px;
+            margin-left: 8px !important;
+        }
+
+        .inputsInformacionInstrumento .label:nth-of-type(8) {
+            width: 35px;
+            margin-left: 8px !important;
+        }*/
+
+    .inputsInformacionInstrumento .componentes, .botonesArribaInformacionInstrumento .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .inputsInformacionInstrumento .label_Instrumento {
+        width: 75px !important;
+    }
+
+    .inputsInformacionInstrumento .componente_Instrumento {
+        width: 200px !important;
+    }
+
+    .inputsInformacionInstrumento .label_clase {
+        width: 36px !important;
+    }
+
+    .inputsInformacionInstrumento .componente_clase {
+        width: 200px !important;
+    }
+
+    .inputsInformacionInstrumento .componente_mercado {
+        width: 150px !important;
+    }
+
+    .inputsInformacionInstrumento .componente_mercado_grande {
+        width: 250px !important;
+    }
+
+
+.botonAzul {
+    background-color: #0D125E;
+}
+
+.inputsInformacionInstrumento .label {
+    float: left;
+    margin-bottom: 10px;
+    margin-top: 5px;
+}
+
+.botonesArribaInformacionInstrumento {
+    float: right;
+    width: 100%;
+    margin-top: 10px;
+}
+
+    .botonesArribaInformacionInstrumento .label, .botonesArribaInformacionInstrumento .componentes {
+        float: left;
+    }
+
+    .botonesArribaInformacionInstrumento .componente_desde {
+        margin-left: 15px;
+    }
+
+    .botonesArribaInformacionInstrumento .label_hasta {
+        margin-left: 27px !important;
+    }
+
+    .botonesArribaInformacionInstrumento .componente_hasta {
+        margin-left: 0px !important;
+    }
+
+    .botonesArribaInformacionInstrumento .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+    .botonesArribaInformacionInstrumento .BOTON_FILTRAR_INFO_INSTUMENTO {
+        float: left;
+        margin-top: 0px !important;
+    }
+
+.tablaInformacionInstrumento {
+    width: 100%;
+    margin-top: 20px;
+}
+
+
+
+
+/*Estilos cierre mercado cambio dinero*/
+.inPUTcIERREmERcAMBIOS {
+    float: left;
+}
+
+    .inPUTcIERREmERcAMBIOS .botonComun {
+        float: right !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesArribaCierreMercCambios {
+    float: right;
+}
+
+    .botonesArribaCierreMercCambios .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+.tablaCierreMercCambiosDinero {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/*Estilos para cierre dolar futuro OCT*/
+.inputsCierreDolarFuturoOCT {
+    float: left;
+    margin-top: 15px;
+}
+
+    .inputsCierreDolarFuturoOCT .botonComun {
+        float: right !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesArribaCierreDolarFuturoOCT {
+    float: right;
+    margin-top: 15px;
+}
+
+    .botonesArribaCierreDolarFuturoOCT .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+.grafica1_cierreDolarFuturoOCT, .grafica2_cierreDolarFuturoOCT {
+    width: 49%;
+    float: left;
+    margin-right: 2%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+.grafica2_cierreDolarFuturoOCT {
+    margin-right: 0;
+}
+
+    .grafica1_cierreDolarFuturoOCT p, .grafica2_cierreDolarFuturoOCT p {
+        margin-left: 60px;
+        font-weight: 700;
+        color: #0D125E;
+    }
+
+.graficaCUTIF1 p, .graficaCUTIF2 p {
+    font-weight: 700;
+    color: #0D125E;
+}
+
+.tablaCierreDolarFuturoOCT {
+    width: 100%;
+}
+
+
+
+/*Estilos para cierre oficial mercado valores*/
+
+.inputsCierreOficialMercValores {
+    float: left;
+    margin-top: 15px;
+    width: 880px;
+}
+
+    .inputsCierreOficialMercValores .botonComun {
+        float: right !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+    .inputsCierreOficialMercValores .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+    }
+
+    .inputsCierreOficialMercValores .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .inputsCierreOficialMercValores .comboClase {
+        float: left;
+        width: 175px !important;
+    }
+
+    .inputsCierreOficialMercValores .comboInstrumento {
+        float: left;
+        width: 225px !important;
+    }
+
+    .inputsCierreOficialMercValores .estiloValidar {
+        margin-left: 440px;
+    }
+
+.botonesArribaCierreOficialMercValores {
+    float: right;
+    margin-top: 15px;
+}
+
+    .botonesArribaCierreOficialMercValores .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+.tablaCierreOficialMercadoValores {
+    width: 100%;
+}
+
+.GridCierreOficial {
+    margin-top: 20px;
+}
+/*eSTILSO PARA EVOLUCION DE PRECIO DE CIERRE DEL INSTRUMENTO*/
+
+.inputsybotonesEvolcionPrecioInstrumento {
+    width: 100%;
+}
+
+    .inputsybotonesEvolcionPrecioInstrumento .botonComun, .inputsybotonesEvolcionPrecioInstrumento .label {
+        float: left;
+    }
+
+    .inputsybotonesEvolcionPrecioInstrumento .botonComun {
+        margin-top: 0px !important;
+    }
+
+    .inputsybotonesEvolcionPrecioInstrumento .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+    }
+
+    .inputsybotonesEvolcionPrecioInstrumento .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+.grafica_evolucionPrecioCierreInstrumento {
+    width: 70%;
+    margin: 0 auto;
+}
+
+.subtituloEvolucionPrecioCierreInstrumento {
+    width: 100%;
+    float: left;
+    position: relative;
+}
+
+.botonesTablaEvolucionPrecioCierreInstrumento {
+    width: 270px;
+    margin-top: 13px;
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    background-color: #FFF;
+}
+
+    .botonesTablaEvolucionPrecioCierreInstrumento .botonComun {
+        float: right;
+    }
+
+.TablaEvolucionGridDatosRend {
+    margin-top: 20px;
+}
+/*Estilos para Datos rend tit. deuda*/
+
+.inputsDatosRendTitDeuda {
+    float: left;
+    width: 1200px;
+}
+
+    .inputsDatosRendTitDeuda .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+    }
+
+    .inputsDatosRendTitDeuda .componentes {
+        float: left;
+        width: 230px !important;
+    }
+
+    .inputsDatosRendTitDeuda .botonComun {
+        float: left !important;
+        margin: 3px 5px 5px 10px !important;
+    }
+
+.botonesArribaDatosRendTitDeuda {
+    float: right;
+}
+
+    .botonesArribaDatosRendTitDeuda .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+/*Estilos para evolucion de operativa total*/
+
+
+#evolucionOperativaTotalBarra, #evolucionOperativaTotalTorta {
+    position: absolute;
+    z-index: 10 !important;
+    background-color: #FFF;
+    top: -3px;
+    left: 0;
+    width: 100%;
+    box-shadow: 0px 4px 5px 1px #AAA;
+    -moz-box-shadow: 0px 4px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 4px 5px 1px #AAA;
+    border-radius: 1px 1px 1px 1px;
+    -moz-border-radius: 1px 1px 1px 1px;
+    -webkit-border-radius: 1px 1px 1px 1px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    height: 435px;
+}
+
+#evolucionOperativaTotalTorta {
+    display: none;
+}
+
+#pestaniasevolcionoperativatotal {
+    position: relative;
+    margin-top: 75px;
+    min-height: 470px;
+}
+
+
+#btnevolucionOperativaTotalBarras, #btnevolucionOperativaTotalTorta {
+    position: absolute;
+    width: 150px;
+    height: 60px;
+    display: block;
+    background-color: #FFF;
+    color: #0D125E;
+    font-family: Roboto;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0px 0px 5px 1px #AAA;
+    -moz-box-shadow: 0px 0px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 0px 5px 1px #AAA;
+    line-height: 60px;
+    text-align: center;
+    font-weight: 700;
+}
+
+#btnevolucionOperativaTotalBarras {
+    top: -60px;
+    left: 0px;
+    z-index: 2;
+}
+
+#btnevolucionOperativaTotalTorta {
+    top: -58px;
+    left: 150px;
+    z-index: 1;
+    background: linear-gradient(180deg, #FFF 16%, #BBB 70%);
+}
+
+.grafica_evolucionOperativaTotal_barra_1, .grafica_evolucionOperativaTotal_torta_1 {
+    width: 49%;
+    margin-left: 2%;
+    float: left;
+}
+
+.grafica_evolucionOperativaTotal_barra_2, .grafica_evolucionOperativaTotal_torta_2 {
+    width: 49%;
+    float: left;
+}
+
+.tabla1_evolucionOperativaTotal, .tabla2_evolucionOperativaTotal {
+    width: 100%;
+    float: left;
+    margin: 0 auto;
+}
+
+.inputevolucionOperativaTotal {
+    float: left;
+    width: 720px;
+}
+
+    .inputevolucionOperativaTotal .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+    }
+
+    .inputevolucionOperativaTotal .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .inputevolucionOperativaTotal .botonComun {
+        float: left !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesArribaevolucionOperativaTotal {
+    float: right;
+}
+
+    .botonesArribaevolucionOperativaTotal .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+.tablasDentroDeLasPEstanias {
+    width: 90%;
+    padding-left: 5%;
+    padding-right: 5%;
+    float: left;
+}
+/*eSTILOS PROMEDIOS DIARIOS TRANSACCIONES*/
+.inputsPromDiariosTrans {
+    float: left;
+}
+
+    .inputsPromDiariosTrans .botonComun {
+        float: right !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesArribaPromDiariosTrans {
+    float: right;
+}
+
+    .botonesArribaPromDiariosTrans .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+#PromDiariosTrans_CANTIDAD, #PromDiariosTrans_MONTO {
+    position: absolute;
+    z-index: 10 !important;
+    background-color: #FFF;
+    top: -3px;
+    left: 0;
+    width: 100%;
+    box-shadow: 0px 4px 5px 1px #AAA;
+    -moz-box-shadow: 0px 4px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 4px 5px 1px #AAA;
+    border-radius: 1px 1px 1px 1px;
+    -moz-border-radius: 1px 1px 1px 1px;
+    -webkit-border-radius: 1px 1px 1px 1px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    height: 780px;
+}
+
+#PromDiariosTrans_MONTO {
+    display: none;
+}
+
+#pestaniaSPromDiariosTrans {
+    position: relative;
+    margin-top: 75px;
+    height: 780px;
+}
+
+
+#btnPromDiariosTrans_CANTIDAD, #btnPromDiariosTrans_MONTO {
+    position: absolute;
+    width: 250px;
+    height: 60px;
+    display: block;
+    background-color: #FFF;
+    color: #0D125E;
+    font-family: Roboto;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0px 0px 5px 1px #AAA;
+    -moz-box-shadow: 0px 0px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 0px 5px 1px #AAA;
+    line-height: 60px;
+    text-align: center;
+    font-weight: 700;
+}
+
+#btnPromDiariosTrans_CANTIDAD {
+    top: -60px;
+    left: 0px;
+    z-index: 2;
+}
+
+#btnPromDiariosTrans_MONTO {
+    top: -58px;
+    left: 250px;
+    z-index: 1;
+    background: linear-gradient(180deg, #FFF 16%, #BBB 70%);
+}
+
+.grafica_PromDiariosTrans_CANTIDAD_1, .grafica_PromDiariosTrans_MONTO_1 {
+    width: 49%;
+    margin-left: 2%;
+    float: left;
+    height: 425px !important;
+}
+
+.grafica_PromDiariosTrans_MONTO_2, .grafica_PromDiariosTrans_CANTIDAD_2 {
+    width: 49%;
+    float: left;
+    height: 425px !important;
+}
+/*#ctl00_ContentPlaceHolder1_ChartAnioActualMonto, #ctl00_ContentPlaceHolder1_ChartAnioAnteriorMonto{ /*para arreglar las graficas de promedio transacciones monto*/
+    /*height:250px!important;
+    width:450px!important;
+}*/
+
+.tabla1_PromDiariosTrans, .tabla2_PromDiariosTrans {
+    width: 100%;
+}
+
+.tablasDentroDeLasPestanias_promedio_diarios {
+    width: 96%;
+    padding-left: 2%;
+    padding-right: 2%;
+    float: left;
+}
+
+/*estos son estilos para cambiar los tamaños de letra de las tablas de esta seccion*/
+
+    .tabla1_PromDiariosTrans table thead tr th.rgHeader, .tabla1_PromDiariosTrans table tbody tr td, .tabla1_PromDiariosTrans table thead tr th.rgHeader, .tabla1_PromDiariosTrans table tbody tr td {
+        font-size: 13px !important;
+        width: 75px !important;
+        
+    }
+    .tabla1_PromDiariosTrans .rgMasterTable tbody .rgRow > td, .tabla1_PromDiariosTrans .rgMasterTable tbody .rgAltRow > td, .tabla1_PromDiariosTrans .rgMasterTable tbody .rgRow > td, .tabla1_PromDiariosTrans .rgMasterTable tbody .rgAltRow > td, .grillaEvolucionAnioAnterior .rgMasterTable thead tr th, .grillaEvolucionActual .rgMasterTable thead tr th {
+        padding-left: 1px !important;
+        padding-right: 1px !important;
+        
+    
+    }
+
+      .tabla2_PromDiariosTrans table thead tr th.rgHeader, .tabla2_PromDiariosTrans table tbody tr td, .tabla2_PromDiariosTrans table thead tr th.rgHeader, .tabla2_PromDiariosTrans table tbody tr td {
+        font-size: 13px !important;
+        width: 75px !important;
+        
+    }
+    .tabla2_PromDiariosTrans .rgMasterTable tbody .rgRow > td, .tabla2_PromDiariosTrans .rgMasterTable tbody .rgAltRow > td, .tabla2_PromDiariosTrans .rgMasterTable tbody .rgRow > td, .tabla2_PromDiariosTrans .rgMasterTable tbody .rgAltRow > td, .grillaEvolucionAnioAnterior .rgMasterTable thead tr th, .grillaEvolucionActual .rgMasterTable thead tr th {
+        padding-left: 1px !important;
+        padding-right: 1px !important;
+        
+    
+    }
+
+
+
+
+
+/*login*/
+.login {
+    width: 400px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #AAA;
+    padding: 20px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #FFF 50px, #AAA 300px);
+    -webkit-background: linear-gradient(180deg, #FFF 50px, #AAA 300px);
+    -moz-background: linear-gradient(180deg, #FFF 50px, #AAA 300px);
+    margin-top: 30px;
+    box-shadow: #9C9C9C 3px 3px 8px;
+}
+
+    .login .label {
+        float: left;
+        width: 100px;
+        margin-top: 15px;
+    }
+
+    .login .inputLogin {
+        float: left;
+        width: 200px;
+        margin-top: 15px;
+    }
+
+    .login .botonComun {
+        margin-left: 110px;
+        margin-top: 20px;
+        float:none;
+    }
+
+    .login .recover {
+        float: right;
+        width: 230px;
+        margin-top: 15px;
+        font-family: Roboto;
+        font-size: 14px;
+        color: #000000;
+        font-weight: 400;
+        text-align: justify;
+    }
+
+/*institucional*/
+.parrafo_bevsa {
+    width: 75% !important;
+}
+
+.parrafo_bevsa h2, .parrafo_bevsa p, .parrafo_ofrece_bevsa h2, .parrafo_ofrece_bevsa p {
+    width: 100%;
+}
+
+.parrafo_ofrece_bevsa {
+    width: 75% !important;
+    float: left;
+}
+
+/* FSS ESTILOS - MISION VISION VALORES*/
+.parrafo_mis_vis_val h2, .parrafo_mis_vis_val p, .parrafo_mis_vis_val h2, .parrafo_mis_vis_val p {
+    width: 100%;
+}
+
+.parrafo_mis_vis_val {
+    width: 75% !important;
+    float: left;
+}
+
+.imagen_mis_vis_val {
+    float: left;
+    width: 23%;
+    margin-left: 2%;
+    margin-top: 1%;
+}
+
+/* fin Estilos MISION VISION VALORES*/
+
+/* FSS ESTILOS - PRESENTACION INSTITUCIONAL*/
+.parrafo_institucional h2, .parrafo_institucional p, .parrafo_institucional h2, .parrafo_institucional p {
+    width: 100%;
+}
+
+.parrafo_institucional {
+    width: 75% !important;
+    float: left;
+}
+
+.imagen_institucional {
+    float: left;
+    width: 23%;
+    margin-left: 2%;
+    margin-top: 1%;
+}
+
+/* fin Estilos QUE OFRECE BEVSA*/
+
+.imagen_seccion_bevsa {
+    float: left;
+    width: 23%;
+    margin-left: 2%;
+    margin-top: 1%; /*FSS*/
+}
+
+#link_descarga_representantes{
+    margin-left: 2%;
+    float: left;
+    margin-top: 15px;
+    height: 50px;
+    width:23%;
+
+    font-family: Roboto;
+    font-weight:bold;
+    font-size: 16px;
+    color: #FFF;
+    text-align: center;
+
+    line-height: 24px;
+
+    background-color: #0D125E
+}
+
+/*EQUIPO PROFESIONAL*/
+.EQUIPO_bevsa {
+    width: 100%;
+    margin-top: 6%;/*FSS*/
+}
+
+    .EQUIPO_bevsa p, .EQUIPO_bevsa h2 {
+        /*width: 78%;*/
+        width: 50%; /*FSS*/
+        float: left;
+        text-align: left !important;
+
+        font-size: 16px;
+    }
+
+    .EQUIPO_bevsa img {
+        width: 18%;
+        margin-right: 2%;
+        float: left;
+        border: solid #CCC 1px;
+    }
+
+    .EQUIPO_bevsa .linea {
+        float: left;
+        width: 100%;
+    }
+
+    .EQUIPO_bevsa h2:first-child {
+        width: 100%;
+    }
+
+.deAtres_Equipo_profesional {
+    float: left;
+    width: 33%;
+}
+
+.deAcuatro_Equipo_profesional {
+    float: left;
+    width: 25%;
+}
+/*estilos para socios y operadores*/
+.socios {
+    width: 32%;
+    margin-right: 2%;
+    float: left;
+}
+
+    .socios:nth-of-type(3) {
+        margin-right: 0;
+    }
+
+    .socios img {
+        width: 30%;
+        margin-right: 2%;
+        float: left;
+        border: solid #AAA 1px;
+        margin-top: 20px;
+    }
+
+    .socios div {
+        float: left;
+        width: 67%;
+    }
+
+    .socios h2, .socios p {
+        width: 100%;
+        float: left;
+        margin-right: 0;
+    }
+
+    .socios h2 {
+        margin-top: 20px;
+    }
+/*Estilos directorio*/
+.fila_directorio {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.separacion_directorio {
+    margin-bottom: 40px;
+}
+
+.fila_directorio p {
+    width: 29%;
+    float: left;
+}
+
+.ultimoDirecotorio {
+    margin-left: 49%;
+}
+
+.fila_directorio img {
+    width: 10%;
+    margin-right: 10%;
+    float: left;
+    border: solid #AAA 1px;
+}
+
+.fila_directorio h2 {
+    width: 100%;
+    float: left;
+    font-size: 18px;
+}
+/*ESTILOS DOLAR*/
+.inputsDolar {
+    float: left;
+}
+
+    .inputsDolar .botonComun {
+        float: right !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesArribaDolar {
+    float: right;
+}
+
+    .botonesArribaDolar .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+.grafica1_Dolar {
+    width: 49%;
+    margin-right: 2%;
+    float: left;
+    margin-bottom: 50px;
+}
+
+.grafica2_Dolar {
+    width: 49%;
+    float: left;
+    margin-bottom: 50px;
+}
+
+.DATOS_DOLAR {
+    width: 100%;
+    float: left;
+}
+
+.DATO_DOLAR {
+    width: 130px;
+    height: 100px;
+    border: 1px solid #0D125E;
+    background: linear-gradient(180deg, #FFF 50%, #CCC 100%);
+    margin-right: 10px;
+    float: left;
+    margin-top: 5px;
+}
+
+    .DATO_DOLAR:nth-of-type(4) {
+        width: 200px;
+    }
+
+.DatoDolarMasGrande {
+    width: 160px !important;
+}
+
+.DATO_DOLAR h2 {
+    text-align: center;
+    border-bottom: 1px solid #0D125E;
+    width: 93%;
+    margin: 0 5px;
+    margin-top: 5px;
+    padding-bottom: 5px;
+    float: none;
+}
+
+.DATO_DOLAR p {
+    text-align: center;
+    margin-top: 22px;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.dolarAumento {
+    color: green !important;
+}
+
+.dolarMantuvo {
+    color: #0D125E !important;
+}
+
+.dolarBajo {
+    color: red !important;
+}
+
+.dolar_p_floatado {
+    float: left;
+    width: 49%;
+    margin-top: 0px !important;
+}
+
+    .dolar_p_floatado:nth-of-type(2) {
+        border-left: 1px solid #0D125E;
+        margin-top: 0px;
+        padding-top: 0px;
+    }
+
+.titulo_p_dato_dolar {
+    color: #0D125E;
+    font-size: 14px;
+}
+
+.DATOS_DOLAR .botonComun {
+    height: 50px;
+    float: right;
+    position: relative;
+    padding-right: 56px;
+    padding-top: 10px;
+    width: 62px;
+    text-align: right;
+}
+
+    .DATOS_DOLAR .botonComun i {
+        line-height: 60px;
+        font-size: 30px;
+        width: 45px;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
+.tabla_Dolar {
+    width: 80%;
+    margin: 0 auto;
+}
+/*DATOS ESTADISTICOS DOLAR VER MAS*/
+.P_DATOS_ESTADISTICOS_DOLAR {
+    width: 80%;
+    margin-bottom: 20px;
+}
+
+.inputsDatos_Estadisticos {
+    float: left;
+}
+
+    .inputsDatos_Estadisticos .botonComun {
+        float: right !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesArribaDatosEstadisticos {
+    float: right;
+}
+
+    .botonesArribaDatosEstadisticos .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+.tabla_datos_estadisticos_ver_mas {
+    width: 30%;
+    float: left;
+    margin-right: 5%;
+    margin-top: 20px;
+}
+
+.grafica_datos_estadisticos_ver_mas {
+    width: 65%;
+    float: left;
+    margin-top: 20px;
+}
+/*eSTILOS HISTORICO MENSAUL - MERCADO CAMBIOS*/
+.inputshISTORICO_mENSUAL_mERCADOcAMBIO {
+    float: left;
+}
+
+    .inputshISTORICO_mENSUAL_mERCADOcAMBIO .botonComun {
+        float: right !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesArribHistoricoMensualMercadoCambio {
+    float: right;
+}
+
+    .botonesArribHistoricoMensualMercadoCambio .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+.tablas_Historico_Mensual_Mercado_cambios {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.tabla1_Historico_Mensual_Mercado_cambios {
+    width: 20%;
+    margin-right: 5%;
+    float: left;
+}
+
+.tabla2_Historico_Mensual_Mercado_cambios {
+    width: 35%;
+    margin-right: 5%;
+    float: left;
+}
+
+.tabla3_Historico_Mensual_Mercado_cambios {
+    width: 35%;
+    float: left;
+}
+/*ESTILOS PARA DOLAR FUTURO POR VENCIMIENTO*/
+
+.botonesArribaDOLAR_FUTURO_POR_VENCIMIENTO {
+    float: right;
+}
+
+    .botonesArribaDOLAR_FUTURO_POR_VENCIMIENTO .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+.tabla_dolar_futuro_por_vencimiento {
+    width: 30%;
+    float: left;
+    margin-right: 5%;
+    margin-top: 20px;
+}
+
+.grafica_dolar_futuro_por_vencimiento {
+    width: 65%;
+    float: left;
+    margin-top: 20px;
+}
+/*Estilos para contacto*/
+
+.formulario_contacto {
+    width: 39%;
+    margin-right: 2%;
+    float: left;
+}
+
+.mapa_y_direccion_contacto {
+    width: 59%;
+    float: left;
+    margin-top: 12px;
+}
+
+.direccion_Contacto {
+    width: 34%;
+    margin-left: 5%;
+    float: left;
+}
+
+.formulario_contacto table {
+    width: 100%;
+}
+
+    .formulario_contacto table tr td {
+        width: 35%;
+    }
+
+        .formulario_contacto table tr td:nth-of-type(2n) {
+            width: 65%;
+        }
+
+.inputs_contacto {
+    width: 100% !important;
+    margin-top: 10px;
+}
+
+.textarea {
+    height: 51px;
+}
+/*Estilos para dolar futuro*/
+.dolar_futuro_50 {
+    width: 49%;
+    margin-right: 2%;
+    float: left;
+    margin-bottom: 20px;
+}
+
+    .dolar_futuro_50:nth-child(2n) {
+        margin-right: 0px;
+    }
+
+.dolarFuturo_arriba_izq {
+    width: 47% !important;
+}
+
+.dolarFuturo_arriba_der {
+    width: 51% !important;
+    margin-bottom:25px!important;
+}
+
+.dolar_futuro_50 .label, .filtros_abajo_dolar_futuro .label {
+    float: left;
+    margin-top: 4px !important;
+    margin-left: 4px !important;
+    width: 50px;
+}
+
+.filtros_abajo_dolar_futuro .labelSegundo {
+    margin-left: 10px !important;
+    width: 40px;
+}
+
+.dolar_futuro_50 .componentes, .filtros_abajo_dolar_futuro .componentes {
+    float: left;
+    width: 128px !important;
+}
+
+.dolar_futuro_50:nth-child(2n) .botonComun {
+    float: right !important;
+}
+
+.dolar_futuro_50 .botonComun, .filtros_abajo_dolar_futuro .botonComun {
+    float: left !important;
+    margin: 0px 5px 5px 10px !important;
+}
+
+.boton_dolar_futuro_por_vencimiento {
+    width: 200px;
+    background-color: #0D125E;
+}
+
+.filtros_abajo_dolar_futuro {
+    width: 100%;
+}
+
+.tabla_dolar_futuro {
+    width: 100%;
+    margin-top: 20PX;
+}
+/*ESTILOS PARA MERCADO LICITACIONES*/
+.filtros_MERCADO_LICITACIONES {
+    width: 100%;
+}
+
+    .filtros_MERCADO_LICITACIONES .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .filtros_MERCADO_LICITACIONES .segundoLabel {
+        margin-left: 10px !important;
+        width: 35px !important;
+    }
+
+    .filtros_MERCADO_LICITACIONES .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .filtros_MERCADO_LICITACIONES .botonComun {
+        float: left;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesDerecha_mercado_licitaciones {
+    float: right !important;
+}
+
+.tabla_mercado_licitaciones {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/*estilos para detalle licitaciones*/
+.botones_detalle_licitacion {
+    width: 100%;
+}
+
+    .botones_detalle_licitacion .botonComun {
+        float: right !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.tabla_detalle_licitaciones {
+    width: 100%;
+}
+
+/*ESTILOS PARA MERCADO LICITACIONES BCU*/
+.filtros_MERCADO_LICITACIONES_BCU {
+    width: 100%;
+}
+
+    .filtros_MERCADO_LICITACIONES_BCU .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .filtros_MERCADO_LICITACIONES_BCU .segundoLabel {
+        margin-left: 10px !important;
+        width: 35px !important;
+    }
+
+    .filtros_MERCADO_LICITACIONES_BCU .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .filtros_MERCADO_LICITACIONES_BCU .botonComun {
+        float: left;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesDerecha_LICITACIONES_BCU {
+    float: right !important;
+}
+
+.tabla_mercado_licitaciones_BCU {
+    width: 100%;
+    margin-top: 20px;
+}
+
+
+/*EMISIONES INSCRIPCION*/
+
+.subtituloEmisionInscripcion{
+    font-family: Roboto;
+    /*font-size: 12px;*/
+    font-size: 15px;
+    font-weight: 700;
+    color: #0D125E;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+/*ESTILOS EMISIONES VENICIMENTOS*/
+.emisiones_venicmientos {
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+.primerosInputVencimiento {
+    margin-bottom: 10px !important;
+}
+
+.emisiones_venicmientos .label {
+    float: left;
+    margin-top: 4px !important;
+    margin-left: 4px !important;
+    width: 40px;
+}
+
+.emisiones_venicmientos .labelSegundo {
+    width: 50px !important;
+    margin-left: 15px !important;
+}
+
+.emisiones_venicmientos .primera_label_vencimientos {
+    margin-left: 58px !important;
+}
+
+.emisiones_venicmientos .componentes {
+    float: left;
+    width: 188px !important;
+}
+
+.emisiones_venicmientos .botonComun {
+    float: left;
+    margin: 0px 5px 5px 10px !important;
+}
+
+.botonesDerecha_emisiones_venicmientos {
+    float: right !important;
+}
+
+.boton_ver_venicmientos_mas_grande {
+    width: 260px !important;
+}
+
+.label_emisiones_vencimeinto_masGrande {
+    width: 85px !important;
+}
+
+.emisiones_venicmientos .label_emisiones_vencimeinto_con_margenizq {
+    margin-left: 46px !important;
+    margin-right: 4px !important;
+}
+
+.tabla_emisiones_vencimientos {
+    width: 49%;
+    margin-right: 2%;
+    float: left;
+    margin-top: 20px;
+}
+
+.tabla_emisiones {
+    width: 100% !important;
+    margin-right: 2%;
+    float: left;
+    margin-top: 20px;
+}
+
+.grafica_emisiones_vencimientos {
+    width: 49%;
+    float: left;
+    margin-top: 20px;
+}
+/*ESTILOS PARA HISTORICO DIARIO - MERCADO CAMBIO*/
+.filtros_HISTORICO_DIARIO_MERCADO_CAMBIO {
+    width: 100%;
+}
+
+    .filtros_HISTORICO_DIARIO_MERCADO_CAMBIO .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .filtros_HISTORICO_DIARIO_MERCADO_CAMBIO .labelSegundo {
+        margin-left: 10px !important;
+        width: 40px;
+    }
+
+    .filtros_HISTORICO_DIARIO_MERCADO_CAMBIO .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .filtros_HISTORICO_DIARIO_MERCADO_CAMBIO .botonComun {
+        float: left;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesDerecha_HISTORICO_DIARIO_MERCADO_CAMBIO {
+    float: right !important;
+}
+
+.tabla_HISTORICO_DIARIO_MERCADO_CAMBIO {
+    width: 100%;
+    margin-top: 20px;
+}
+/*PRODUCTO MERCADO DE CAMBIO*/
+.texto_productos_mercado_cambio {
+    width: 70%;
+}
+
+.inputs_productos_mercado_cambio .botonComun {
+    float: left;
+}
+
+.inputs_productos_mercado_cambio .botonesDerecha_PRODUCTOS_MERCADO_CAMBIO {
+    float: right !important;
+}
+
+.tabla_productos_mercado_cambio {
+    margin-top: 20px;
+    width: 100%;
+}
+/*Estilos para evolcuion operativa / mercado cambio*/
+
+
+
+#evolucionOperativaMercadoCambioBarra, #evolucionOperativaMercadoCambioTorta {
+    position: absolute;
+    z-index: 10 !important;
+    background-color: #FFF;
+    top: -3px;
+    left: 0;
+    width: 100%;
+    box-shadow: 0px 4px 5px 1px #AAA;
+    -moz-box-shadow: 0px 4px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 4px 5px 1px #AAA;
+    border-radius: 1px 1px 1px 1px;
+    -moz-border-radius: 1px 1px 1px 1px;
+    -webkit-border-radius: 1px 1px 1px 1px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    height: 435px;
+}
+
+#evolucionOperativaMercadoCambioTorta {
+    display: none;
+}
+
+#pestaniasevolcionoperativaMercadoCambio {
+    position: relative;
+    margin-top: 60px;
+    min-height: 470px;
+}
+
+
+#btnevolucionOperativaMercadoCambioBarras, #btnevolucionOperativaMercadoCambioTorta {
+    position: absolute;
+    width: 150px;
+    height: 60px;
+    display: block;
+    background-color: #FFF;
+    color: #0D125E;
+    font-family: Roboto;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0px 0px 5px 1px #AAA;
+    -moz-box-shadow: 0px 0px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 0px 5px 1px #AAA;
+    line-height: 60px;
+    text-align: center;
+    font-weight: 700;
+}
+
+#btnevolucionOperativaMercadoCambioBarras {
+    top: -60px;
+    left: 0px;
+    z-index: 2;
+}
+
+#btnevolucionOperativaMercadoCambioTorta {
+    top: -58px;
+    left: 150px;
+    z-index: 1;
+    background: linear-gradient(180deg, #FFF 16%, #BBB 70%);
+}
+
+.grafica_evolucionOperativaMercadoCambio_barra_1, .grafica_evolucionOperativaMercadoCambio_torta_1 {
+    width: 49%;
+    margin-left: 2%;
+    float: left;
+}
+
+.grafica_evolucionOperativaMercadoCambio_barra_2, .grafica_evolucionOperativaMercadoCambio_torta_2 {
+    width: 49%;
+    float: left;
+}
+
+.tabla1_evolucionOperativaMercadoCambio, .tabla2_evolucionOperativaMercadoCambio {
+    width: 100%;
+    float: left;
+    margin: 0 auto;
+}
+
+.inputevolucionOperativaMercadoCambio {
+    float: left;
+}
+
+    .inputevolucionOperativaMercadoCambio .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+    }
+
+    .inputevolucionOperativaMercadoCambio .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .inputevolucionOperativaMercadoCambio .botonComun {
+        float: left !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesArribaevolucionOperativaMercadoCambio {
+    float: right;
+}
+
+    .botonesArribaevolucionOperativaMercadoCambio .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+/*Estilos para evolcuion operativa / mercado dinero*/
+
+
+
+#evolucionOperativaMercadoDineroBarra, #evolucionOperativaMercadoDineroTorta {
+    position: absolute;
+    z-index: 10 !important;
+    background-color: #FFF;
+    top: -3px;
+    left: 0;
+    width: 100%;
+    box-shadow: 0px 4px 5px 1px #AAA;
+    -moz-box-shadow: 0px 4px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 4px 5px 1px #AAA;
+    border-radius: 1px 1px 1px 1px;
+    -moz-border-radius: 1px 1px 1px 1px;
+    -webkit-border-radius: 1px 1px 1px 1px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    height: 435px;
+}
+
+#evolucionOperativaMercadoDineroTorta {
+    display: none;
+}
+
+#pestaniasevolcionoperativaMercadoDinero {
+    position: relative;
+    margin-top: 70px;
+    min-height: 470px;
+}
+
+
+#btnevolucionOperativaMercadoDineroBarras, #btnevolucionOperativaMercadoDineroTorta {
+    position: absolute;
+    width: 150px;
+    height: 60px;
+    display: block;
+    background-color: #FFF;
+    color: #0D125E;
+    font-family: Roboto;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0px 0px 5px 1px #AAA;
+    -moz-box-shadow: 0px 0px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 0px 5px 1px #AAA;
+    line-height: 60px;
+    text-align: center;
+    font-weight: 700;
+}
+
+#btnevolucionOperativaMercadoDineroBarras {
+    top: -60px;
+    left: 0px;
+    z-index: 2;
+}
+
+#btnevolucionOperativaMercadoDineroTorta {
+    top: -58px;
+    left: 150px;
+    z-index: 1;
+    background: linear-gradient(180deg, #FFF 16%, #BBB 70%);
+}
+
+.grafica_evolucionOperativaMercadoDinero_barra_1, .grafica_evolucionOperativaMercadoDinero_torta_1 {
+    width: 49%;
+    margin-left: 2%;
+    float: left;
+}
+
+.grafica_evolucionOperativaMercadoDinero_barra_2, .grafica_evolucionOperativaMercadoDinero_torta_2 {
+    width: 49%;
+    float: left;
+}
+
+.tabla1_evolucionOperativaMercadoDinero, .tabla2_evolucionOperativaMercadoDinero {
+    width: 100%;
+}
+
+.inputevolucionOperativaMercadoDinero {
+    float: left;
+}
+
+    .inputevolucionOperativaMercadoDinero .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+    }
+
+    .inputevolucionOperativaMercadoDinero .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .inputevolucionOperativaMercadoDinero .botonComun {
+        float: left !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesArribaevolucionOperativaMercadoDinero {
+    float: right;
+}
+
+    .botonesArribaevolucionOperativaMercadoDinero .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+
+/*Estilos para evolcuion operativa / mercado valores*/
+
+
+#evolucionOperativaMercadoValoresBarra, #evolucionOperativaMercadoValoresTorta {
+    position: absolute;
+    z-index: 10 !important;
+    background-color: #FFF;
+    top: -3px;
+    left: 0;
+    width: 100%;
+    box-shadow: 0px 4px 5px 1px #AAA;
+    -moz-box-shadow: 0px 4px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 4px 5px 1px #AAA;
+    border-radius: 1px 1px 1px 1px;
+    -moz-border-radius: 1px 1px 1px 1px;
+    -webkit-border-radius: 1px 1px 1px 1px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    height: 450px;
+}
+
+#evolucionOperativaMercadoValoresTorta {
+    display: none;
+}
+
+#pestaniasevolcionoperativaMercadoValores {
+    position: relative;
+    margin-top: 70px;
+    min-height: 500px;
+}
+
+
+#btnevolucionOperativaMercadoValoresBarras, #btnevolucionOperativaMercadoValoresTorta {
+    position: absolute;
+    width: 150px;
+    height: 60px;
+    display: block;
+    background-color: #FFF;
+    color: #0D125E;
+    font-family: Roboto;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0px 0px 5px 1px #AAA;
+    -moz-box-shadow: 0px 0px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 0px 5px 1px #AAA;
+    line-height: 60px;
+    text-align: center;
+    font-weight: 700;
+}
+
+#btnevolucionOperativaMercadoValoresBarras {
+    top: -60px;
+    left: 0px;
+    z-index: 2;
+}
+
+#btnevolucionOperativaMercadoValoresTorta {
+    top: -58px;
+    left: 150px;
+    z-index: 1;
+    background: linear-gradient(180deg, #FFF 16%, #BBB 70%);
+}
+
+.grafica_evolucionOperativaMercadoValores_barra_1, .grafica_evolucionOperativaMercadoValores_torta_1 {
+    width: 49%;
+    margin-left: 2%;
+    float: left;
+}
+
+.grafica_evolucionOperativaMercadoValores_barra_2, .grafica_evolucionOperativaMercadoValores_torta_2 {
+    width: 49%;
+    float: left;
+}
+
+.tabla1_evolucionOperativaMercadoValores, .tabla2_evolucionOperativaMercadoValores {
+    width: 100%;
+}
+
+.inputevolucionOperativaMercadoValores {
+    float: left;
+}
+
+    .inputevolucionOperativaMercadoValores .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+    }
+
+    .inputevolucionOperativaMercadoValores .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .inputevolucionOperativaMercadoValores .botonComun {
+        float: left !important;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesArribaevolucionOperativaMercadoValores {
+    float: right;
+}
+
+    .botonesArribaevolucionOperativaMercadoValores .botonComun {
+        float: right;
+        margin-top: 0px !important;
+    }
+
+/*ESTILOS PARA HISTORICO DIARIO CALL*/
+
+.filtros_HISTORICO_DIARIO_CALL {
+    width: 100%;
+}
+
+    .filtros_HISTORICO_DIARIO_CALL .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .filtros_HISTORICO_DIARIO_CALL .segundoLabel {
+        margin-left: 10px !important;
+        width: 35px !important;
+    }
+
+    .filtros_HISTORICO_DIARIO_CALL .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .filtros_HISTORICO_DIARIO_CALL .botonComun {
+        float: left;
+        margin: 0px 5px 5px 10px !important;
+    }
+
+.botonesDerecha_HISTORICO_DIARIO_CALL {
+    float: right !important;
+}
+
+.tabla_HISTORICO_DIARIO_CALL {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+/*ESTILOS PARA CALL VER MAS*/
+
+.inputsCallVerMas {
+    float: left;
+}
+
+    .inputsCallVerMas .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsCallVerMas .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputsCallVerMas .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputsCallVerMas .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaDolar {
+    float: right;
+}
+
+.botonesArribaCallVerMas .botonComun {
+    float: right;
+}
+
+.tablaCallVerMas {
+    width: 29%;
+    float: left;
+    margin-right: 1%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.graficaCallVerMas {
+    width: 70%;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/*PRODUCTO MERCADO DE DINERO*/
+.texto_productos_mercado_dinero {
+    width: 70%;
+}
+
+.inputs_productos_mercado_dinero .botonComun {
+    float: left;
+}
+
+.inputs_productos_mercado_dinero .botonesDerecha_PRODUCTOS_MERCADO_DINERO {
+    float: right !important;
+}
+
+.tabla_productos_mercado_dinero {
+    margin-top: 20px;
+    width: 100%;
+}
+/*PRODUCTO MERCADO DE VALORES*/
+.texto_productos_mercado_valores {
+    width: 70%;
+}
+
+.inputs_productos_mercado_valores .botonComun {
+    float: left;
+}
+
+.inputs_productos_mercado_valores .botonesDerecha_PRODUCTOS_MERCADO_VALORES {
+    float: right !important;
+}
+
+.tabla_productos_mercado_valores {
+    margin-top: 20px;
+    width: 100%;
+}
+/*ESTILOS PARA DETALLE LICITACION*/
+.botonesArribaDetalleLicitacion {
+    float: right;
+}
+
+    .botonesArribaDetalleLicitacion .botonComun {
+        float: right;
+    }
+
+.tabla_resultado_licitacion_mercado_dinero {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA DETALLE LICITACION mercado valores*/
+.botonesArribaDetalleLicitacion_mercado_valores {
+    float: right;
+}
+
+    .botonesArribaDetalleLicitacion_mercado_valores .botonComun {
+        float: right;
+    }
+
+.tabla_resultado_licitacion_mercado_valores {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA HISTORICO DIARIO MERCADO VALORES PRIMARIO*/
+.inputshistoricoDiario_mercadoValores_primario {
+    float: left;
+}
+
+.inputshistoricoDiario_mercadoValores_primario_FECHAS {
+    float: left;
+    width: 100%;
+}
+
+.inputshistoricoDiario_mercadoValores_primario .botonComun {
+    float: right !important;
+    margin: 5px 5px 5px 10px !important;
+}
+
+.inputshistoricoDiario_mercadoValores_primario .label, .inputshistoricoDiario_mercadoValores_primario_FECHAS .label {
+    float: left;
+    margin-top: 9px !important;
+    margin-left: 4px !important;
+    width: 50px;
+}
+
+.inputshistoricoDiario_mercadoValores_primario .labelSegundo, .inputshistoricoDiario_mercadoValores_primario_FECHAS .labelSegundo {
+    margin-left: 10px !important;
+    width: 75px !important;
+}
+
+
+.inputshistoricoDiario_mercadoValores_primario .componentes, .inputshistoricoDiario_mercadoValores_primario_FECHAS .componentes {
+    float: left;
+    width: 128px !important;
+    margin-top: 5px;
+}
+
+.inputshistoricoDiario_mercadoValores_primario .componenteMasGrande, .inputshistoricoDiario_mercadoValores_primario_FECHAS .componenteMasGrande {
+    width: 280px !important;
+}
+
+.botonesArriba_HISTORICO_DIARIO_MERCADO_VALORES_PRIMARIO {
+    float: right;
+}
+
+    .botonesArriba_HISTORICO_DIARIO_MERCADO_VALORES_PRIMARIO .botonComun {
+        float: right;
+    }
+
+.tabla_historico_diario_mercado_valores_primario {
+    margin: 0 auto;
+    width: 80%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA DETALLE CERTIFICADO EN MERCADO VALORES PRIMARIO*/
+.inputsDetalleCertificadoMercadoValoresPrimario {
+    float: left;
+    width: 100%;
+}
+
+    .inputsDetalleCertificadoMercadoValoresPrimario .botonComun {
+        float: left !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsDetalleCertificadoMercadoValoresPrimario .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .inputsDetalleCertificadoMercadoValoresPrimario .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputsDetalleCertificadoMercadoValoresPrimario .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+    .inputsDetalleCertificadoMercadoValoresPrimario .botonDerecha_mercado_valores_primario_detalle_certificado {
+        float: right !important;
+    }
+
+.ver_todas_las_emisiones {
+    width: 260px;
+}
+
+.tabla_detalle_certificado_deposito_mercado_valores_primario {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+/*emisiones por emisor*/
+.detalleeMISIONESpOReMISOR {
+    float: left;
+    width: 50%;
+}
+
+.botonesArribaEmisionesPorEmisor {
+    float: right;
+}
+
+    .botonesArribaEmisionesPorEmisor .botonComun {
+        float: right;
+    }
+
+.tabla_emisiones_por_emisor {
+    width: 80%;
+    margin: 0 auto;
+}
+/*ESTILOS PARA DETALLE TODAS LAS EMISIONES MERCADO VALORES PRIMARIO*/
+.inputsDetalleTodasLasEmisionesMercadoValoresPrimario {
+    float: left;
+    width: 100%;
+}
+
+    .inputsDetalleTodasLasEmisionesMercadoValoresPrimario .botonComun {
+        float: left !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsDetalleTodasLasEmisionesMercadoValoresPrimario .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .inputsDetalleTodasLasEmisionesMercadoValoresPrimario .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputsDetalleTodasLasEmisionesMercadoValoresPrimario .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+    .inputsDetalleTodasLasEmisionesMercadoValoresPrimario .componenteMasGrande {
+        width: 210px !important;
+    }
+
+    .inputsDetalleTodasLasEmisionesMercadoValoresPrimario .botonDerecha_mercado_valores_primario_detalle_certificado {
+        float: right !important;
+    }
+
+.tabla_detalle_todas_las_emisiones_mercado_valores_primario {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+/*ESTILOS PARA VENCIMIENTO CERTIFICADO DE DESPOSITO*/
+
+.inputsVencimientoCertificadoDeDeposito {
+    float: left;
+}
+
+    .inputsVencimientoCertificadoDeDeposito .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsVencimientoCertificadoDeDeposito .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputsVencimientoCertificadoDeDeposito .primer_label {
+        width: 75px;
+    }
+
+    .inputsVencimientoCertificadoDeDeposito .labelSegundo {
+        width: 45px;
+    }
+
+    .inputsVencimientoCertificadoDeDeposito .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaVencimientoCertificadoDeDeposito {
+    float: right;
+}
+
+    .botonesArribaVencimientoCertificadoDeDeposito .botonComun {
+        float: right;
+    }
+
+.tabla_vencimiento_certificado_de_deposito {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+/*ESTILOS PARA RESULTADO LICITACIONES MERCADO PRIMARIO*/
+.inputsResultadoLicitaciones_MercadoPrimario {
+    float: left;
+}
+
+    .inputsResultadoLicitaciones_MercadoPrimario .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsResultadoLicitaciones_MercadoPrimario .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputsResultadoLicitaciones_MercadoPrimario .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputsResultadoLicitaciones_MercadoPrimario .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaResultadoLicitaciones_MercadoPrimari {
+    float: right;
+}
+
+    .botonesArribaResultadoLicitaciones_MercadoPrimari .botonComun {
+        float: right;
+    }
+
+.tabla_resultado_licitaciones_mercado_primario {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA HISTORICO TRANSACCIONES MERCADO SECUNDARIO*/
+
+.inputsHistoricoTransaccionesMercadoSecundarios {
+    float: left;
+}
+
+    .inputsHistoricoTransaccionesMercadoSecundarios .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsHistoricoTransaccionesMercadoSecundarios .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputsHistoricoTransaccionesMercadoSecundarios .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputsHistoricoTransaccionesMercadoSecundarios .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaHistoricoTransaccionesMercadoSecundario {
+    float: right;
+}
+
+    .botonesArribaHistoricoTransaccionesMercadoSecundario .botonComun {
+        float: right;
+    }
+
+.tablaHistoricoTransacciones_MercadoSecundario {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA IPC*/
+.botonesArribaIPC {
+    width: 100%;
+    float: right;
+}
+
+    .botonesArribaIPC .botonGrande {
+        float: right;
+    }
+
+.botonCentradoIPC {
+    line-height: 30px;
+    text-align: center;
+}
+
+.grafica1_IPC {
+    width: 49%;
+    margin-right: 2%;
+    float: left;
+    margin-top: 20px;
+}
+
+.grafica2_IPC {
+    width: 49%;
+    float: left;
+    margin-top: 20px;
+}
+
+.tabla1_IPC, .tabla2_IPC {
+    width: 70%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.tabla1_IPC {
+    margin-top: 60px;
+}
+
+    .tabla1_IPC .botonComun, .tabla2_IPC .botonComun {
+        float: right;
+        margin-right: 0;
+    }
+
+.tabla_IPC {
+    float: left;
+    width: 100%;
+}
+/*ESTILOS PARA BOTON UI*/
+
+.inputsBotonUI {
+    float: left;
+}
+
+    .inputsBotonUI .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsBotonUI .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputsBotonUI .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputsBotonUI .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaBotonUI {
+    float: right;
+}
+
+    .botonesArribaBotonUI .botonComun {
+        float: right;
+    }
+
+.tablaBotonUI {
+    float: left;
+    width: 29%;
+    margin-right: 1%;
+    margin-top: 20px;
+}
+
+.graficaBotonUI {
+    float: left;
+    width: 70%;
+    margin-top: 20px;
+}
+
+.tablaBotonUP {
+    float: left;
+    width: 29%;
+    margin-right: 1%;
+    margin-top: 20px;
+}
+
+.graficaBotonUP {
+    float: left;
+    width: 70%;
+    margin-top: 20px;
+}
+/*estilos para analisis dolar*/
+.detalle_AnalisisDolar {
+    width: 80% !important;
+    float: left;
+    margin-bottom: 20px;
+}
+
+.inputsanalisisDolar {
+    float: left;
+}
+
+    .inputsanalisisDolar .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsanalisisDolar .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputsanalisisDolar .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputsanalisisDolar .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesAnalisisDolar {
+    float: right;
+}
+
+    .botonesAnalisisDolar .botonComun {
+        float: right;
+    }
+
+.grafica1_analisisDolar, .grafica2_analisisDolar {
+    width: 49%;
+    margin-right: 2%;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.tabla1_analisisDolar, .tabla2_analisisDolar {
+    width: 49%;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+/*estilos para call vs dolar dentro de mercado analisis*/
+.detalle_callvsDolar_Mercado_Analisis {
+    width: 80% !important;
+    float: left;
+    margin-bottom: 20px;
+}
+
+.inputscallvsDolar_Mercado_Analisis {
+    float: left;
+}
+
+    .inputscallvsDolar_Mercado_Analisis .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputscallvsDolar_Mercado_Analisis .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputscallvsDolar_Mercado_Analisis .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputscallvsDolar_Mercado_Analisis .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonescallvsDolar_Mercado_Analisis {
+    float: right;
+}
+
+    .botonescallvsDolar_Mercado_Analisis .botonComun {
+        float: right;
+    }
+
+.grafica1_callvsDolar_Mercado_Analisis, .grafica2_callvsDolar_Mercado_Analisis {
+    width: 49%;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.tabla1_callvsDolar_Mercado_Analisis, .tabla2_callvsDolar_Mercado_Analisis {
+    width: 49%;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-right: 2%;
+}
+/*ESTILOS PARA MONITOR INDICE VER MAS*/
+.inputsMonitorIndiceVerMas {
+    float: left;
+}
+
+    .inputsMonitorIndiceVerMas .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsMonitorIndiceVerMas .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputsMonitorIndiceVerMas .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputsMonitorIndiceVerMas .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaMonitorIndiceVerMas {
+    float: right;
+}
+
+    .botonesArribaMonitorIndiceVerMas .botonComun {
+        float: right;
+    }
+
+.tabla_montir_indice_ver_mas {
+    width: 29%;
+    float: left;
+    margin-right: 1%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.grafica_Monitor_Indice_Ver_Mas {
+    width: 70%;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+/*ESTILSO CALENDARIOS DE FERIADOS*/
+.inputsCalendarioDeFeriados {
+    float: left;
+}
+
+.inputsCalendarioDeFeriados .botonComun {
+    float: right !important;
+    margin: 5px 5px 5px 10px !important;
+}
+
+.inputsCalendarioDeFeriados .label {
+    float: left;
+    margin-top: 9px !important;
+    margin-left: 4px !important;
+    width: 40px;
+}
+
+.inputsCalendarioDeFeriados .labelSegundo {
+    margin-left: 20px !important;
+}
+
+.inputsCalendarioDeFeriados .componentes {
+    width: 210px !important;
+    margin-top: 5px;
+}
+
+.labelFeriados {
+    margin-right: 20px;
+}
+
+.botonesArribaCalendarioFeriados {
+    float: right;
+}
+
+    .botonesArribaCalendarioFeriados .botonComun {
+        float: right;
+    }
+
+.tabla_calendario_Feriados {
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 29%;
+    margin-right: 1%;
+}
+
+.almanaques_calendario_de_feriados {
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 70%;
+}
+
+    .almanaques_calendario_de_feriados .meses {
+        float: left;
+        width: 30%;
+        margin-right: 3%;
+        margin-bottom: 20px;
+    }
+
+.RadCalendar .rcMainTable {
+    font-family: Roboto;
+    font-size: 11px !important;
+    font-weight: 400;
+}
+
+.RadCalendar .rcTitlebar {
+    font-family: Roboto;
+    font-size: 14px !important;
+    font-weight: 700;
+}
+/*ESTILOS PARA DERTIFICADO DEPOSITO MERCADO VALORES*/
+.filtros_primeros_certificado_despositos {
+    width: 100%;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.inputs_certificado_despositos {
+    float: left;
+    margin-bottom: 20px;
+}
+
+    .inputs_certificado_despositos .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputs_certificado_despositos .label, .filtros_primeros_certificado_despositos .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 80px;
+    }
+
+    .inputs_certificado_despositos .labelSegundo, .filtros_primeros_certificado_despositos .labelSegundo {
+        margin-left: 20px !important;
+        width: 40px !important;
+    }
+
+    .inputs_certificado_despositos .componentes, .filtros_primeros_certificado_despositos .componentes {
+        float: left;
+        width: 190px !important;
+        margin-top: 5px;
+    }
+
+
+.botonesArriba_certificado_despositos {
+    float: right;
+}
+
+    .botonesArriba_certificado_despositos .botonComun {
+        float: right;
+    }
+
+.graficaTasa_certificadoDeposito {
+    width: 49%;
+    margin-right: 2%;
+    float: left;
+}
+
+.graficaMonto_certificadoDeposito {
+    width: 49%;
+    float: left;
+}
+
+.botones_abajo_certificadoDeposito_MercadoValores {
+    float: right;
+    width: 45%;
+}
+
+    .botones_abajo_certificadoDeposito_MercadoValores .botonComun {
+        height: 50px;
+        float: right;
+        position: relative;
+        padding-right: 56px;
+        padding-top: 10px;
+        width: 73px;
+        text-align: right;
+        line-height: 15px;
+        text-align: right !important;
+    }
+
+        .botones_abajo_certificadoDeposito_MercadoValores .botonComun i {
+            line-height: 60px;
+            font-size: 30px;
+            width: 45px;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+.datos_certificadoDeposito_contenedor {
+    width: 55%;
+    float: left;
+}
+
+.DATO_certificadoDeposito {
+    width: 130px;
+    height: 100px;
+    border: 1px solid #0D125E;
+    background: linear-gradient(180deg, #FFF 50%, #CCC 100%);
+    margin-right: 10px;
+    float: left;
+    margin-top: 5px;
+}
+
+.DATO_certificadoDeposito_mas_grande {
+    width: 414px;
+    margin-top: 10px;
+}
+
+.DATO_certificadoDeposito h2 {
+    text-align: center;
+    border-bottom: 1px solid #0D125E;
+    width: 93%;
+    margin: 0 5px;
+    margin-top: 5px;
+    padding-bottom: 5px;
+    float: none;
+}
+
+.DATO_certificadoDeposito p {
+    text-align: center;
+    margin-top: 22px;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.certificadoDeposito_p_floatado {
+    float: left;
+    width: 33%;
+    margin-top: 0px !important;
+}
+
+.certificadoDeposito_p_floatado_con_borde {
+    border-left: 1px solid #0D125E;
+    border-right: 1px solid #0D125E;
+    margin-top: 0px;
+    padding-top: 0px;
+}
+
+.titulo_p_dato_certificadoDeposito {
+    color: #0D125E;
+    font-size: 14px;
+}
+/*ESTILOS OTROS INFORMES ANALSIS*/
+.inputsOtrosInformesAnalisis {
+    float: left;
+}
+
+.primerosInsputs_otrosinformes_analisis {
+    float: left;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.inputsOtrosInformesAnalisis .botonComun {
+    float: right !important;
+    margin: 5px 5px 5px 10px !important;
+}
+
+.inputsOtrosInformesAnalisis .label {
+    float: left;
+    margin-top: 9px !important;
+    margin-left: 4px !important;
+    width: 40px;
+}
+
+.inputsOtrosInformesAnalisis .labelSegundo {
+    margin-left: 10px !important;
+    width: 55px !important;
+}
+
+.inputsOtrosInformesAnalisis .labelTercero {
+    margin-left: 10px !important;
+    width: 70px !important;
+}
+
+.inputsOtrosInformesAnalisis .componentes {
+    float: left;
+    width: 128px !important;
+    margin-top: 5px;
+}
+
+.inputsOtrosInformesAnalisis .componenteMasLargo {
+    float: left;
+    width: 250px !important;
+    margin-top: 5px;
+}
+
+.botonesArribaOtrosInformesAnalisis {
+    float: right;
+}
+
+    .botonesArribaOtrosInformesAnalisis .botonComun {
+        float: right;
+    }
+
+.tabla_otros_informes_analisis {
+    width: 29%;
+    float: left;
+    margin-right: 1%;
+    margin-top: 20px;
+}
+
+.grafica_otros_informes_Analisis {
+    float: left;
+    width: 70%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA MONITOR INDICES - INDICES Y PARAMETROS*/
+.inputsMonitorIndicesyParametros {
+    float: left;
+}
+
+    .inputsMonitorIndicesyParametros .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsMonitorIndicesyParametros .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputsMonitorIndicesyParametros .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputsMonitorIndicesyParametros .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaMonitorIndicesyParametros {
+    float: right;
+}
+
+    .botonesArribaMonitorIndicesyParametros .botonComun {
+        float: right;
+    }
+
+.datos_MonitorIndice {
+    width: 70%;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
+.datos_monitor_indice_tablas_izq {
+    width: 49%;
+    margin-right: 2%;
+    float: left;
+}
+
+.datos_monitor_indice_tablas_der {
+    width: 49%;
+    float: left;
+}
+
+.DATO_MonitorIndice {
+    width: 100%;
+    border: 1px solid #0D125E;
+    background: linear-gradient(180deg, #FFF 50%, #CCC 100%);
+    margin-right: 1%;
+    float: left;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+    .DATO_MonitorIndice div {
+        padding: 1%;
+        width: 98%;
+    }
+
+    .DATO_MonitorIndice h2 {
+        text-align: left;
+        border-bottom: 1px solid #0D125E;
+        width: 93%;
+        margin: 0 5px;
+        margin-top: 5px;
+        padding-bottom: 5px;
+        float: none;
+    }
+
+    .DATO_MonitorIndice p {
+        text-align: center;
+        margin-top: 22px;
+        font-weight: 700;
+        font-size: 18px;
+    }
+/* ESTILOS PARA LETRAS MERCADO SECUNDARIO*/
+.inputsLetrasMercadoSecundario {
+    float: left;
+}
+
+    .inputsLetrasMercadoSecundario .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsLetrasMercadoSecundario .label, .inputs_segundos_letras .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .inputsLetrasMercadoSecundario .labelSegundo, .inputs_segundos_letras .labelSegundo {
+        margin-left: 15px !important;
+    }
+
+    .inputsLetrasMercadoSecundario .componentes, .inputs_segundos_letras .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaLetrasMercadoSecundario {
+    float: right;
+}
+
+    .botonesArribaLetrasMercadoSecundario .botonComun {
+        float: right;
+    }
+
+.grafica1_letras {
+    width: 49%;
+    float: left;
+    margin-left: 2%;
+    margin-top: 20px;
+}
+
+.grafica2_letras {
+    width: 49%;
+    float: left;
+    margin-top: 20px;
+}
+
+.botones_abajo_Letras {
+    float: right;
+    width: 45%;
+}
+
+    .botones_abajo_Letras .botonComun {
+        height: 50px;
+        float: right;
+        position: relative;
+        padding-right: 56px;
+        padding-top: 10px;
+        width: 73px;
+        text-align: right;
+        line-height: 15px;
+        text-align: right !important;
+    }
+
+        .botones_abajo_Letras .botonComun i {
+            line-height: 60px;
+            font-size: 30px;
+            width: 45px;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+.datos_Letras {
+    width: 55%;
+    float: left;
+}
+
+.DATO_Letras {
+    width: 130px;
+    height: 70px;
+    border: 1px solid #0D125E;
+    background: linear-gradient(180deg, #FFF 50%, #CCC 100%);
+    margin-right: 10px;
+    float: left;
+    margin-top: 5px;
+}
+
+.DATO_Letras_mas_grande {
+    width: 414px;
+    margin-top: 10px;
+}
+
+.bodres_dato_letras {
+    border: 1px solid #0D125E;
+    padding: 13px;
+    position: relative;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+    .bodres_dato_letras h4 {
+        position: absolute;
+        top: -13px;
+        left: 10px;
+        background-color: #FFF;
+        font-family: Roboto;
+        font-size: 14px;
+        font-weight: 700;
+        color: #0D125E;
+        padding: 5px;
+    }
+
+.DATO_Letras h2 {
+    text-align: center;
+    border-bottom: 1px solid #0D125E;
+    width: 93%;
+    margin: 0 5px;
+    margin-top: 5px;
+    padding-bottom: 5px;
+    float: none;
+}
+
+.DATO_Letras p {
+    text-align: center;
+    margin-top: 8px;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.DATO_Letras_p_floatado {
+    float: left;
+    width: 33%;
+    margin-top: 0px !important;
+}
+
+.DATO_Letras_p_floatado_con_borde {
+    border-left: 1px solid #0D125E;
+    border-right: 1px solid #0D125E;
+    margin-top: 0px;
+    padding-top: 0px;
+}
+
+.dato_mas_Chico_Letras {
+    width: 100px !important;
+}
+
+.dato_mas_Grande_Letras {
+    width: 138px !important;
+}
+
+.dato_letras_sin_margen {
+    margin-right: auto;
+}
+
+.dato_Letras_segundaLinea {
+    margin-top: 10px;
+}
+/*ESTILOS PARA NORMATIVA*/
+.inputsnormativa {
+    float: left;
+}
+
+    .inputsnormativa .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsnormativa .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputsnormativa .labelSegundo {
+        margin-left: 20px !important;
+        width: 70px;
+    }
+
+    .inputsnormativa .componentes, .inputsnormativa .RadInput {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaNormativa {
+    float: right;
+}
+
+    .botonesArribaNormativa .botonComun {
+        float: right;
+    }
+
+.tabla_estatutosyregalmentos {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA MANUALES*/
+.input_manuales {
+    float: left;
+}
+
+
+    .input_manuales .botonComun {
+        float: right !important;
+        margin: 8px 5px 5px 10px !important;
+    }
+
+    .input_manuales .label {
+        float: left !important;
+        margin-top: 13px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .input_manuales .labelSegundo {
+        margin-left: 10px !important;
+        width: 70px;
+    }
+
+.input_manuales_primeros .labelSegundo {
+    margin-right: 38px;
+}
+
+.input_manuales .componentes, .input_manuales .RadInput {
+    float: left !important;
+    width: 152px !important;
+    margin-top: 10px;
+}
+
+.botonesArribaManuales {
+    float: right;
+}
+
+    .botonesArribaManuales .botonComun {
+        float: right;
+    }
+
+.tabla_manuales {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA BOLETIN*/
+.input_boletin {
+    float: left;
+}
+
+
+    .input_boletin .botonComun {
+        float: right !important;
+        margin: 8px 5px 5px 30px !important;
+    }
+
+    .input_boletin .label {
+        float: left !important;
+        margin-top: 13px !important;
+        margin-left: 4px;
+        width: 70px;
+    }
+
+    .input_boletin .labelSegundo {
+        margin-left: 30px !important;
+        width: 40px;
+    }
+
+
+    .input_boletin .componentes, .input_boletin .RadInput {
+        float: left !important;
+        width: 152px;
+        margin-top: 5px;
+    }
+
+    .input_boletin .componenteMasLargo {
+        width: 180px !important;
+    }
+
+.botonesArribaBoletin {
+    float: right;
+}
+
+    .botonesArribaBoletin .botonComun {
+        float: right;
+    }
+
+.tabla_Boletin {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA INFORME OPERATIVA DIARIA - COMUNICADOS*/
+.input_comunicados {
+    float: left;
+}
+
+
+    .input_comunicados .botonComun {
+        float: right !important;
+        margin: 8px 5px 5px 30px !important;
+    }
+
+    .input_comunicados .label {
+        float: left !important;
+        margin-top: 13px !important;
+        margin-left: 4px;
+        width: 70px;
+    }
+
+    .input_comunicados .labelSegundo {
+        margin-left: 30px !important;
+        width: 40px;
+    }
+
+
+    .input_comunicados .componentes, .input_comunicados .RadInput {
+        float: left !important;
+        width: 152px;
+        margin-top: 5px;
+    }
+
+    .input_comunicados .componenteMasLargo {
+        width: 180px !important;
+    }
+
+.botonesArribaComunicados {
+    float: right;
+}
+
+    .botonesArribaComunicados .botonComun {
+        float: right;
+    }
+
+.tabla_comunicados {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/*ESTILOS PARA CODIGO DE ETICA*/
+.texto_etica {
+    width: 70% !important;
+}
+/*ESTILOS PARA SIOPEL AGENTE*/
+.botonesArribaSiopelAgente {
+    float: right;
+}
+
+    .botonesArribaSiopelAgente .botonComun {
+        float: right;
+    }
+
+.tabla_siopel_agentes {
+    width: 60%;
+    margin: 0 auto;
+}
+/*ESTILOS PARA NEGOCIACION*/
+.botonesArribaSiopelNegociacion {
+    float: right;
+}
+
+    .botonesArribaSiopelNegociacion .botonComun {
+        float: right;
+    }
+
+.tabla_siopel_negociacion {
+    width: 40%;
+}
+/*ESTILOS PARA SIOPEL MONEDA*/
+.botonesArribaSiopelMoneda {
+    float: right;
+}
+
+    .botonesArribaSiopelMoneda .botonComun {
+        float: right;
+    }
+
+.tabla_siopel_moneda {
+    width: 70%;
+}
+/*ESTILOS PARA SIOPEL TITULOS*/
+.inputsSiopelTitulos {
+    float: left;
+}
+
+    .inputsSiopelTitulos .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsSiopelTitulos .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .inputsSiopelTitulos .labelSegundo {
+        width: 34px !important;
+    }
+
+    .inputsSiopelTitulos .labelTercero {
+        width: 75px !important;
+    }
+
+    .inputsSiopelTitulos .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaSiopelTitulos {
+    float: right;
+}
+
+    .botonesArribaSiopelTitulos .botonComun {
+        float: right;
+    }
+
+.tabla_siopel_titulo {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA SIOPEL TITULOS VER MAS*/
+.inputsSiopelTitulosVerMas {
+    float: left;
+}
+
+    .inputsSiopelTitulosVerMas .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsSiopelTitulosVerMas .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+
+    .inputsSiopelTitulosVerMas .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaSiopelTitulosVerMas {
+    float: right;
+}
+
+    .botonesArribaSiopelTitulosVerMas .botonComun {
+        float: right;
+    }
+
+.tabla_siopel_tituloVerMas {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA SIOPEL RUEDA*/
+.botonesArribaSiopelRueda {
+    float: right;
+}
+
+    .botonesArribaSiopelRueda .botonComun {
+        float: right;
+    }
+
+.tabla_siopel_Rueda {
+    width: 100%;
+    margin-top: 20px;
+}
+
+/*ESTILOS PARA SIOPEL CLASES VER MAS*/
+.botonesArribaSiopelClasesVerMas {
+    float: right;
+}
+
+    .botonesArribaSiopelClasesVerMas .botonComun {
+        float: right;
+    }
+
+.tabla1_siopel_ClasesVerMas, .tabla2_siopel_ClasesVerMas, .tabla3_siopel_ClasesVerMas {
+    width: 40%;
+    margin-top: 20px;
+}
+
+.tabla4_siopel_ClasesVerMas {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA INSTRUCTIVOS*/
+.inputsInstructivo {
+    float: left;
+}
+
+    .inputsInstructivo .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsInstructivo .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 40px;
+    }
+
+    .inputsInstructivo .labelSegundo {
+        margin-left: 10px !important;
+        width: 75px;
+    }
+
+    .inputsInstructivo .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaInstructivo {
+    float: right;
+}
+
+    .botonesArribaInstructivo .botonComun {
+        float: right;
+    }
+
+.tabla_instructivos {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA ACERCA SIOPEL*/
+.botonesArribaAcercaSiopel {
+    float: left;
+    width: 100%;
+}
+
+    .botonesArribaAcercaSiopel .botonComun {
+        float: left;
+    }
+
+.texto_Acerca_Siopel h2, .texto_Acerca_Siopel p {
+    width: 100%;
+}
+
+.texto_Acerca_Siopel h2 {
+    text-transform: uppercase;
+}
+/*ESTILOS PARA SIOPEL NEMOTECNICO*/
+.SiopelNemotecnicoIframe {
+    width: 80%;
+    margin: 0 auto;
+}
+/*ESTILOS PARA SITIO DE INTERES*/
+.sitiosInteres_ContenidoGeneral {
+    width: 83%;
+}
+
+.sitioInteres_cadaUno {
+    width: 21%;
+    margin-right: 1%;
+    float: left;
+    margin-top: 10px;
+    border: 1px solid #DDD;
+    padding: 10px;
+    height: 170px;
+}
+
+    .sitioInteres_cadaUno img {
+        width: 70%;
+        margin: 0 15%;
+    }
+
+    .sitioInteres_cadaUno a:link, .sitioInteres_cadaUno a:visited {
+        font-family: Roboto;
+        font-size: 14px;
+        color: #000000;
+        font-weight: 400;
+        text-align: justify;
+        text-decoration: none;
+    }
+
+    .sitioInteres_cadaUno a:hover {
+        opacity: .50;
+    }
+/*ESTILOS PARA SIOPEL MANUAL USO*/
+.botones_Siopel_manual_uso {
+    width: 450px;
+}
+
+    .botones_Siopel_manual_uso img {
+        width: 100%;
+    }
+
+    .botones_Siopel_manual_uso .botonComun {
+        height: 50px;
+        float: left;
+        position: relative;
+        padding-right: 56px;
+        padding-top: 10px;
+        width: 80px;
+        text-align: left;
+        line-height: 15px;
+    }
+
+        .botones_Siopel_manual_uso .botonComun i {
+            line-height: 60px;
+            font-size: 30px;
+            width: 45px;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+/*ESTILOS PARA PERFIL DE USUARIOS*/
+.perfilUsuario {
+    width: 400px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #AAA;
+    padding: 20px;
+    margin: 0 auto;
+    background: linear-gradient(180deg, #FFF 50px, #AAA 300px);
+    -webkit-background: linear-gradient(180deg, #FFF 50px, #AAA 300px);
+    -moz-background: linear-gradient(180deg, #FFF 50px, #AAA 300px);
+    margin-top: 30px;
+    box-shadow: #9C9C9C 3px 3px 8px;
+    margin-bottom: 20px;
+}
+
+    .perfilUsuario .label {
+        float: left;
+        width: 215px;
+        margin-top: 15px;
+    }
+
+    .perfilUsuario .inputPerfilUsuario {
+        float: left;
+        width: 170px;
+        margin-top: 15px;
+    }
+
+    .perfilUsuario .botonComun {
+        margin-left: 225px;
+        margin-top: 20px;
+    }
+/*ESTILOS PARA DETALLE EMISIONES*/
+
+.flex-container {
+    display: flex;    
+    column-gap: 3em;
+}
+
+.flex-container2 {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 3em;
+    align-items: baseline;
+}
+
+.inputsDetalleEmisiones {
+    float: left;
+    width: 100%;
+}
+
+.primerosinputDetalleEmisiones {
+    width: 100% !important;
+    margin-bottom: 15px;
+}
+
+.inputsDetalleEmisiones .botonComun {
+    float: left !important;
+    margin: 0px 5px 5px 7px !important;
+}
+
+.inputsDetalleEmisiones .label {
+    float: left;
+    margin-top: 4px !important;
+    margin-left: 4px !important;
+    width: 117px;
+}
+
+.inputsDetalleEmisiones .labelSegundo {
+    margin-left: 10px !important;
+}
+
+.inputsDetalleEmisiones .labelTercero {
+    margin-left: 10px !important;
+    width: 48px !important;
+}
+
+.inputsDetalleEmisiones .labelCuarto {
+    margin-left: 25px !important;
+    width: 48px !important;
+}
+
+.inputsDetalleEmisiones .componentes {
+    float: left;
+    width: 128px !important;
+}
+
+.inputsDetalleEmisiones .comboEmisor {
+    float: left;
+    width: 200px !important;
+}
+
+
+.inputsDetalleEmisiones .comboEmpresa {
+    float: left;
+    width: 200px !important;
+}
+
+.botonesArribaDetalleEmisiones {
+    float: right;
+}
+
+    .botonesArribaDetalleEmisiones .botonComun {
+        float: right;
+        margin-top: 0 !important;
+    }
+
+.tabla_detalleEmisores {
+    width: 100%;
+    float: left;
+    margin-top: 5px;
+}
+/*ESTILOS PARA DETALLE EMSIONES VER MAS*/
+.botonesArribaDetalleEmisionesVerMAs {
+    float: right;
+}
+
+    .botonesArribaDetalleEmisionesVerMAs .botonComun {
+        float: right;
+    }
+
+.tabla_detalle_emisiones_verMas {
+    width: 50%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#ContentPlaceHolder1_linkTerminos{ /*FSS*/
+    display: none;
+}
+
+.botones_abajo_detalle_emisiones_ver_mas .botonComun {
+    height: 54px;
+    float: left;
+    position: relative;
+    padding-right: 56px;
+    padding-top: 6px;
+    width: 83px;
+    text-align: right;
+}
+
+    .botones_abajo_detalle_emisiones_ver_mas .botonComun i {
+        line-height: 60px;
+        font-size: 30px;
+        width: 45px;
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+/*ESTILOS PARA DOCUMENTACION EMISIONES*/
+.inputsDocumentacionEmisiones {
+    float: left;
+    margin-top: 15px;
+    width: 1150px;
+}
+
+    .inputsDocumentacionEmisiones .botonComun {
+        float: right !important;
+        margin: 10px 50px 50px 50px !important;
+    }
+
+    .inputsDocumentacionEmisiones .label {
+        float: left;
+        margin-top: 4px !important;
+        margin-left: 4px !important;
+        width: 45px;
+    }
+
+    .inputsDocumentacionEmisiones .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputsDocumentacionEmisiones .labelTercero {
+        margin-left: 20px !important;
+        width: 25px !important;
+    }
+
+    .inputsDocumentacionEmisiones .labelCuarto {
+        margin-left: 20px !important;
+        width: 35px !important;
+    }
+
+    .inputsDocumentacionEmisiones .componentes {
+        float: left;
+        width: 128px !important;
+    }
+
+    .inputsDocumentacionEmisiones .componentesGrande {
+        float: left;
+        width: 180px !important;
+    }
+
+    .inputsDocumentacionEmisiones .comboEmisor {
+        float: left;
+        width: 150px !important;
+    }
+
+    .inputsDocumentacionEmisiones .comboEmision {
+        float: left;
+        width: 230px !important;
+    }
+
+.emisiones {
+    width: 160px !important;
+}
+
+.descargarAdobe {
+    font-family: Roboto;
+    font-size: 10px;
+    margin-left: 10px;
+}
+
+.botonesArribaDocumentacionEmisiones {
+    float: right;
+    margin-top: 15px;
+}
+
+    .botonesArribaDocumentacionEmisiones .botonComun {
+        float: right;
+        margin-top: 0 !important;
+      
+    }
+
+.tabla_documentacion_emisiones {
+    width: 100%;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+/*ESTILOS PARA LISTA EMISORES*/
+.inputsListaEmisores {
+    float: left;
+}
+
+    .inputsListaEmisores .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsListaEmisores .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .inputsListaEmisores .labelSegundo {
+        margin-left: 20px !important;
+    }
+
+    .inputsListaEmisores .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaListaEmisores {
+    float: right;
+}
+
+    .botonesArribaListaEmisores .botonComun {
+        float: right;
+    }
+
+.botonMasGrande {
+    width: 140px !important;
+}
+
+.tabla_listaEmisores {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+/*ESTILOS PARA OTROS CURSOS*/
+.otrosCursos_texto {
+    width: 70%;
+    float: left;
+}
+
+.tabla_otros_cursos {
+    margin-bottom: 20px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.texto_contacto_otros_cursos, .boton_otros_cursos_contacto {
+    float: left;
+}
+
+.texto_contacto_otros_cursos {
+    margin-top: 5px;
+    margin-right: 20px;
+}
+/*ESTILOS PARA CURSOS SIOPEL*/
+.texto_inicial_cursos_siopel {
+    width: 83%;
+    float: left;
+    margin-bottom: 10px;
+}
+
+.imagen_curso_siopel {/*FSS*/
+    float: left;
+    width: 14%;
+    margin-left: 2%;
+    margin-top: 1%; 
+}
+
+.cada_curso_siopel {
+    width: 80%;
+}
+
+    .cada_curso_siopel img, .cada_curso_siopel p {
+        float: left;
+    }
+
+    .cada_curso_siopel p {
+        margin-left: 20px;
+        width: 72%;
+    }
+
+.lineacursoSiopel {
+    margin-top: 15px !important;
+    margin-bottom: 15px !important;
+    margin-left: 0 !important;
+}
+
+.texto_contacto_curso_siopel, .boton_curso_siopel_contacto {
+    float: left;
+}
+
+.texto_contacto_curso_siopel {
+    margin-top: 5px;
+    margin-right: 20px;
+}
+/*ESTILOS PARA CONVENIOS CON UNIVERSIDADES*/
+.detalle_convenio_universidades {
+    width: 80%;
+    float: left;
+}
+
+.universidades {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+    .universidades img {
+        float: left;
+        width: 200px;
+        margin-right: 10px;
+        border: 1px solid #BBB;
+    }
+/*ESTILOS PARA EDUCACION FINANICERA OTROS*/
+.detalleEduacion_financiera_otros {
+    width: 80%;
+    float: left;
+    margin-bottom: 20px;
+}
+
+.botonAdministracionUsuariosMasGDE {
+    width: 180px !important;
+}
+/*ESTILOS PARA ADMINISTRACION DE USUARIOS*/
+.botonAdministracionUsuarios {
+    float: left;
+}
+/*ESTILOS PARA INFORAMCION JUEGO SIOPEL*/
+.divdetalle_juego_informacion_siopel {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.detalle_juego_informacion_siopel {
+    width: 77%;
+    margin-right: 1%;
+    float: left;
+}
+
+.divdetalle_juego_informacion_siopel img {
+    float: right;
+}
+
+.divdetalle_juego_informacion_siopel a:hover img {
+    opacity: .5;
+}
+
+.botones_abajo_curso_siopel_informacion {
+    width: 33%;
+    float: left;
+    margin-top: 20px;
+    margin-right: .5%;
+}
+
+.botones_abajo_curso_siopel_informacion_sinMargen {
+    margin-right: 0;
+}
+
+.botones_abajo_curso_siopel_informacion .botonJuego {
+    background-color: #9C9C9C;
+    color: #FFF;
+    width: 40px;
+    height: 40px;
+    display: block;
+    text-align: center;
+    line-height: 40px;
+    font-size: 22px;
+    float: left;
+}
+
+    .botones_abajo_curso_siopel_informacion .botonJuego:hover {
+        background-color: #5C5C5C;
+    }
+
+.botones_abajo_curso_siopel_informacion p {
+    float: left;
+    margin-left: 10px;
+    width: 80%;
+    text-align: left;
+}
+
+.separacion_CursoSiopel {
+    margin-top: 10px;
+}
+
+.p_centrado_botones_info_siopel {
+    line-height: 40px;
+}
+/*ESTILOS PARA NUEVO USUARIOS*/
+.form_nuevo_usuario {
+    width: 60%;
+    float: left;
+    margin-top: 20px;
+}
+
+    .form_nuevo_usuario .primeros_inputs_usuarios {
+        margin-bottom: 20px;
+    }
+
+    .form_nuevo_usuario .label {
+        width: 160px !important;
+        float: left;
+        margin-bottom: 10px;
+    }
+
+    .form_nuevo_usuario .componentes {
+        width: 245px !important;
+        margin-bottom: 10px;
+        float: left;
+        margin-right: 10px;
+    }
+
+    .form_nuevo_usuario .primer_boton_usuarios {
+        margin-left: 170px;
+        float: left;
+    }
+
+    .form_nuevo_usuario .botonComun {
+        float: left;
+    }
+/*ESTILOS PARA VERIFICAR DATOS ERROR*/
+.nuevo_usuarioVerificar_Datos_Error {
+    margin-top: 20px;
+}
+
+    .nuevo_usuarioVerificar_Datos_Error p {
+        margin-bottom: 20px;
+    }
+
+    .nuevo_usuarioVerificar_Datos_Error .botonComun {
+        float: left;
+    }
+/*ESTILO PARA USUARIO CREADO*/
+.usuarioCreadoExito {
+    color: green;
+    font-weight: 700;
+}
+/*ESTILOS PARA PERMISOS*/
+.form_permisos_usuario {
+    width: 60%;
+    float: left;
+    margin-top: 20px;
+}
+
+    .form_permisos_usuario .primeros_inputs_usuarios {
+        margin-bottom: 20px;
+    }
+
+    .form_permisos_usuario .label {
+        width: 160px !important;
+        float: left;
+        margin-bottom: 10px;
+    }
+
+    .form_permisos_usuario .componentes {
+        width: 245px !important;
+        margin-bottom: 10px;
+        float: left;
+        margin-right: 10px;
+    }
+
+    .form_permisos_usuario .componenteMasLargoListadoUsuarios250 {
+        width: 250px !important;
+    }
+
+    .form_permisos_usuario .primer_boton_usuarios {
+        margin-left: 170px;
+        float: left;
+    }
+
+    .form_permisos_usuario .botonComun {
+        float: left;
+        margin-top: 0 !important;
+    }
+
+.opcion_de_permisos {
+    float: left;
+    margin-left: 1%;
+    width: 39%;
+    margin-top: 20px;
+}
+
+.tabla_de_usuarios_con_permisos {
+    float: left;
+    width: 100%;
+}
+/*ESTILOS PARA LISTADO DE USUARIOS*/
+.tabla_listado_de_usuarios {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.componenteMasLargoListadoUsuarios {
+    width: 250px !important;
+}
+
+.form_nuevo_usuario .componenteMasLargoListadoUsuarios250 {
+    width: 250px !important;
+}
+
+#ctl00_ContentPlaceHolder1_ctl00_ContentPlaceHolder1_GridUsuarioListPanel {
+    margin-top: 20px;
+}
+
+.form_nuevo_usuario .botonComun {
+    margin-top: 0 !important;
+}
+
+/*ESTILOS PARA INFORMES RANKING*/
+.inputsRanking {
+    float: left;
+}
+
+    .inputsRanking .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsRanking .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 62px;
+    }
+
+    .inputsRanking .labelSegundo {
+        margin-left: 20px !important;
+        width: 40px;
+    }
+
+    .inputsRanking .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+    .inputsRanking .componentesMasLargos {
+        width: 230px !important;
+    }
+
+.botonesArribaRanking {
+    float: right;
+}
+
+    .botonesArribaRanking .botonComun {
+        float: right;
+        margin-top: 32px;
+    }
+
+.tabla_ranking {
+    width: 100%;
+    margin-top: 20px;
+}
+
+} /*ESTILOS PARA INFORMES OPERATIVA DIARIA*/
+.inputsOperativaDiaria {
+    float: left;
+}
+
+    .inputsOperativaDiaria .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsOperativaDiaria .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 62px;
+    }
+
+    .inputsOperativaDiaria .labelSegundo {
+        margin-left: 20px !important;
+        width: 40px;
+    }
+
+    .inputsOperativaDiaria .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaOperativaDiaria {
+    float: right;
+}
+
+    .botonesArribaOperativaDiaria .botonComun {
+        float: right;
+        margin-top: 32px;
+    }
+
+.grafica_operativaDiaria {
+    width: 49%;
+    margin-right: 1%;
+    float: left;
+    margin-top: 10px;
+    height: 450px;
+}
+
+.tabla_operativa_infomres_privados {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.lineaPermisosPrivadoOperativaDiaria {
+    margin-top: 31px !important;
+}
+/*ESTILOS PARA INFOMRES PRIVADOS TRANSACCIONES*/
+.inputsTransacciones_informePrivado {
+    float: left;
+    width: 100%;
+}
+
+    .inputsTransacciones_informePrivado .botonComun {
+        float: left !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsTransacciones_informePrivado .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 70px;
+    }
+
+    .inputsTransacciones_informePrivado .labelSegundo {
+        margin-left: 10px !important;
+        width: 60px;
+    }
+
+    .inputsTransacciones_informePrivado .labelTercero {
+        margin-left: 10px !important;
+        width: 50px;
+    }
+
+    .inputsTransacciones_informePrivado .componentes {
+        float: left;
+        width: 116px !important;
+        margin-top: 5px;
+    }
+
+    .inputsTransacciones_informePrivado .botonesDerechaTransacciones {
+        float: right !important;
+    }
+
+    .inputsTransacciones_informePrivado .componentesMasLargosTransacciones {
+        width: 230px !important;
+    }
+
+.tablaTransacciones {
+    width: 100%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA INFOMRES PRIVADOS TRANSACCIONES MENSUALES*/
+.inputsTransaccionesmensuales_informePrivado {
+    float: left;
+    width: 100%;
+}
+
+    .inputsTransaccionesmensuales_informePrivado .botonComun {
+        float: left !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsTransaccionesmensuales_informePrivado .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 70px;
+    }
+
+    .inputsTransaccionesmensuales_informePrivado .labelprimero {
+        margin-left: 68px !important;
+    }
+
+    .inputsTransaccionesmensuales_informePrivado .labelplazo {
+        width: 50px !important;
+    }
+
+    .inputsTransaccionesmensuales_informePrivado .labelSegundo {
+        margin-left: 10px !important;
+        width: 60px;
+    }
+
+    .inputsTransaccionesmensuales_informePrivado .labelTercero {
+        margin-left: 10px !important;
+        width: 50px;
+    }
+
+    .inputsTransaccionesmensuales_informePrivado .componentes {
+        float: left;
+        width: 116px !important;
+        margin-top: 5px;
+    }
+
+    .inputsTransaccionesmensuales_informePrivado .botonesDerechaTransacciones {
+        float: right !important;
+    }
+
+    .inputsTransaccionesmensuales_informePrivado .componentesMasLargosTransaccionesMensuales {
+        width: 230px !important;
+    }
+
+.tabla_transacciones_mensuales {
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.grafica_todos_los_mercados_transaccionesMensuales {
+    width: 50%;
+    margin: 20px auto;
+}
+
+.grafica_mercado_primario_transaccionesMensuales, .grafica_mercado_dinero_transaccionesMensuales {
+    width: 49%;
+    margin-bottom: 20px;
+    margin-right: 2%;
+    float: left;
+}
+
+.grafica_mercado_cambio_transaccionesMensuales, .grafica_mercado_valores_transaccionesMensuales {
+    width: 49%;
+    margin-bottom: 20px;
+    float: left;
+}
+/*ESTILOS PARA REGISTRO DE TENENCIA*/
+.detalle_registro_tenencia {
+    width: 70%;
+    margin-bottom: 20px;
+}
+
+.inputsRegistrosTenencias_informePrivado {
+    float: left;
+    width: 100%;
+}
+
+    .inputsRegistrosTenencias_informePrivado .botonComun {
+        float: left !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsRegistrosTenencias_informePrivado .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 70px;
+    }
+
+    .inputsRegistrosTenencias_informePrivado .labelTipoMovimiento {
+        width: 114px;
+    }
+
+    .inputsRegistrosTenencias_informePrivado .labelDesdeHasta {
+        width: 50px;
+    }
+
+    .inputsRegistrosTenencias_informePrivado .labelSegundo {
+        margin-left: 10px !important;
+    }
+
+    .inputsRegistrosTenencias_informePrivado .componentes {
+        float: left;
+        width: 116px !important;
+        margin-top: 5px;
+    }
+
+    .inputsRegistrosTenencias_informePrivado .componentesMasLargosRegistoTeneica {
+        width: 230px !important;
+    }
+
+    .inputsRegistrosTenencias_informePrivado .botonesDerechaTransacciones {
+        float: right !important;
+    }
+
+.tabla_tenencia_registro_tenencias {
+    width: 70%;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+
+
+.tabla_tenecia_registro_movimientos {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.inputsRegistrosTenencias_informePrivado {
+    margin-bottom: 20px;
+}
+
+.labelTipoSubtitulo {
+    margin-bottom: 20px !important;
+}
+/*ESTILOS PARA LIQUIDACION MTM*/
+.inputsLiquidacionMTM_informePrivado {
+    float: left;
+    width: 100%;
+}
+
+    .inputsLiquidacionMTM_informePrivado .botonComun {
+        float: left !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsLiquidacionMTM_informePrivado .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 65px;
+    }
+
+    .inputsLiquidacionMTM_informePrivado .labelSegundo {
+        width: 40px;
+        margin-left: 10px !important;
+    }
+
+    .inputsLiquidacionMTM_informePrivado .labelVencimiento {
+        width: 73px;
+    }
+
+    .inputsLiquidacionMTM_informePrivado .componentes {
+        float: left;
+        width: 116px !important;
+        margin-top: 5px;
+    }
+
+    .inputsLiquidacionMTM_informePrivado .botonesDerechaliquidacionMTM {
+        float: right !important;
+    }
+
+    .inputsLiquidacionMTM_informePrivado .componentesMasLargosMTM {
+        width: 230px !important;
+    }
+
+.tabla_totales_por_venicmiento_liquidacionMTM, .tabla_DETALLE_liquidacionMTM {
+    width: 70%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+/*ESTILOS PARA INFORMES OPERADORES PRIMARIOS*/
+.inputsInformesOperadoresPrivados {
+    float: left;
+}
+
+    .inputsInformesOperadoresPrivados .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsInformesOperadoresPrivados .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 65px;
+    }
+
+    .inputsInformesOperadoresPrivados .labelSegundo {
+        margin-left: 20px !important;
+        width: 40px !important;
+    }
+
+    .inputsInformesOperadoresPrivados .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+    .inputsInformesOperadoresPrivados .componentesMasLargosOpPrimarios {
+        width: 230px !important;
+    }
+
+.botonesArribaInformeOperadoresPrivados {
+    float: right;
+}
+
+    .botonesArribaInformeOperadoresPrivados .botonComun {
+        float: right;
+    }
+
+    .botonesArribaInformeOperadoresPrivados .botonConMasMArgenInformeOpPrivado {
+        margin-top: 32px;
+    }
+
+.tabla_informe_op_privado_por_operaciones {
+    width: 60%;
+    margin: 20px 0;
+}
+
+.tabla_informe_op_primario_ofertas {
+    width: 80%;
+    margin: 20px 0;
+}
+/*ESTILOS PARA INFORME OPERADORES PRIMARIOS VER MAS*/
+.botonesArribaInformeOpPrimarioVerMas {
+    float: right;
+}
+
+    .botonesArribaInformeOpPrimarioVerMas .botonComun {
+        float: right;
+    }
+
+.tabla_informe_op_primarios_ver_mas {
+    width: 100%;
+    margin: 20px 0;
+}
+
+.tabla_informe_op_privado_linea_credito {
+    /*width: 60%;*/
+    margin: 20px 0;
+}
+
+.tabla_lineas_credito_cb {
+    width: 100%;
+}
+
+/* LINEAS CREDITO AFECTACION */
+
+.panel-subir-archivo {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: -10%;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.contenido-subir-archivo {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+}
+
+.contenido-subir-archivo label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.btn-informar-estado-afectacion {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 10px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+}
+
+.btn-aceptar-afectacion {
+    margin-right: 10px;
+}
+
+.fecha-seleccion-retraso-tolerado-desafectacion{
+    margin:10px;
+}
+
+.lineaPermisosPrivadoInformeOperativo {
+    margin-top: 53px !important;
+}
+
+.labelFechaPermisosPrivadoInformeOperativo {
+    width: 44px !important;
+}
+/*ESTILOS PARA OPERACIONES GARANTIZADAS*/
+.inputsInformesOperacionesGarantizadas {
+    float: left;
+}
+
+    .inputsInformesOperacionesGarantizadas .botonComun {
+        float: right !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsInformesOperacionesGarantizadas .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 65px;
+    }
+
+    .inputsInformesOperacionesGarantizadas .labelSegundo {
+        margin-left: 20px !important;
+        width: 40px !important;
+    }
+
+    .inputsInformesOperacionesGarantizadas .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+    .inputsInformesOperacionesGarantizadas .componentesMasLargosOpGarantizadas {
+        width: 230px !important;
+    }
+
+.botonesArribaInformeOoeracionesGarantizadas {
+    float: right;
+}
+
+    .botonesArribaInformeOoeracionesGarantizadas .botonComun {
+        float: right;
+    }
+
+    .botonesArribaInformeOoeracionesGarantizadas .botonConMasMArgenOperacionesGarantizadas {
+        margin-top: 32px;
+    }
+
+.tabla_operacionesGarantizadas {
+    width: 100%;
+    margin: 20px 0;
+}
+
+.OperacionesGarantizadasverMas {
+    position: absolute;
+    left: 0;
+    top: -500px;
+    z-index: 999;
+    border: 1px solid #DDDDDD;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 2px 2px 10px 0px #AAA;
+    -moz-box-shadow: 2px 2px 10px 0px #AAA;
+    -webkit-box-shadow: 2px 2px 10px 0px #AAA;
+    width: 96%;
+    margin-left: 1%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 1%;
+    padding-right: 1%;
+    background-color: #FFF;
+}
+
+.btnCerrarVerMasOperacionesGarantizadas {
+    color: #000;
+    float: right;
+}
+
+.OperacionesGarantizadasverMas h2 {
+    float: left;
+    margin-top: 0 !important;
+}
+
+.grillaOperacionesGarantizadas {
+    width: 100% !important;
+}
+
+.OperacionesGarantizadasverMas .grillaOperacionesGarantizadas #ctl00_ContentPlaceHolder1_GridGarantias_ctl00 {
+    font-size: 11px !important;
+}
+/*ESTILOS PARA OTROS INFORMES*/
+.botones_otrosInformes .botonComun {
+    height: 38px;
+    position: relative;
+    text-align: center;
+    padding-right: 50px;
+    width: 130px;
+    line-height: 38px;
+    float: left;
+}
+
+.botones_otrosInformes .botonDerecha_otrosInformes {
+    text-align: right;
+    line-height: 16px;
+    padding-top: 3px;
+    height: 35px;
+}
+
+.botones_otrosInformes img {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.input_otrosInformes {
+    float: left;
+}
+
+
+    .input_otrosInformes .botonComun {
+        float: right !important;
+        margin: 8px 5px 5px 30px !important;
+    }
+
+    .input_otrosInformes .label {
+        float: left !important;
+        margin-top: 13px !important;
+        margin-left: 4px;
+        width: 70px;
+    }
+
+    .input_otrosInformes .labelSegundo {
+        margin-left: 30px !important;
+        width: 40px;
+    }
+
+
+    .input_otrosInformes .componentes, .input_otrosInformes .RadInput {
+        float: left !important;
+        width: 152px;
+        margin-top: 5px;
+    }
+
+    .input_otrosInformes .componenteMasLargo {
+        width: 180px !important;
+    }
+
+/*ESTILOS PARA INICIO*/
+.pruebaInicio {
+    width: 78px;
+}
+
+    .pruebaInicio .RadGrid_Default .rgMasterTable {
+        font-size: 9px !important;
+        line-height: 10px !important;
+    }
+
+    .pruebaInicio .RadGrid_Default .rgHeader {
+        font-size: 9px !important;
+        line-height: 10px !important;
+        padding: 1px !important;
+    }
+
+¨ /*ESTILOS PARA MP IMP HMP*/
+.inputsMP_IMP_HMP {
+    float: left;
+    margin-bottom: 20px !important;
+}
+
+.inputsMP_IMP_HMP .botonComun {
+    float: left !important;
+    margin: 5px 5px 5px 10px !important;
+}
+
+.inputsMP_IMP_HMP .label {
+    float: left;
+    margin-top: 9px !important;
+    margin-left: 4px !important;
+    width: 70px;
+}
+
+.inputsMP_IMP_HMP .labelSegundo {
+    width: 50px;
+    margin-left: 8px !important;
+}
+
+.inputsMP_IMP_HMP .labelTercero {
+    width: 40px;
+}
+
+
+.inputsMP_IMP_HMP .componentes {
+    float: left;
+    width: 128px !important;
+    margin-top: 5px;
+}
+
+.botonesArribaMP_IMP_HMP {
+    float: right;
+}
+
+    .botonesArribaMP_IMP_HMP .botonComun {
+        float: right;
+    }
+
+.tabla_MP_IMP_HMP {
+    width: 60%;
+    margin-top: 20px;
+}
+
+/*ESTILOS PARA MEJOR OFERTAS FWD*/
+
+.inputsMejoresOfertasFWD {
+    float: left;
+    margin-bottom: 20px !important;
+}
+
+    .inputsMejoresOfertasFWD .botonComun {
+        float: left !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsMejoresOfertasFWD .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .inputsMejoresOfertasFWD .labelSegundo {
+        width: 50px;
+        margin-left: 8px !important;
+    }
+
+    .inputsMejoresOfertasFWD .labelTercero {
+        width: 40px;
+    }
+
+
+    .inputsMejoresOfertasFWD .componentes, #ctl00_ContentPlaceHolder1_ctl00_ContentPlaceHolder1_ComboPlazoPanel {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaMejoresOfertasFWD {
+    float: right;
+}
+
+    .botonesArribaMejoresOfertasFWD .botonComun {
+        float: right;
+    }
+
+.tabla_MejoresOfertasFWD {
+    width: 60%;
+    margin-top: 20px;
+}
+/*ESTILOS PARA MEJOR OFERTAS OCT*/
+
+.inputsMejoresOfertasOCT {
+    float: left;
+    margin-bottom: 20px !important;
+}
+
+    .inputsMejoresOfertasOCT .botonComun {
+        float: left !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsMejoresOfertasOCT .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 50px;
+    }
+
+    .inputsMejoresOfertasOCT .labelSegundo {
+        width: 77px;
+        margin-left: 20px !important;
+    }
+
+    .inputsMejoresOfertasOCT .componentes, #ctl00_ContentPlaceHolder1_ctl00_ContentPlaceHolder1_ComboPlazoPanel, #ctl00_ContentPlaceHolder1_ctl00_ContentPlaceHolder1_ComboVencimientoPanel {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaMejoresOfertasOCT {
+    float: right;
+}
+
+    .botonesArribaMejoresOfertasOCT .botonComun {
+        float: right;
+    }
+
+.tabla_MejoresOfertasOCT {
+    width: 50%;
+    margin-top: 20px;
+    float: left;
+}
+
+.grafica_MejoresOfertasOCT {
+    width: 49%;
+    margin-left: 1%;
+    float: left;
+    margin-top: 20px;
+}
+/*ESTILOS PARA MEJOR OFERTAS DOLAR*/
+
+.inputsMejoresOfertasDolar {
+    float: left;
+    margin-bottom: 20px !important;
+}
+
+    .inputsMejoresOfertasDolar .botonComun {
+        float: left !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsMejoresOfertasDolar .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 38px;
+    }
+
+    .inputsMejoresOfertasDolar .labelSegundo {
+        width: 77px;
+        margin-left: 8px !important;
+    }
+
+    .inputsMejoresOfertasDolar .componentes, #ctl00_ContentPlaceHolder1_ctl00_ContentPlaceHolder1_listBoxPlazoPanel {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+.botonesArribaMejoresOfertasDolar {
+    float: right;
+}
+
+    .botonesArribaMejoresOfertasDolar .botonComun {
+        float: right;
+    }
+
+.tabla_MejoresOfertasDolar {
+    width: 50%;
+    margin-top: 20px;
+    float: left;
+}
+
+.grafica_MejoresOfertasDolar {
+    width: 49%;
+    margin-left: 1%;
+    float: left;
+    margin-top: 20px;
+}
+/*ESTILOS PARA CALCULADORA ITLUP*/
+
+.inputsCalculadoraITLUP {
+    float: left;
+    margin-bottom: 10px !important;
+}
+
+    .inputsCalculadoraITLUP .botonComun {
+        float: left !important;
+        margin: 5px 5px 5px 10px !important;
+    }
+
+    .inputsCalculadoraITLUP .label {
+        float: left;
+        margin-top: 9px !important;
+        margin-left: 4px !important;
+        width: 70px;
+    }
+
+    .inputsCalculadoraITLUP .labelSegundo {
+        margin-left: 10px !important;
+    }
+
+    .inputsCalculadoraITLUP .labelTercero {
+        width: 40px;
+        margin-left: 10px !important;
+    }
+
+    .inputsCalculadoraITLUP .labelCuarto {
+        width: 160px;
+        margin-left: 8px !important;
+    }
+
+    .inputsCalculadoraITLUP .componentes {
+        float: left;
+        width: 128px !important;
+        margin-top: 5px;
+    }
+
+    .inputsCalculadoraITLUP .componentesRadio {
+        width: 25px !important;
+        margin-top: 8px;
+        margin-left: 15px;
+    }
+
+.botonesArribaCalculadoraITLUP {
+    float: right;
+}
+
+    .botonesArribaCalculadoraITLUP .botonComun {
+        float: right;
+    }
+
+.tabla_CalculadoraITLUP {
+    width: 60%;
+    margin-top: 20px;
+    float: left;
+}
+
+.tabla_Center {
+    width: 60%;
+    margin-top: 20px;
+    float: left;
+}
+
+.grafica_CalculadoraITLUP {
+    width: 39%;
+    margin-left: 1%;
+    float: left;
+    margin-top: 20px;
+}
+/* INICIO */
+#slider_inicio {
+    float: left;
+    margin-top: 10px;
+}
+
+.ticker_novedades_inicio {
+    width: 100%;
+    background-color: #5C5C5C;
+    padding: 7px 0 7px 2%;
+}
+
+    .ticker_novedades_inicio p {
+        width: 12%;
+        color: #FFF;
+        font-size: 12px;
+        float: left;
+    }
+
+.ticker_novedades_inicio {
+    width: 98%;
+    background-color: #5C5C5C;
+    padding: 7px 0 7px 2%;
+}
+
+    .ticker_novedades_inicio p {
+        width: 12%;
+        color: #FFF;
+        font-size: 12px;
+        float: left;
+        line-height:37px;
+        font-weight:700;
+    }
+
+    .ticker_novedades_inicio .list_carousel {
+        float: left;
+        margin-left: 3%;
+        background-color: #CCC;
+        width: 78%;
+        position: relative;
+    }
+
+        .ticker_novedades_inicio .list_carousel ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: block;
+        }
+
+            .ticker_novedades_inicio .list_carousel ul li {
+                font-size: 10px;/*font-size: 9.5px;*/
+                font-family: Roboto;
+                color: #111;
+                padding: 0;
+                display: block;
+                float: left;
+                margin: 6px;
+                /*width:500px!important;*/  
+            }
+
+                .ticker_novedades_inicio .list_carousel ul li a {
+                    font-size: 9px;/*font-size: 9.5px;*/
+                    font-family: Roboto;
+                    color: #111;
+                    text-decoration: none;
+                    text-transform:uppercase;
+                    font-weight:700;
+                }
+
+        .ticker_novedades_inicio .list_carousel.responsive {
+            width: auto;
+            margin-left: 0;
+        }
+
+#next2, #prev2 {
+    position: absolute;
+    right: -24px;
+    top: 11px;
+    text-decoration: none;
+  
+   
+    width: 18px;
+    text-align: center;
+}
+
+#prev2 {
+    right: 0;
+    left: -24px;
+}
+
+.ladoIzqInicio {
+    float: left;
+    width: 75%;
+}
+
+.ladoDerInicio {
+    float: left;
+    width: 24%;
+    padding-left: 0.5%;
+    padding-right: 0.5%;
+    background-color: #437EC0;
+    min-height: 1421px;
+}
+
+#topInicio .botonComun, .dolarEnInicio .botonComun {
+    height: 38px;
+    position: relative;
+    text-align: center;
+    padding-right: 50px;
+    width: 80px;
+    line-height: 38px;
+    float: right;
+    margin-bottom: 10px;
+    background-color: #0D125E;
+
+}
+#topInicio .botonComun{
+    margin-bottom:0;
+}
+
+.dolarEnInicio .botonComun {
+    float: left;
+    width: 60% !important;
+    width: 70px;
+    padding-right: 37%;
+}
+
+#topInicio .botonDerecha_BannerInicio, .dolarEnInicio .botonDerecha_BannerInicio {
+    text-align: right;
+    line-height: 35px; /*FSS*/
+    font-weight: bold; /*FSS*/
+    padding-top: 3px;
+    height: 33px;
+    margin-left: 3%;
+}
+
+.dolarEnInicio .botonDerecha_BannerInicio {
+    margin-left: 10px !important;
+    padding-top: 0;
+    height: 47px;
+    line-height: 47px;
+}
+
+#topInicio img, .dolarEnInicio .botonComun img {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+#topInicio{
+    position:relative;
+}
+#divbtnComunicadoInicio{
+    position:absolute;
+    top:25%;
+    right:0;
+    width:18%;
+}
+#divbtnCierreInicio{
+    position:absolute;
+    top:50%;
+    right:0;
+    width:18%;
+}
+#divbtnBoletinInicio{
+    position:absolute;
+    top:0;
+    right:0;
+    width:18%;
+}
+#divbtnHechosInicio{
+    position:absolute;
+    bottom:0;
+    right:0;
+    width:18%;
+}
+.dolarEnInicio {
+    width: 28%;
+    padding-left: 0.5%;
+    padding-right: 0.5%;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-right: 1px solid #AAA;
+    min-height:920px;
+}
+
+.graficasEnInicio {
+    width: 69%;
+    padding-left: 1%;
+    float: left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#bannerEmisiones .list_carousel {
+    background-color: #FFF !important;
+}
+
+.tablaIndicesInicio {
+    width: 100%; /*antes decia 23 cuando estaban separadas la grafica de la tabla*/
+    float: left;
+}
+.CALLGraficaPrecioPpal, .ITLUPGraficaIndicePpal{
+    height:230px!important;
+    margin-left:20px!important;
+}
+
+    .tablaIndicesInicio .tablaIRUBEVSA, #tablaGraficaInicioItbgl .tablaIndice, #tablaGraficaInicioIndui .tablaIndice, #tablaGraficaInicioItlup .tablaIndice {
+        width: 20%;
+    }
+
+    .tablaIndicesInicio .graficaIRUBEVSA, #tablaGraficaInicioItbgl .graficaIndice {/*ACAAAAAAAAAAAA*/
+        width: 78%;
+        height:230px;
+    }
+    .tablaIndicesInicio .tablaIRUBEVSA #tablaIRUBEVSA_1 {
+        width: 100%!important;
+    }
+
+.graficaIncidesInicio {
+    width: 70%;
+    float: left;
+}
+
+.graficaCurvasInicio, .tablaCurvasInicio {
+    width: 100%;
+}
+
+.botonesIndicesInicio .botonComun, .botonesCurvasInicio .botonComun, .botonesCierreMercadoValoresInicio .botonComun {
+    background-color: #CCC;
+    color: #5C5C5C;
+    width: 63px;
+    float: left;
+}
+
+.botonesCierreMercadoValoresInicio .botonComun {
+    width: 32%;
+    margin-left: 0;
+    margin-right: 0.5%;
+    padding-left: 0.5%;
+    margin-bottom: 0;
+
+    font-weight: bold;
+}
+
+.botonesIndicesInicio .seleccionado, .botonesCurvasInicio .seleccionado, .botonesCierreMercadoValoresInicio .seleccionado {
+    background-color: #0D125E;
+    color: #FFF;
+}
+
+.botonesIndicesInicio .btnVerMas, .botonesCurvasInicio .btnVerMas, .ladoDerInicio .btnVerMas {
+    background-color: #0D125E;
+    color: #FFF;
+    width: 75px;
+    float: right;
+}
+
+    .botonesIndicesInicio .btnVerMas:hover, .botonesCurvasInicio .btnVerMas:hover, .ladoDerInicio .btnVerMas:hover {
+        background-color: #FFF;
+        color: #0D125E;
+    }
+
+.tituloLadoDerechoInicio {
+    text-align: center !important;
+}
+
+.ladoDerInicio h3 {
+    margin-left: 0;
+    margin-right: 0;
+    text-align: center;
+    color: #FFF;
+    font-size: 14px;
+}
+
+.ladoDerInicio h2 {
+    color: #FFF;
+}
+
+.ladoDerInicio .lineah2 {
+    border-color: #FFF;
+}
+
+.tablaResumenTransacciones {
+    width: 100%;
+}
+
+#foo4 li p {
+    position: absolute;
+    bottom: 10px;
+    color: #FFF;
+    background-color: rgba(100,100,100,1);
+    z-index: 9999;
+    padding: 10px;
+    width: 236px;
+}
+
+.preciosInicio {
+    height: 220px;
+    overflow: hidden;
+}
+
+
+@keyframes tickerVertical {
+    from {
+        top: 0;
+    }
+
+    to {
+        top: -310px;
+    }
+}
+
+#ContentPlaceHolder1_Precios_ticker_vertical_precio {
+    position: relative;
+    top: 0;
+    left: 0;
+    background-color: #f2f2f2;
+    width: 100%;
+}
+
+    #ContentPlaceHolder1_Precios_ticker_vertical_precio tr td p, #tituloTickerVertical tr td p {
+        font-size: 12px !important; /*TAMAÑO DE TIPOGRAFIA DE TICKER VERTICAL PRECIO*/
+        text-align: left;
+    }
+
+    #ContentPlaceHolder1_Precios_ticker_vertical_precio tbody {
+        width: 100%;
+    }
+
+    #ContentPlaceHolder1_Precios_ticker_vertical_precio tr {
+        width: 100%;
+        display: block;
+    }
+
+        #ContentPlaceHolder1_Precios_ticker_vertical_precio tr.grisClaro {
+            background-color: #CCC;
+        }
+
+.tablaCierreMercadoValoresInicio .RadGrid_Default table.rgMasterTable tbody tr.rgRow td p {
+    background-color: red;
+}
+
+.tablaCierreMercadoValoresInicio .RadGrid .rgRow > td, .tablaCierreMercadoValoresInicio .RadGrid .rgAltRow > td, .tablaCierreMercadoValoresInicio .RadGrid .rgHeader {
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    /*font-size:10px;*/
+}
+
+.tablaCierreMercadoValoresInicio .RadGrid_Default .rgHeader {
+    /*font-size:10px!important; TAMAÑO TIPOGRAFIA DE TABLA ABAJO DE TICKER VERTICAL PRECIO*/
+    background-color: #0D125E !important;
+}
+
+.tablaCierreMercadoValoresInicio .RadGrid_Default, .tablaResumenTransacciones .RadGrid_Default, .tablaDolarInicio .RadGrid_Default, #tablaGraficaInicioIrubevsa .RadGrid_Default, #tablaGraficaInicioItbgl .RadGrid_Default, #tablaGraficaInicioIndui .RadGrid_Default, #tablaGraficaInicioItlup .RadGrid_Default {
+    border: 0;
+}
+
+.tablaResumenTransacciones .RadGrid .rgRow > td, .tablaResumenTransacciones .RadGrid .rgAltRow > td, .tablaResumenTransacciones .RadGrid .rgHeader {
+    /*font-size:10px;*/
+}
+
+.tablaResumenTransacciones .RadGrid_Default .rgHeader {
+    /*font-size:10px!important; TAMAÑO TIPOGRAFIA DE TABLA ARRIBA DE TICKER VERTICAL PRECIO*/
+    background-color: #0D125E !important;
+}
+
+.tablaDolarInicio .RadGrid .rgRow > td, .tablaDolarInicio .RadGrid .rgAltRow > td, .tablaDolarInicio .RadGrid .rgHeader {
+    border: 0 !important;
+    /*font-size:10px;*/
+}
+
+.tablaDolarInicio .RadGrid_Default .rgHeader {
+    /* font-size:10px!important; TAMAÑO TIPOGRAFIA DE TABLA DOLAR INICIO*/
+    background-color: #0D125E !important;
+}
+
+#btnPrecioDolar{
+    width:48%!important;
+    /*padding-right:unset!important;
+    padding-left:unset!important;*/
+    padding-right:0!important;
+    padding-left:0!important;
+    font-weight:700!important;
+}
+#btnDolarFuturo{
+    width:48%!important;
+    padding-right:0!important;
+    padding-left:0!important;
+    font-weight:700!important;
+}
+
+.TablaDolarFuturo_1{
+    float:left;
+    width: 97%;
+}
+.TablaDolarFuturo_2{
+    float:left;
+    width: 45%;
+    margin-left: 15px;
+}
+.tablaDolarFuturoInicio .RadGrid .rgRow > td, .tablaDolarFuturoInicio .RadGrid .rgAltRow > td, .tablaDolarFuturoInicio .RadGrid .rgHeader {
+    border: 0 !important;
+    /*font-size:10px;*/
+}
+
+.tablaDolarFuturoInicio .RadGrid_Default .rgHeader {
+    /* font-size:10px!important; TAMAÑO TIPOGRAFIA DE TABLA DOLAR INICIO*/
+    background-color: #0D125E !important;
+}
+
+#tablaGraficaInicioIrubevsa .RadGrid .rgRow > td, #tablaGraficaInicioIrubevsa .RadGrid .rgAltRow > td, #tablaGraficaInicioIrubevsa .RadGrid .rgHeader {
+    /*font-size:10px;*/
+}
+
+#tablaGraficaInicioIrubevsa .RadGrid_Default .rgHeader {
+    /* font-size:10px!important; TAMAÑO TIPOGRAFIA DE TABLA DOLAR INICIO*/
+    background-color: #0D125E !important;
+}
+
+#tablaGraficaInicioItbgl .RadGrid .rgRow > td, #tablaGraficaInicioItbgl .RadGrid .rgAltRow > td, #tablaGraficaInicioItbgl .RadGrid .rgHeader {
+    /*font-size:10px;*/
+}
+
+#tablaGraficaInicioItbgl .RadGrid_Default .rgHeader {
+    /*font-size:10px!important; TAMAÑO TIPOGRAFIA DE TABLA DOLAR INICIO*/
+    background-color: #0D125E !important;
+}
+
+#tablaGraficaInicioIndui .RadGrid .rgRow > td, #tablaGraficaInicioIndui .RadGrid .rgAltRow > td, #tablaGraficaInicioIndui .RadGrid .rgHeader {
+    /*font-size:10px;*/
+}
+
+#tablaGraficaInicioIndui .RadGrid_Default .rgHeader {
+    /*font-size:10px!important; TAMAÑO TIPOGRAFIA DE TABLA DOLAR INICIO*/
+    background-color: #0D125E !important;
+    
+}
+
+#tablaGraficaInicioItlup .RadGrid .rgRow > td, #tablaGraficaInicioItlup .RadGrid .rgAltRow > td, #tablaGraficaInicioItlup .RadGrid .rgHeader {
+    /*font-size:10px;*/
+}
+
+#tablaGraficaInicioItlup .RadGrid_Default .rgHeader {
+    /* font-size:10px!important; TAMAÑO TIPOGRAFIA DE TABLA DOLAR INICIO*/
+    background-color: #0D125E !important;
+    color: #8D8D8D;
+}
+
+
+
+#tituloTickerVertical {
+    background-color: #0D125E;
+    color: #FFF !important;
+    width: 100%;
+    z-index: 999;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+    #tituloTickerVertical tr td p {
+        color: #FFF !important;
+    }
+
+    #tituloTickerVertical tr td, #ContentPlaceHolder1_Precios_ticker_vertical_precio tr td {
+         width: 72% !important;
+        display: inline-block;
+        height: 28px;
+        padding-top: 5px;
+        padding-bottom: 3px;
+        border-right:solid 1px #fff;
+    }
+      #tituloTickerVertical , #ContentPlaceHolder1_Precios_ticker_vertical_precio {
+        border-spacing:0;
+        
+    }
+
+     #tituloTickerVertical tr td p{
+         text-align:center!important;
+         font-weight:700;
+         width:100%;
+         float:none;
+         line-height:27px;
+     }
+
+        #tituloTickerVertical tr td:nth-child(2n), #ContentPlaceHolder1_Precios_ticker_vertical_precio tr td:nth-child(2n) {
+            width: 25% !important;
+            display: inline-block;
+            border:none;
+            
+        }
+        #tituloTickerVertical tr td:nth-child(2n){
+            width:26%!important;
+        }
+        #ContentPlaceHolder1_Precios_ticker_vertical_precio tr td:nth-child(2n) p{
+            text-align:center;
+        }
+        #ContentPlaceHolder1_Precios_ticker_vertical_precio tr, #tituloTickerVertical tr{
+            border-bottom:solid 1px #fff;
+        }
+        
+        #tituloTickerVertical tbody{
+            border-bottom:solid 1px #FFF;
+        }
+        #ContentPlaceHolder1_Precios_ticker_vertical_precio{
+            border-spacing:0!important;
+        }
+
+#topInicio .botonDerecha_BannerInicio {
+    margin-left: 0;
+}
+
+#topInicio .botonComun {
+    width: 72%;
+    margin-right: 1%;
+    padding-right: 34%;
+    margin-top: 5px;
+    text-transform:uppercase;
+}
+
+    #topInicio .botonComun img {
+        width: 33px;
+    }
+    .theme-default .nivoSlider{
+        margin-bottom:0!important;
+
+    }
+/*divs para las gracias que se muestre y no */
+#tablaGraficaInicioIrubevsa, #graficaInicioCUD, #tablaInicioCUD, #USDInicioCierreMercadoValores, #verMasIRUBEVSAinicio, #verMasCUDInicio {
+    display: block;
+}
+
+#tablaGraficaInicioItbgl, #tablaGraficaInicioIndui, #tablaGraficaInicioItlup, #graficaInicioITLUP, #graficaInicioCUI, #graficaInicioCUP, #graficaInicioCUTIF, #graficaInicioCCUI, #tablaInicioITLUP, #tablaInicioCUI, #tablaInicioCUP, #tablaInicioCUTIF, #tablaInicioCCUI, #UIInicioCierreMercadoValores, #pesosInicioCierreMercadoValores, #privadosInicioCierreMercadoValores, #verMasITBGLinicio, #verMasINDUIinicio, #verMasITLUPinicio, #verMasITLUPRendimientoInicio, #verMasCUIInicio, #verMasCUPInicio, #verMasCUTIFInicio, #verMasCCUIInicio {
+    display: none;
+}
+
+
+/*para que la tabla de CUD y otras de inicio tengan gris claro arriba*/
+.tablaCUD, .tablaITLUP, .tablaCUI, .tablaCUP, .tablaCEI, .tablaCUTIF, .tablaCCUI {
+    width: 100% !important;
+}
+#tablaInicioCUD .tablaCUD .rgMasterTable thead tr th, #tablaInicioCUD .tablaCUD .rgMasterTable tbody tr td, #tablaInicioITLUP .tablaITLUP .rgMasterTable thead tr th, #tablaInicioITLUP .tablaITLUP .rgMasterTable tbody tr td, #tablaInicioCUI .tablaCUI .rgMasterTable thead tr th, #tablaInicioCUI .tablaCUI .rgMasterTable tbody tr td, #tablaInicioCUP .tablaCUP .rgMasterTable thead tr th, #tablaInicioCUP .tablaCUP .rgMasterTable tbody tr td, #tablaInicioCUTIF .tablaCUTIF .rgMasterTable thead tr th, #tablaInicioCUTIF .tablaCUTIF .rgMasterTable tbody tr td, #tablaInicioCCUI .tablaCCUI .rgMasterTable thead tr th, #tablaInicioCCUI .tablaCCUI .rgMasterTable tbody tr td {
+    font-size: 11px !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+}
+.tablaCUD .RadGrid_Default .rgHeader, .tablaITLUP .RadGrid_Default .rgHeader, .tablaCUI .RadGrid_Default .rgHeader, .tablaCUP .RadGrid_Default .rgHeader, .tablaCEI .RadGrid_Default .rgHeader, .tablaCUTIF .RadGrid_Default .rgHeader, .tablaCCUI .RadGrid_Default .rgHeader {
+    background-color: #f2f2f2 !important;
+    color: #000 !important;
+    font-weight: 400 !important;
+}
+
+.tablaCUD .rgMasterTable .home_curva_header, .tablaITLUP .rgMasterTable .home_curva_header, .tablaCUI .rgMasterTable .home_curva_header, .tablaCUP .rgMasterTable .home_curva_header, .tablaCEI .rgMasterTable .home_curva_header, .tablaCUTIF .RadGrid_Default .home_curva_header {
+    background-color: #0D125E !important;
+    color: white !important;
+    width: 46px !important;
+}
+.tablaCCUI .rgMasterTable thead tr th:first-child, .tablaCCUI .rgMasterTable tbody tr td:first-child{
+    background-color: #0D125E !important;
+    color: white !important;
+   width:46px!important;
+}
+.grillaCCUIPpal, .grillaCUTIFPpal{
+    width:100%;
+}
+#graficaInicioCUTIF .graficaCUTIF{
+    width:100%!important;
+}
+#ctl00_ContentPlaceHolder1_CUTIFGrafico_ChartCuadroEvolucion{/*tamaño de grafica de cutif inicio*/
+    width:520px!important;
+  
+}
+#ctl00_ContentPlaceHolder1_CUDGrafico_ChartCuadroEvolucion{/*tamaño de grafica de CUD inicio*/
+    width:480px!important;
+  
+}
+#graficaInicioCUD .graficaCUD{
+    margin-left:0!important;
+}
+#ctl00_ContentPlaceHolder1_CurvaITLUPGrafico_ChartCuadroEvolucion{/*tamaño de grafica de ITLUP inicio*/
+    width:480px!important;
+  
+}
+#ctl00_ContentPlaceHolder1_CUIGrafico_ChartCuadroEvolucion{/*tamaño de grafica de CUI inicio*/
+    width:480px!important;
+  
+}
+#ctl00_ContentPlaceHolder1_CUPGrafico_ChartCuadroEvolucion { /*tamaño de grafica de CUP inicio*/
+    width: 480px !important;
+}
+#ctl00_ContentPlaceHolder1_CCUIGrafico_ChartCuadroEvolucion{/*tamaño de grafica de CCUI inicio*/
+    width:480px!important;
+  
+}
+#ctl00_ContentPlaceHolder1_ITBGL_ChartITBGL{/*tamaño de grafica de ITBGL inicio*/
+    width:330px!important;
+  
+}
+#ctl00_ContentPlaceHolder1_INDUI_ChartINDUI{/*tamaño de grafica de indui inicio*/
+    width:330px!important;
+  
+}
+#ctl00_ContentPlaceHolder1_ITLUP_ChartITLUP{/*tamaño de grafica de ITLUP ARRIBA inicio*/
+    width:330px!important;
+  
+}
+#btnMercadoBursatilInicio img{
+    width:100%;
+    margin-top:10px;
+}
+#btnDolarFuturoInicio{
+    margin:15 auto!important;
+    /*float:none;*/
+
+    font-weight:bold;
+    font-size: 16px;
+}
+.ticker_novedades_inicio .list_carousel .caroufredsel_wrapper{
+    height:39px!important;
+}
+
+/*Footer*/
+
+html {
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+    html.t-chrome51, html.t-chrome52 {
+        height: 84% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    html.t-chrome {
+        height: 84% !important; /*PROBANDO PARA AJUSTAR EL FOOTER ANTES DECIA 100%*/
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+body {
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.contenedorGeneral {
+    min-height: 100% !important;
+}
+
+.pieFalso {
+    height: 168px;
+}
+
+footer {
+    background-color: #0D125E;
+    padding: 20px;
+    height: 128px;
+    position: relative;
+    top: -60px; /*PROBANDO PARA AJUSTAR ELFOOTER ANTES DECIA -168PX*/
+}
+
+.datosfooter {
+    float: left;
+    /*width: 70%; FSS*/
+    width: 40%;
+}
+
+.logos_calidad{
+    float: left;
+    width: 20%;
+}
+
+#ImagenLogosCalidad{
+    max-width: 100%
+}
+
+address, small, #redesSociales ul li {
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 12px;
+    color: #FFF;
+    font-style: normal;
+}
+
+#redesSociales {
+    float: left;
+    width: 40%;
+}
+
+    #redesSociales ul li {
+        list-style: none;
+        float: right;
+        line-height: 37px;
+    }
+
+        #redesSociales ul li a:link, #redesSociales ul li a:visited {
+            font-size: 30px;
+            color: #FFF;
+        }
+
+        #redesSociales ul li a:hover {
+            color: #9C9C9C;
+        }
+
+        #redesSociales ul li a i {
+            margin-left: 10px;
+        }
+
+.clear {
+    clear: both;
+}
+
+/*ESTILOS TABLA TELERIK*/
+.RadGrid_Default .rgHeader, .RadGrid_Default th.rgResizeCol, .RadGrid_Default .rgHeaderWrapper {
+    background: #9C9C9C !important;
+    color: #FFF !important;
+    font-family: Roboto !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    border-right: 1px solid #FFF !important;
+    text-align: center !important;
+}
+
+.RadGrid .rgRow, .RadGrid .rgAltRow, .RadGrid .rgHeader, .RadGrid .rgResizeCol, .RadGrid .rgPager, .RadGrid .rgGroupPanel, .RadGrid .rgGroupHeader {
+    background-color: #CCC;
+}
+
+    .RadGrid .rgRow > td, .RadGrid .rgAltRow > td {
+        border-right: 1px solid #FFF !important;
+    }
+
+
+.grillaCUD .rgRow:first-child {
+    /*background-color: #6db3ee !important;*/
+    background-color: #902121;/*FSS*/
+    color: #FFF !important;
+}
+
+.grillaCUD rgRow:first-child > td {
+    border-right: 0 !important;
+    text-align: center !important;
+    width: 100px !important;
+}
+
+
+grillaCUD .RadGrid_Default {
+    border: 0 !important;
+}
+
+.fechasCUD {
+    /*min-width: 224px;
+    width: 24%;*/
+    float: left;
+    /*margin-top: 20px;*/
+}
+
+.grillaCUI .rgRow:first-child {
+    /*background-color: #6db3ee !important;*/
+    background-color: #902121;/*FSS*/
+    color: #FFF !important;
+}
+
+.grillaCUI rgRow:first-child > td {
+    border-right: 0 !important;
+    text-align: center !important;
+    width: 100px !important;
+}
+
+.grillaCUP .rgRow:first-child {
+    /*background-color: #6db3ee !important;*/
+    background-color: #902121; /*FSS*/
+    color: #FFF !important;
+}
+
+.grillaCUP rgRow:first-child > td {
+    border-right: 0 !important;
+    text-align: center !important;
+    width: 100px !important;
+}
+
+
+grillaCUI .RadGrid_Default {
+    border: 0 !important;
+}
+
+grillaCUP .RadGrid_Default {
+    border: 0 !important;
+}
+
+
+.grillaCUTIF .rgRow:first-child {
+    background-color: #6db3ee !important;
+    color: #FFF !important;
+}
+
+.grillaCUTIF rgRow:first-child > td {
+    border-right: 0 !important;
+    text-align: center !important;
+    width: 100px !important;
+}
+
+
+grillaCUTIF .RadGrid_Default {
+    border: 0 !important;
+}
+
+.grillaITLUP .rgRow:first-child {
+    /*background-color: #6db3ee !important;*/
+    background-color: #902121;/*FSS*/
+    color: #FFF !important;
+}
+
+.grillaITLUP rgRow:first-child > td {
+    border-right: 0 !important;
+    text-align: center !important;
+    width: 100px !important;
+}
+
+grillaITLUP .RadGrid_Default {
+    border: 0 !important;
+}
+
+
+.RadGrid_Default .rgHeader:last-child {
+    border-right: 0 !important;
+}
+
+.RadGrid .RadGrid_Default {
+    border: 0 !important;
+}
+
+.rgMasterTable {
+    border: 0 !important;
+}
+
+.separadorGrilla {
+    background-color: white !important;
+}
+
+.grillaVacia {
+    text-align: center !important;
+    background-color: #CCC;
+    line-height: 25px;
+}
+
+.datosEstadistictoImg {
+    color: #5C5C5C;
+    font-size: 14px;
+}
+
+.RadComboBoxDropDown{
+    font-size:12px;
+    font-family:"Segoe UI",Arial,Helvetica,sans-serif;
+}
+
+.RadGrid_Default .rgMultiHeaderRow .tituloTablaCUD {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 700;
+    background: #5C5C5C !important;
+    color: #FFF;
+    text-align: center;
+    line-height: 22px;
+}
+
+.RadGrid_Default .rgMultiHeaderRow .tituloTablaCUDVacio {
+    background: #5C5C5C !important;
+    color: #FFF !important;
+    font-family: Roboto !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    border-right: 1px solid #FFF !important;
+    text-align: center !important;
+}
+
+.RadGrid_Default .rgMultiHeaderRow .tituloTablaCUI {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 700;
+    background: #5C5C5C !important;
+    color: #FFF;
+    text-align: center;
+    line-height: 22px;
+}
+
+.RadGrid_Default .rgMultiHeaderRow .tituloTablaCUP {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 700;
+    background: #5C5C5C !important;
+    color: #FFF;
+    text-align: center;
+    line-height: 22px;
+}
+
+.RadGrid_Default .rgMultiHeaderRow .tituloTablaCEI {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 700;
+    background: #5C5C5C !important;
+    color: #FFF;
+    text-align: center;
+    line-height: 22px;
+}
+
+
+.RadGrid_Default .rgMultiHeaderRow .tituloTablaCUIVacio {
+    background: #5C5C5C !important;
+    color: #FFF !important;
+    font-family: Roboto !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    border-right: 1px solid #FFF !important;
+    text-align: center !important;
+}
+
+.RadGrid_Default .rgMultiHeaderRow .tituloTablaCUPVacio {
+    background: #5C5C5C !important;
+    color: #FFF !important;
+    font-family: Roboto !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    border-right: 1px solid #FFF !important;
+    text-align: center !important;
+}
+
+.RadGrid_Default .rgMultiHeaderRow .tituloTablaCEIVacio {
+    background: #5C5C5C !important;
+    color: #FFF !important;
+    font-family: Roboto !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    border-right: 1px solid #FFF !important;
+    text-align: center !important;
+}
+
+.RadGrid_Default .rgMultiHeaderRow .tituloTablaITLUP {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 700;
+    background: #5C5C5C !important;
+    color: #FFF;
+    text-align: center;
+    line-height: 22px;
+}
+
+.RadGrid_Default .rgMultiHeaderRow .tituloTablaITLUPVacio {
+    background: #5C5C5C !important;
+    color: #FFF !important;
+    font-family: Roboto !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    border-right: 1px solid #FFF !important;
+    text-align: center !important;
+}
+/*Estos estilos son para que la tipografia de los input de fechas sean igual a las label*/
+html body .RadInput_Default .riTextBox, html body .RadInputMgr_Default, html body .RadComboBox_Default {
+    font-family: Roboto !important;
+    font-size: 14px !important;
+    color: #000000 !important;
+    font-weight: 400 !important;
+}
+/*Estos son para la tipografia de las tablas*/
+.RadGrid_Default .rgMasterTable, .RadGrid_Default .rgDetailTable, .RadGrid_Default .rgGroupPanel table, .RadGrid_Default .rgCommandRow table, .RadGrid_Default .rgEditForm table, .RadGrid_Default .rgPager table {
+    font-family: Roboto !important;
+    font-size: 13px !important;
+    color: #000000 !important;
+    font-weight: 400 !important;
+}
+
+.CUDGrafica {
+    width: 750px !important;
+    margin-left: 20px !important;
+}
+
+.CUD_PAR_Grafica {
+    /*width: 550px !important;*/
+    margin-left: 20px !important;
+}
+
+.CUIGrafica {
+    width: 750px !important;
+    margin-left: 20px !important;
+}
+
+.CUPGrafica {
+    width: 750px !important;
+    margin-left: 20px !important;
+}
+
+.CALLGraficaPrecio {
+    min-width: 480px;
+    width: 100% !important;
+}
+
+.CALLGraficaMonto {
+    min-width: 480px;
+    width: 100% !important;
+}
+
+.montoNegativo {
+    color: red;
+}
+
+.grillaCUDvsUST {
+}
+
+    .grillaCUDvsUST table thead .rgHeader, .tablaHistoricoCUD table thead .rgHeader {
+        background-color: #5C5C5C !important;
+    }
+
+.CUDvsUSTGrafica {
+    min-width: 480px !important;
+    width: 100% !important;
+}
+
+.grillaHistCUDvsUST {
+}
+
+
+.grillaIRUBEVSA1 {
+    width: 120px !important;
+}
+
+.grillaIRUBEVSA2 {
+    width: 250px !important;
+}
+
+.grillaIRUBEVSA3 {
+    width: 33px !important;
+}
+
+/*Histórico Índices*/
+
+.grillaHistorico1 {
+    border-width: 0px !important;
+}
+
+th.emptyheader.rgHeader {
+    background-color: white !important;
+    border-color: white !important;
+}
+
+.emptyItem {
+    background-color: white !important;
+    border-color: white !important;
+}
+
+/*CUTIF*/
+.grillaCUTIF1 {
+    border-width: 0px !important;
+    width: 85px !important;
+    float: left;
+}
+
+
+.grillaCCUI {
+    width: 100% !important;
+}
+
+
+.grillaFairValues {
+    width: 100%;
+}
+
+.grillaCUTIF2 { /*grillas que tienen columnas vacías*/
+    border-width: 0px !important;
+    width: 100% !important;
+    float: left;
+}
+
+.grillaHistoricoMensual { /*grillas que tienen columnas vacías*/
+    border-width: 0px !important;
+    width: 100% !important;
+    float: left;
+}
+
+.grillaHistoricoDiario { /*grillas que tienen columnas vacías*/
+    border-width: 0px !important;
+    width: 100% !important;
+    float: left;
+}
+
+/*parte oscura de las tablas*/
+.RadGrid_Default .rgHeader {
+    background-color: #5C5C5C !important;
+}
+
+.tablaCUI .RadGrid_Default .rgMultiHeaderRow:last-of-type .rgHeader, .tablaCUP .RadGrid_Default .rgMultiHeaderRow:last-of-type .rgHeader, .tablaCEI .RadGrid_Default .rgMultiHeaderRow:last-of-type .rgHeader, .tablaCUD .RadGrid_Default .rgMultiHeaderRow:last-of-type .rgHeader, .tablaITLUP .RadGrid_Default .rgMultiHeaderRow:last-of-type .rgHeader, .tablaHistorico .RadGrid_Default .rgMultiHeaderRow:last-of-type .rgHeader { /*este estilo es para los que tienen dos header que tiene dos Header*/
+    background-color: #9C9C9C !important;
+}
+
+.columnaTotal {
+    background-color: #5C5C5C !important;
+    color: white;
+    text-align: center !important;
+    font-weight: bold;
+}
+
+.columnaTotalLeft {
+    background-color: #5C5C5C !important;
+    color: white;
+    text-align: left !important;
+    font-weight: bold;
+}
+
+.columnaTotalLeftClaro {
+    background-color: #9C9C9C !important;
+    color: white;
+    text-align: left !important;
+    font-weight: bold;
+}
+
+.columnaTotalRight {
+    background-color: #5C5C5C !important;
+    color: white;
+    text-align: right !important;
+    font-weight: bold;
+}
+
+.columnaCantidadRight { /*gris más claro*/
+    background-color: #8D8D8D !important;
+    color: white;
+    text-align: right !important;
+    font-weight: bold;
+}
+
+.siopel {
+    background-color: #5C5C5C !important;
+    color: white;
+    font-weight: bold;
+}
+
+.grillaHistoricoMensual th.headerGrisClaro {
+    background-color: #9C9C9C !important;
+}
+
+.grillaHistoricoDiario th.headerGrisClaro {
+    background-color: #9C9C9C !important;
+}
+
+th.mergeCelda1.rgHeader {
+    text-align: left !important;
+}
+
+th.mergeCeldaLeft.rgHeader {
+    border-left: 0px !important;
+}
+
+th.mergeCeldaRight.rgHeader {
+    border-right: 0px !important;
+}
+
+.siopelIframe {
+    width: 100%;
+    height: 400px;
+}
+
+.rgMultiHeaderRow .gridMasClara {
+    background-color: #9C9C9C !important;
+    background-image: none !important;
+}
+
+.feriado {
+    background-color: #F78181;
+}
+
+.limiteDiario {
+    width: 50px !important;
+}
+
+
+.grillaOperativaMensual { /*grillas que tienen columnas vacías*/
+    border-width: 0px !important;
+    width: 100% !important;
+    float: left;
+}
+
+/*ALINEAR GRILLAS center EVOLUCION OPERATIVA TOTAL*/
+
+.grillaEvolucionActual, .grillaEvolucionAnioAnterior {
+    width: 100% !important;
+}
+
+    .grillaEvolucionActual table thead tr th.rgHeader, .grillaEvolucionActual table tbody tr td, .grillaEvolucionAnioAnterior table thead tr th.rgHeader, .grillaEvolucionAnioAnterior table tbody tr td {
+        font-size: 10px !important;
+        width: 75px !important;
+        /*width:6%!important;*/
+    }
+    
+    .grillaEvolucionActual .rgMasterTable tbody .rgRow > td, .grillaEvolucionActual .rgMasterTable tbody .rgAltRow > td, .grillaEvolucionAnioAnterior .rgMasterTable tbody .rgRow > td, .grillaEvolucionAnioAnterior .rgMasterTable tbody .rgAltRow > td, .grillaEvolucionAnioAnterior .rgMasterTable thead tr th, .grillaEvolucionActual .rgMasterTable thead tr th {
+        padding-left: 1px !important;
+        padding-right: 1px !important;
+        /*padding-left:0.5%!important;
+    padding-right:0.5%!important;*/
+    }
+
+    
+
+/*PARA QUE LAS GRAFICAS DE CALL SE VEAN MAS GRANDES EN RESOLUCIONES MAS GRANDES*/
+@media screen and (min-width:1200px) {
+
+    .CALLGraficaPrecio {
+        min-width: 600px;
+        width: 100% !important;
+    }
+
+    .CALLGraficaMonto {
+        min-width: 600px;
+        width: 100% !important;
+    }
+
+    #topInicio .botonComun {
+        height: 38px;
+        padding-top: 7px;
+        /* FSS para que boton HECHOS RELEVANTES QUEDE EN UNA LINEA*/
+        /*padding-right: 43%;
+        width: 63%;*/
+        padding-right: 30%;
+        width: 80%;
+    }
+
+        #topInicio .botonComun img {
+            height: 45px;
+            width: auto;
+        }
+        #ctl00_ContentPlaceHolder1_CUTIFGrafico_ChartCuadroEvolucion{/*tamaño de grafica de cutif inicio*/
+    width:700px!important;
+  
+}
+        #ctl00_ContentPlaceHolder1_CUDGrafico_ChartCuadroEvolucion{/*tamaño de grafica de CUD inicio*/
+    width:700px!important;
+  
+}
+        #ctl00_ContentPlaceHolder1_CurvaITLUPGrafico_ChartCuadroEvolucion{/*tamaño de grafica de ITLUP inicio*/
+    width:680px!important;
+  
+}
+          #ctl00_ContentPlaceHolder1_CUIGrafico_ChartCuadroEvolucion{/*tamaño de grafica de CUI inicio*/
+    width:700px!important;
+  
+}
+          #ctl00_ContentPlaceHolder1_CUPGrafico_ChartCuadroEvolucion { /*tamaño de grafica de CUP inicio*/
+    width: 700px !important;
+}
+          #ctl00_ContentPlaceHolder1_CCUIGrafico_ChartCuadroEvolucion{/*tamaño de grafica de CCUI inicio*/
+    width:710px!important;
+  
+}
+          #ctl00_ContentPlaceHolder1_ITBGL_ChartITBGL{/*tamaño de grafica de ITBGL inicio*/
+    width:530px!important;
+  
+}
+#ctl00_ContentPlaceHolder1_INDUI_ChartINDUI{/*tamaño de grafica de indui inicio*/
+    width:520px!important;
+  
+}
+#ctl00_ContentPlaceHolder1_ITLUP_ChartITLUP{/*tamaño de grafica de ITLUP ARRIBA inicio*/
+    width:520px!important;
+  
+}
+
+.ticker_novedades_inicio .list_carousel ul li a {
+                    font-size: 12px;/*font-size: 9.5px;*/
+                    
+                }
+    .tablaCUD .rgMasterTable .home_curva_header, .tablaITLUP .rgMasterTable .home_curva_header, .tablaCUI .rgMasterTable .home_curva_header, .tablaCUP .rgMasterTable .home_curva_header, .tablaCEI .rgMasterTable .home_curva_header, .tablaCUTIF .RadGrid_Default .home_curva_header {
+        width: 70px !important;
+    }
+.tablaCCUI .rgMasterTable thead tr th:first-child, .tablaCCUI .rgMasterTable tbody tr td:first-child{
+   width:70px!important;
+}
+.grillaEvolucionActual table thead tr th.rgHeader, .grillaEvolucionActual table tbody tr td, .grillaEvolucionAnioAnterior table thead tr th.rgHeader, .grillaEvolucionAnioAnterior table tbody tr td{
+    font-size:13px!important;
+}
+    #tablaInicioCUD .tablaCUD .rgMasterTable thead tr th, #tablaInicioCUD .tablaCUD .rgMasterTable tbody tr td, #tablaInicioITLUP .tablaITLUP .rgMasterTable thead tr th, #tablaInicioITLUP .tablaITLUP .rgMasterTable tbody tr td, #tablaInicioCUI .tablaCUI .rgMasterTable thead tr th, #tablaInicioCUI .tablaCUI .rgMasterTable tbody tr td, #tablaInicioCUP .tablaCUP .rgMasterTable thead tr th, #tablaInicioCEI .tablaCEI .rgMasterTable tbody tr td, #tablaInicioCUTIF .tablaCUTIF .rgMasterTable thead tr th, #tablaInicioCUTIF .tablaCUTIF .rgMasterTable tbody tr td, #tablaInicioCCUI .tablaCCUI .rgMasterTable thead tr th, #tablaInicioCCUI .tablaCCUI .rgMasterTable tbody tr td {
+        font-size: 11px !important;
+    }
+
+}
+/*termiann estilos de mas de 1024*/
+#topInicio .botonComun{
+    margin-top:10px;
+}
+
+.ocultarHeaderColumna {
+    display: none !important;
+}
+
+
+.HISTORICO_CUD_PAR{
+    width:75%!important;
+    margin-left:5px;
+}
+
+/* ESTILOS PRINCIPAL PANEL CENTRAL FSS*/
+#btnIndicesInicio{
+    margin-top: 10px;
+}
+#btnIndicadoresInicio{
+    margin-top: 10px;
+}
+
+#divcontenidoIndicadores{
+    float:left;
+
+}
+
+
+/* ESTILOS DOLAR FUTURO GARANTIZADO*/
+
+.dolarfg_comboinstitucion{
+    width: 250px !important;
+}
+.dolarfg_inputFecha{
+    width:270px;
+    float:left;
+    margin-top:5px;
+}
+.divGrillaSaldos{
+    width: 500px;
+}
+.inputsDolarFuturoGarantizado{
+    margin-top: 30px;
+}
+.divGrillaHistorico{
+    width: 1000px;
+}
+
+.DATO_DFG {
+    width: 100px;
+    height: 75px;
+    border: 1px solid #0D125E;
+    background: linear-gradient(180deg, #FFF 50%, #CCC 100%);
+    margin-right: 10px;
+    float: left;
+    margin-top: 5px;
+}
+
+.DATO_DFG_medio {
+    float: right;
+    background: linear-gradient(180deg, #FFF 50%, #c5d9ff 100%) !important;
+    width: 150px !important;
+}
+
+.DATO_DFG_ancho {
+    width: 280px !important;
+}
+
+.DATO_DFG h2 {
+    text-align: center;
+    border-bottom: 1px solid #0D125E;
+    width: 93%;
+    margin: 0 5px;
+    margin-top: 10px;
+    padding-bottom: 5px;
+    float: none;
+}
+
+.DATO_DFG p {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.DFG_p_floatado1 {
+    float: left;
+    width: 28%;
+}
+
+.DFG_p_floatado2 {
+    float: left;
+    width: 70%;
+    border-left: 1px solid #0D125E;
+    margin-top: 0px;
+    padding-top: 0px;
+}
+
+.DATOS_DFG {
+    width: 100%;
+    float: left;
+}
+
+.DFG_CONTENEDOR_DOLAR {
+    width: 100%;
+}
+
+.DFG_CONTENEDOR_GRILLA{
+    margin-top: 20px;
+}
+
+.DFG_LINK_INSTRUCTIVO {
+    margin-top: 10px;
+    height: 30px !important;
+    padding-left: 10px;
+    padding-top: 10px;
+    text-decoration: none;
+    font-weight: bold;
+    font-family:roboto;
+    color: white;
+}
+
+.DFGDatosCliente_grillaPosicionNeta {
+    margin-top: 15px;
+    width: 600px;
+}
+
+.DFGDatosCliente_div_expNeta{
+     margin-top:10px;
+     margin-left: 350px;
+}
+
+.DFGDatosCliente_txt_expNeta{
+    font-size:large;
+}
+
+.DFGDatosCliente_botonColapsar:hover {
+    background-color: #6c75ff;
+}
+
+.DFGDatosCliente_botonColapsar {
+    background-color: #4b56ff;
+    color: white;
+    cursor: pointer;
+    padding: 5px;
+    margin-left: 10px;
+    margin-top: 5px;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
+.DFGDatosCliente_colapsable {
+    background-color: #cae4ff;
+    margin-left: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    display: none;
+}
+
+.DFG_linksBotones {
+    margin-top: 10px;
+    height: 60px;
+}
+
+.DFG_linksBotones .botonGrande{
+    width: 200px;
+    font-weight:bold;
+    height:30px;
+    padding-top:20px;
+}
+
+
+
+.DFG_Garantias_divSeleccionAgente{
+    width: 900px;
+    margin-bottom: 15px;
+}
+.DFG_Garantias_Filtrar{
+    float: right!important;
+}
+
+.FG_Garantias_bodyTabs{
+    margin-left:20px;
+}
+
+.DFG_Garantias_saldos{
+    height:350px;
+}
+
+.DFG_Garantias_ChartConcentracion{
+    width: 40%;
+    float:left;
+    height:340px!important;
+}
+
+.DFG_Garantias_GrillaSaldo{
+    margin-left: 20px;
+    width: 50%;
+    height:340px!important;
+    float:left;
+}
+
+.DFG_Garantias_Movimientos{
+
+}
+
+.DFG_Garantias_GrillaMovmientos{
+    margin-top:10px;
+    width: 90%;
+}
+
+.DFG_Garantias_ControlFechas{
+    width:700px;
+}
+
+.DFG_GarantiasLinkFiltrar{
+    float: right;
+}
+
+.DFG_Garantias_GrillaGrupos .rgGroupHeader{
+    background-color: #6f6f6f !important;
+    border-radius: 1rem;
+    color: white !important;
+    font-weight:bold;
+    font-size:medium !important;
+}
+
+    .DFG_Garantias_GrillaGrupos .rgGroupHeader .rgGroupCol {
+         background-color: #ababab !important;
+    }
+
+    .DFG_Garantias_GrillaGrupos .rgRow{
+        background-color: #FFF !important;
+        font-size: 15px!important;
+    }
+    
+    .DFG_Garantias_GrillaGrupos .rgAltRow{
+        background-color: #FFF !important;
+        font-size: 15px!important;
+    }
+
+    .DFG_Garantias_GrillaGrupos .rgHoveredRow{
+        background-image: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(236,236,236,1) 20%, rgba(236,236,236,1) 74%, rgba(255,255,255,1) 100%)!important;*/
+        background-color: #e8fbff !important;
+    }
+
+
+.DFG_SolicitudDevolucion_divSeleccionGarantia{
+    margin-top:20px;
+}
+
+.DFG_SolicitudDevolucion_inputCantidad{
+    height: 26px !important;
+}
+
+.DFG_SolicitudDevolucion_divFiltroFecha{
+    width:700px;
+}
+
+.DFG_SolicitudDevolucion_grilla{
+    margin-top: 10px;
+}
+
+.DFG_SeleccBenDep_guardar{
+    color: #1e7b00 !important;
+}
+
+.DFG_SeleccBenDep_grillaDepositos{
+    height: 160px !important;
+}
+
+
+
+/* ESTILOS ABM EMISIONES EMISORES */
+.lbl_abmEmisores_error {
+    color : red;
+}
+
+.grillaAMBEMI{
+    border: none;
+}
+
+.ABMEmi_DocPendientesFiltro{
+    width: 800px;
+}
+
+.ABMEmi_DocPendientesBotonBuscar{
+   float:right!important;
+}
+
+.abmEmi_docPendiente_calendario{
+    width : 800px;
+    margin-top: 50px;
+    margin-left: 10px;
+}
+
+.abmEmi_docPendiente_tabla{
+    vertical-align:top;
+}
+
+
+.abmEmi_fechaAmarilloClaro{
+    background-color: #fffab7;
+}
+.abmEmi_fechaAmarilloOscuro{
+    background-color: #ffd400;
+}
+.abmEmi_fechaRojo{
+    background-color: #F78181;
+}
+.abmEmi_fechaVerde{
+    background-color: #76ef6e;
+}
+
+.ABMEmi_GrillaDocEmision{
+    margin-top: 10px;
+}
+
+.ABMEmi_VencimientosFecha{
+    position: absolute;
+  
+    top: -1000px;
+    z-index: 999;
+    border: 1px solid #DDDDDD;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 2px 2px 10px 0px #AAA;
+    -moz-box-shadow: 2px 2px 10px 0px #AAA;
+    -webkit-box-shadow: 2px 2px 10px 0px #AAA;
+    width: 800px;
+    margin-left: 280px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 1%;
+    padding-right: 1%;
+    background-color: #FFF;
+}
+
+.btnCerrarVencimientosFecha{
+    float:right;
+}
+
+
+/* ESTILOS DIFUSION LICITACIONES*/
+
+.botonesDifusionLicitaciones{
+    margin-top:80px;
+    display: grid;
+}
+
+.botonDifusionLicitaciones {
+    background-color: #007735;
+    color: #FFF;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    padding-left: 5px;
+    line-height: 25px;
+    width: 550px;
+    margin: 10px 5px 5px 0px;
+    text-decoration: none;
+
+    float:left; 
+}
+
+.botonDifusionLicitaciones i { /* FSS copia botonComun */
+    text-align: center;
+    background-color: #1e5d1a;
+    color: #FFF;
+    width: 20px;
+    float: right;
+    line-height: 25px;
+}
+
+.botonDifusionLicitaciones:hover { /* FSS copia botonComun */
+    background-color: #9C9C9C;
+    color: #5C5C5C;
+}
+
+/* ESTILOS DOCUMENTACION DIRECTORIO */
+
+.DocDirectorio_contenedor {
+    margin: 0 auto;
+    margin-top:100px;
+    width: 80%;
+}
+
+.DocDirectorio_linkCargar .botonGrande{
+    background-color: #257bd8;
+    width: 135px;
+    font-weight:bold;
+    height:30px;
+    padding-top:20px;
+}
+
+.GrillaDocumentos{
+    border:none!important;
+}
+
+.GrillaDocumentos .rgGroupCol{
+    background-color: #FFF !important;
+}
+
+.GrillaDocumentos .rgGroupHeader{
+    background-color: #3596ff !important;
+    border-radius: 1rem;
+    height:50px;
+    color: white !important;
+    font-weight:bold;
+    font-size:medium !important;
+}
+
+    .GrillaDocumentos .rgGroupHeader .rgGroupCol {
+         background-color: #257bd8 !important;
+    }
+
+    .GrillaDocumentos .rgRow{
+        background-color: #FFF !important;
+        height: 40px;
+        font-size: 15px!important;
+    }
+
+    .GrillaDocumentos .rgAltRow{
+        background-color: #e8fbff !important;
+        height: 40px;
+        font-size: 15px!important;
+    }
+
+    .GrillaDocumentos .rgHoveredRow{
+        background-image: linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(182,237,255,1) 20%, rgba(182,237,255,1) 74%, rgba(255,255,255,1) 100%)!important;*/
+        background-color: #e8fbff !important;
+    }
+
+    .GrillaDocumentos .rgExpandIcon{
+        color: #fff;
+    }
+
+    .GrillaDocumentos .rgCollapseIcon{
+        color: #fff;
+    }
+
+    .eliminarDocDirectorio{
+        color:#940000 !important;
+    }
+
+    .editarDocDirectorio{
+        color:#308e00 !important;
+    }
+
+ .CargaDocDirectorio_contenedor{
+     margin-top:80px;
+ }   
+
+ .DocDirectorio_popUp{
+    position: absolute;
+  
+    top: -1000px;
+
+    z-index: 999;
+    border: 1px solid #DDDDDD;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 2px 2px 10px 0px #AAA;
+    -moz-box-shadow: 2px 2px 10px 0px #AAA;
+    -webkit-box-shadow: 2px 2px 10px 0px #AAA;
+    width: 500px;
+    margin-left: 500px;
+    margin-right: auto;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 1%;
+    padding-right: 1%;
+    background-color: #FFF;
+}
+
+.btnCerrarPopUp{
+    float:right;
+}
+
+/* FIN ESTILOS DOCUMENTACION DIRECTORIO */
+
+/* ESTILOS VISOR DE INSTRUMENTOS */
+#visorInstrumentos_panelBusqueda{
+    margin-top:25px;
+}
+#visorInstrumentos_texto{
+    margin-top:6px;
+    width:450px;
+    float:left;
+}
+#visorInstrumentos_texto p{
+    font-size:16px;
+}
+
+.visorInstrumentos_resultados_descripcion{
+    margin-top:15px;
+    margin-bottom:10px;
+    font-size:26px;
+    font-family:Roboto;
+    font-weight:400;
+    color:#424242;
+}
+.visorInstrumentos_resultados_codigos{
+    font-size:25px;
+    font-family:Roboto;
+    margin-bottom:20px;
+}
+.visorInstrumentos_resultados_codigo{
+    margin-right:50px;
+}
+.visorInstrumentos_resultados_divDatosTitulo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Espaciado entre elementos */
+    align-items: center;
+
+
+    margin-bottom: 5px;
+    font-size: 19px;
+    font-family: Roboto;
+    color: #676666
+}
+
+
+.visorInstrumentos_label {
+    min-width: 75px; /* Ajusta el ancho mínimo según el contenido deseado */
+    margin-right: 5px; /* Espacio entre el label y el valor */
+
+
+    margin-left: 2%;
+    font-size: 18px;
+    font-family: Arial;
+    color: #000000
+}
+
+.visorInstrumentos_literal {
+    display: inline-block;
+    min-width: 100px; /* Fija un ancho mínimo para mantener la separación */
+    text-align: left;
+}
+
+.visorInstrumentos_subtitulo{
+    margin-left:5px;
+    font-size:20px;
+    font-family:Roboto;
+    color:#241d92;
+}
+.visorInstrumentos_grilla{
+    margin-left:2%;
+}
+.visorInstrumentos_bloque{
+    float:left;
+    width: 98%;
+    background:linear-gradient(180deg, #FFF 50%, #efefef 100%);
+    margin-bottom:15px;
+    margin-right:15px;
+}
+/* FIN ESTILOS VISOR DE INSTRUMENTOS */
+
+/* ESTILOS POTENCIALIDAD OPERATIVA */
+.inputsPotencialidadOperativa {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+}
+
+.error-message {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.radio-buttons-container {
+    display:flex;
+    gap: 1rem;
+}
+
+.radio-item, .contraparte-combobox, .filter-button, .plazo-textbox, .searchbox-container, .visorInstrumentos_panelBusquedaPotencialidadOperativa {
+    display: flex;
+    align-items: center;
+}
+
+.visorInstrumentos_resultados_descripcionPotencialidadOperativa {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 400;
+    color: #424242;
+}
+
+.visorInstrumentos_subtituloPotencialidadOperativa {
+    margin-left: 5px;
+    font-size: 16px;
+    font-family: Roboto;
+    color: #241d92;
+}
+
+/* FIN ESTILOS POTENCIALIDAD OPERATIVA */
+
+/* ESTILOS POLITICA DE LA ORGANIZACION */
+.politicaOrg_body{
+    margin-top: 30px;
+    font-family: Roboto;
+}
+.politicaOrg_lista{
+    margin-left: 50px;
+    margin-top: 10px;
+
+}
+.politicaOrg_textoAprobacion{
+    float:right;
+}
+/* FIN ESTILOS POLITICA DE LA ORGANIZACION */
+
+
+/* ESTILOS VALUACION INDEPENDIENTE */
+.ValIndep_divParrafo{
+    margin-top:40px;
+    margin-bottom:40px;
+}
+
+.ValIndep_divSeleccionEmisor{
+    margin-top:10px;
+}
+
+.ValIndep_divSeleccionEmision{
+    margin-top:10px;
+}
+.ValIndep_divSeleccionTipo{
+    margin-top:10px;
+}
+
+.ValIndep_Precios_divAviso{
+    margin-bottom:5px;
+}
+
+.ValIndep_Precios_disclaimer{
+    margin-top:20px;
+    margin-bottom:10px;
+}
+
+.ValIndep_Precios_botonesTabla{
+    float:right;
+}
+
+.ValIndep_Historico_inputs{
+    float:left;
+}
+
+.ValIndep_Historico_inputs .label {
+    float: left;
+    margin-top: 9px !important;
+    margin-left: 4px !important;
+    width: 40px;
+}
+
+.ValIndep_Historico_botonesExportar{
+    float:right;
+}
+
+.ValIndep_Historico_Grilla{
+    width:40%;
+    float:left;
+    margin-right: 1%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.ValIndep_Historico_Grafica{
+    width:55%;
+    float:left;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+
+.lbl_abmEmisores_error {
+    color : red;
+}
+
+.ValIndep_Calendario_Filtros{
+    width: 440px;
+}
+
+.ValIndep_Calendario_BotonBuscar{
+   float:right!important;
+}
+
+.ValIndep_Calendario_tabla{
+    vertical-align:top;
+}
+
+.ValIndep_Calendario_Grilla{
+    height:435px !important;
+}
+
+.ValIndep_Calendario_Calendarios{
+    width : 800px;
+    margin-left: 10px;
+    float:left;
+}
+
+.ValIndep_Calendario_Calendarios .RadCalendar {
+    float:left;
+}
+
+.ValIndep_Calendario_fechaAmarilloClaro{
+    background-color: #fffab7;
+}
+.ValIndep_Calendario_fechaAmarilloOscuro{
+    background-color: #ffd400;
+}
+.ValIndep_Calendario_fechaRojo{
+    background-color: #F78181;
+}
+.ValIndep_Calendario_fechaVerde{
+    background-color: #76ef6e;
+}
+
+.ValIndep_Calendario_PendientesFecha{
+    position: absolute;
+  
+    top: -1000px;
+    z-index: 999;
+    border: 1px solid #DDDDDD;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 2px 2px 10px 0px #AAA;
+    -moz-box-shadow: 2px 2px 10px 0px #AAA;
+    -webkit-box-shadow: 2px 2px 10px 0px #AAA;
+    width: 800px;
+    margin-left: 280px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 1%;
+    padding-right: 1%;
+    background-color: #FFF;
+}
+
+.btnCerrarVencimientosFecha{
+    float:right;
+}
+
+/* FIN ESTILOS VALUACION INDEPENDIENTE */
+
+/* ESTILOS OPERATIVA OTC *//*DFP*/
+.lbl_operativaOtc_error {
+    color: darkred;
+    background-color: #ffcccc;
+}
+.lbl_operativaOtc_ok {
+    color: darkgreen;
+    background-color: lightgreen;
+}
+
+.lbl_operativaOtc_advertencia {
+    color: #4d4d00;
+    background-color: #ffffb3;
+}
+/* ESTILOS LANDING OPERACION OTC*//*DFP*/
+
+.OTC_linksBotones {
+    width:600px;
+    margin-top: 10px;
+    height: 60px;
+}
+
+.OTC_linksBotones .botonGrande {
+    width: 200px;
+    font-weight: bold;
+    height: 30px;
+    padding-top: 20px;
+    top: 1px;
+}
+
+.botonMega {
+    background-color: #5C5C5C;
+    font-family: Roboto;
+    font-size: 12px;
+    color: #FFF;
+    width: 600px;
+    height: 30px;
+    text-decoration: none;
+    display: block;
+    float: left;
+    position: relative;
+    padding-right: 47px;
+    padding-top: 10px;
+    text-align: center;
+    top: 10px;
+}
+
+.OTC_linksBotonesSegundoNivel {
+    width: 450px;
+    margin-top: 5px;
+    margin-left: 145px;
+    height: 60px;
+}
+
+.botonLargo {
+    background-color: #5C5C5C;
+    font-family: Roboto;
+    font-size: 12px;
+    color: #FFF;
+    width: 460px;
+    height: 30px;
+    text-decoration: none;
+    display: block;
+    float: right;
+    position: relative;
+    padding-right: 47px;
+    padding-top: 10px;
+    text-align: center;
+    
+}
+
+.botonLargo i {
+    text-align: center;
+    background-color: #FFF;
+    color: #0D125E;
+    width: 30px;
+    position: absolute;
+    top: 0;
+    right: 3px;
+    line-height: 50px;
+    margin-right: 5px;
+    font-size: 20px;
+    box-shadow: 0px 0px 5px 1px #AAA;
+    -moz-box-shadow: 0px 0px 5px 1px #AAA;
+    -webkit-box-shadow: 0px 0px 5px 1px #AAA;
+}
+
+.botonLargo:hover {
+    background-color: #9C9C9C;
+}
+
+.OTC_linksBotonesSegundoNivel .botonLargo {
+    width: 460px;
+    font-weight: bold;
+    height: 30px;
+    padding-top: 20px;
+}
+
+.OTC_linksOtros {
+    margin-left:80px;
+}
+
+.OTC_linksOtros_tabla {
+    height:120px;
+}
+
+.OTC_linksOtros_tabla tr .a {
+    font-family: Roboto;
+    vertical-align: bottom;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.linkdato {
+    background-color: white;
+    color: #006699;
+    border: 2px solid #006699;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.linkdato:active {
+        background-color: #006699;
+        color: white;
+    }
+
+.linkdato:hover {
+        background-color: #006699;
+        color: white;
+    }
+
+.tabla_Instituciones {
+    width: 60%;
+    margin: 0 auto;
+}
+
+
+
+/* FIN ESTILOS LANDING OPERACION OTC*/
+
+/* FIN ESTILOS OPERATIVA OTC */
+
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+
+/* MEMORIA Y BALANCE */
+.MemoriaBalance_linksBotones {
+    width: 800px;
+    margin-top: 50px;
+    height: 60px;
+}
+
+.MemoriaBalance_linksBotones .botonGrande {
+    width: 300px;
+    font-weight: bold;
+    height: 30px;
+    padding-top: 20px;
+    top: 1px;
+}
+
+/* ESG */
+.ESG_listado{
+    margin-left: 20px;
+}
+
+
+/* DISCLAIMER */
+.linkDisclaimer {
+    
+    color:white;
+}
+
+
+/* DATOS SUCRIPTORES */
+.datosSuscriptores { /*FSS*/
+    background-color: #f9d13d;
+    color: #000;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    padding-left: 5px;
+    line-height: 25px;
+    width: 505px;
+    margin: 5px 5px 5px 0px;
+    text-decoration: none;
+    float: left;
+    -webkit-box-shadow: 0px 0px 4px 0px #c9bb57;
+}
+
+    .datosSuscriptores i { /* FSS copia botonComun */
+        text-align: center;
+        background-color: #FFD700;
+        color: #000;
+        width: 20px;
+        float: right;
+        line-height: 25px;
+    }
+
+    .datosSuscriptores:hover { /* FSS copia botonComun */
+        background-color: #ffeb59;
+        color: #000;
+    }
+
+/* AVISO DELAYS */
+.avisoDelaysCurvas { /*FSS*/
+    background-color: #7dc9ff;
+    color: #000;
+    font-family: Roboto;
+    font-weight: 400;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    display: block;
+    padding-left: 5px;
+    line-height: 25px;
+    width: 800px;
+    margin: 5px 5px 5px 0px;
+    text-decoration: none;
+    float: left;
+    -webkit-box-shadow: 0px 0px 4px 0px #9fd7ff;
+}
+
+    .avisoDelaysCurvas i { /* FSS copia botonComun */
+        text-align: center;
+        background-color: #68bffd;
+        color: #000;
+        width: 20px;
+        float: right;
+        line-height: 25px;
+    }
+
+    .avisoDelaysCurvas:hover { /* FSS copia botonComun */
+        background-color: #9ed7ff;
+        color: #000;
+    }

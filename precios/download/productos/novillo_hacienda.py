@@ -50,6 +50,31 @@ def configurar_driver_descargas(download_dir: str):
     return driver
 
 
+def limpiar_archivos_anteriores(data_raw_path: str):
+    """
+    Elimina TODOS los archivos relacionados antes de descargar:
+    - El archivo destino si existe
+    - Cualquier archivo que empiece con "webinac---serie-mensual-precios-de-hacienda" (con o sin (1), (2), etc.)
+    """
+    destino = os.path.join(data_raw_path, DEST_FILENAME)
+    
+    # Eliminar el archivo destino si ya existe
+    if os.path.exists(destino):
+        os.remove(destino)
+        print(f"[INFO] Archivo anterior '{DEST_FILENAME}' eliminado")
+    
+    # Eliminar archivos que empiecen con "webinac---serie-mensual-precios-de-hacienda" (con o sin (1), (2), etc.)
+    for archivo in os.listdir(data_raw_path):
+        archivo_lower = archivo.lower()
+        if archivo_lower.startswith("webinac---serie-mensual-precios-de-hacienda") and archivo_lower.endswith((".xls", ".xlsx")):
+            archivo_path = os.path.join(data_raw_path, archivo)
+            try:
+                os.remove(archivo_path)
+                print(f"[INFO] Archivo anterior '{archivo}' eliminado")
+            except Exception as e:
+                print(f"[WARN] No se pudo eliminar '{archivo}': {e}")
+
+
 def descargar_excel_inac():
     """
     Abre la página de precios de hacienda de INAC con Selenium,
@@ -60,6 +85,9 @@ def descargar_excel_inac():
     """
     data_raw_path = asegurar_data_raw()
     print(f"[INFO] Carpeta de descargas configurada en: {data_raw_path}")
+
+    # Limpiar archivos anteriores antes de descargar
+    limpiar_archivos_anteriores(data_raw_path)
 
     driver = configurar_driver_descargas(download_dir=data_raw_path)
 

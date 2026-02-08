@@ -2,7 +2,7 @@
 Script Ejecutor de Todas las Actualizaciones
 ============================================
 Ejecuta automáticamente todos los scripts de actualización de datos
-en precios/update/productos/ y macro/update/
+en update/direct/ y update/calculate/
 """
 
 import subprocess
@@ -27,17 +27,17 @@ def descubrir_scripts() -> Dict[str, List[Path]]:
         'macro': []
     }
     
-    # Scripts de precios
-    precios_dir = Path("precios/update/productos")
-    if precios_dir.exists():
-        for script_file in precios_dir.glob("*.py"):
+    # Scripts de update/direct/
+    direct_dir = Path("update/direct")
+    if direct_dir.exists():
+        for script_file in sorted(direct_dir.glob("*.py")):
             if script_file.name != "__init__.py" and not script_file.name.startswith("_"):
                 scripts['precios'].append(script_file)
     
-    # Scripts de macro
-    macro_dir = Path("macro/update")
-    if macro_dir.exists():
-        for script_file in macro_dir.glob("*.py"):
+    # Scripts de update/calculate/
+    calculate_dir = Path("update/calculate")
+    if calculate_dir.exists():
+        for script_file in sorted(calculate_dir.glob("*.py")):
             if script_file.name != "__init__.py" and not script_file.name.startswith("_"):
                 scripts['macro'].append(script_file)
     
@@ -306,12 +306,12 @@ def main():
     parser.add_argument(
         '--solo-precios',
         action='store_true',
-        help='Ejecutar solo scripts de precios/update/productos'
+        help='Ejecutar solo scripts de update/direct/'
     )
     parser.add_argument(
         '--solo-macro',
         action='store_true',
-        help='Ejecutar solo scripts de macro/update'
+        help='Ejecutar solo scripts de update/calculate/'
     )
     parser.add_argument(
         '--scripts',

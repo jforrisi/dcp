@@ -15,12 +15,30 @@ El script `update_database.py` ejecuta automáticamente todos los scripts de act
 - ✅ **Robusto**: Si un script falla, continúa con los demás
 - ✅ **Timeout**: Máximo 1 hora por script
 
+## Scripts Separados
+
+El sistema ahora tiene dos scripts:
+
+1. **`update_database.py`**: Ejecuta scripts normales (rápidos)
+   - Excluye scripts complicados como `servicios_no_tradicionales.py`
+   - Timeout: 1 hora por script
+
+2. **`update_database_complicados.py`**: Ejecuta solo scripts complicados
+   - Solo `servicios_no_tradicionales.py` y otros similares
+   - Timeout: 2 horas por script (más tiempo)
+
 ## Prueba Local
 
-### 1. Verificar que detecta los scripts correctamente
+### 1. Ejecutar scripts normales
 
 ```bash
 python update_database.py
+```
+
+### 2. Ejecutar scripts complicados (después de los normales)
+
+```bash
+python update_database_complicados.py
 ```
 
 El script mostrará:

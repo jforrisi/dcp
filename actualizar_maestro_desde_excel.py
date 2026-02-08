@@ -16,10 +16,10 @@ if not Path(EXCEL_FILE).exists():
     exit(1)
 
 # Leer Excel
-print(f"\n[INFO] Leyendo {EXCEL_FILE}...")
-df = pd.read_excel(EXCEL_FILE, sheet_name='maestro')
+print(f"\n[INFO] Leyendo {EXCEL_FILE} (hoja Sheet1)...")
+df = pd.read_excel(EXCEL_FILE, sheet_name='Sheet1')
 
-print(f"✓ Leídos {len(df)} registros")
+print(f"[OK] Leidos {len(df)} registros")
 print(f"Columnas: {list(df.columns)}")
 
 # Conectar a la base de datos
@@ -58,20 +58,43 @@ def normalize_bool(value):
         return 0
     return 0
 
-# Preparar datos para actualización
-print("\n[INFO] Preparando datos...")
-updated_count = 0
+# Verificar columnas del Excel
+print(f"\n[INFO] Columnas en el Excel: {list(df.columns)}")
+
+# Mapeo de columnas del Excel a columnas de la BD
+column_mapping = {
+    'pais/region': 'pais',
+    'pais-region': 'pais',
+    'grupo': None  # No se guarda grupo, se mapea a categoria
+}
+
+# REEMPLAZAR COMPLETAMENTE LA TABLA
+print("\n[INFO] Eliminando todos los registros existentes...")
+cursor.execute("DELETE FROM maestro")
+deleted_count = cursor.rowcount
+print(f"[OK] Eliminados {deleted_count} registros existentes")
+
+# Preparar datos para inserción
+print("\n[INFO] Insertando datos desde Excel...")
 inserted_count = 0
+skipped_count = 0
 
 for idx, row in df.iterrows():
     # Obtener valores, manejando NaN
     id_val = int(row['id']) if pd.notna(row['id']) else None
     if id_val is None:
-        print(f"⚠ Fila {idx+1}: ID nulo, saltando...")
+        print(f"[WARN] Fila {idx+1}: ID nulo, saltando...")
+        skipped_count += 1
         continue
     
     nombre = str(row['nombre']) if pd.notna(row['nombre']) else ''
-    tipo = str(row['tipo']) if pd.notna(row['tipo']) else 'P'
+    # Si no hay columna 'tipo', intentar inferirla desde 'categoria'
+    if 'tipo' in df.columns:
+        tipo = str(row['tipo']) if pd.notna(row['tipo']) else 'P'
+    else:
+        # Si categoria es P, S o I, usar eso como tipo
+        cat_val = str(row['categoria']) if pd.notna(row.get('categoria')) else None
+        tipo = cat_val if cat_val in ('P', 'S', 'M') else 'P'
     fuente = str(row['fuente']) if pd.notna(row['fuente']) else ''
     periodicidad = str(row['periodicidad']) if pd.notna(row['periodicidad']) else 'M'
     unidad = str(row['unidad']) if pd.notna(row['unidad']) else None
@@ -81,41 +104,57 @@ for idx, row in df.iterrows():
     nominal_real = str(row['nominal_real']) if pd.notna(row.get('nominal_real')) else None
     es_cotizacion = normalize_bool(row.get('es_cotizacion', 0))
     
-    # Verificar si existe
-    cursor.execute("SELECT id FROM maestro WHERE id = ?", (id_val,))
-    exists = cursor.fetchone()
+    # Obtener pais si existe
+    pais = None
+    if 'pais' in df.columns:
+        pais = str(row['pais']).strip() if pd.notna(row.get('pais')) else None
+    elif 'pais/region' in df.columns:
+        pais = str(row['pais/region']).strip() if pd.notna(row.get('pais/region')) else None
+    elif 'pais-region' in df.columns:
+        pais = str(row['pais-region']).strip() if pd.notna(row.get('pais-region')) else None
     
-    if exists:
-        # Actualizar
-        update_query = """
-            UPDATE maestro 
-            SET nombre = ?, tipo = ?, fuente = ?, periodicidad = ?, 
-                unidad = ?, categoria = ?, activo = ?, 
-                moneda = ?, nominal_real = ?, es_cotizacion = ?
-            WHERE id = ?
-        """
-        cursor.execute(update_query, (
-            nombre, tipo, fuente, periodicidad, unidad, categoria, 
-            activo, moneda, nominal_real, es_cotizacion, id_val
-        ))
-        updated_count += 1
-    else:
-        # Insertar
-        insert_query = """
-            INSERT INTO maestro 
-            (id, nombre, tipo, fuente, periodicidad, unidad, categoria, activo, moneda, nominal_real, es_cotizacion)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """
-        cursor.execute(insert_query, (
-            id_val, nombre, tipo, fuente, periodicidad, unidad, categoria,
-            activo, moneda, nominal_real, es_cotizacion
-        ))
+    # Construir query dinámica con todas las columnas disponibles
+    columns = ['id', 'nombre', 'tipo', 'fuente', 'periodicidad', 'unidad', 'categoria', 'activo']
+    values = [id_val, nombre, tipo, fuente, periodicidad, unidad, categoria, activo]
+    placeholders = ['?'] * len(columns)
+    
+    if 'moneda' in existing_columns:
+        columns.append('moneda')
+        values.append(moneda)
+        placeholders.append('?')
+    
+    if 'nominal_real' in existing_columns:
+        columns.append('nominal_real')
+        values.append(nominal_real)
+        placeholders.append('?')
+    
+    if 'es_cotizacion' in existing_columns:
+        columns.append('es_cotizacion')
+        values.append(es_cotizacion)
+        placeholders.append('?')
+    
+    if 'pais' in existing_columns and pais is not None:
+        columns.append('pais')
+        values.append(pais)
+        placeholders.append('?')
+    
+    # Insertar
+    insert_query = f"""
+        INSERT INTO maestro ({', '.join(columns)})
+        VALUES ({', '.join(placeholders)})
+    """
+    try:
+        cursor.execute(insert_query, tuple(values))
         inserted_count += 1
+    except Exception as e:
+        print(f"[WARN] Error insertando fila {idx+1} (ID {id_val}): {e}")
+        skipped_count += 1
 
 conn.commit()
 
-print(f"\n✓ Actualizados: {updated_count} registros")
-print(f"✓ Insertados: {inserted_count} registros")
+print(f"\n[OK] Insertados: {inserted_count} registros")
+if skipped_count > 0:
+    print(f"[WARN] Omitidos: {skipped_count} registros")
 
 # Verificar cotizaciones
 print("\n" + "=" * 80)
@@ -160,5 +199,5 @@ conn.close()
 print("\n" + "=" * 80)
 print("ACTUALIZACIÓN COMPLETA")
 print("=" * 80)
-print("\n✓ Reinicia el servidor para aplicar los cambios:")
+print("\n[OK] Reinicia el servidor para aplicar los cambios:")
 print("  python backend/run.py")

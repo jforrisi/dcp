@@ -87,7 +87,12 @@ Columnas:
 - unidad (VARCHAR, opcional)
   - Unidad asociada al valor (ej.: UYU, USD, índice base 2010=100, litros, etc.).
 - categoria (VARCHAR, opcional)
-  - Clasificación general (ej.: Alimentos, Servicios públicos, Macro – tipo de cambio).
+  - Clasificación funcional y temática de la serie.
+  - Puede contener valores funcionales (P, S, M) para filtrado, o categorías temáticas (ej.: "Precios Internacionales", "Macro - Tipo de cambio", "Macro - IPC").
+  - Se usa para filtrar productos/servicios/macros en lugar de la columna `tipo`.
+- pais (VARCHAR(100), opcional)
+  - País o región de la serie (ej.: "Uruguay", "Chile", "México", "Brasil").
+  - Permite filtrar y agrupar series por país.
 - activo (BOOLEAN, opcional, por defecto TRUE)
   - Marca si la serie se sigue usando.
 
@@ -390,13 +395,15 @@ IDENTIFICACIÓN DE COTIZACIONES:
 --------------------------------
 
 Las cotizaciones LATAM se identifican en la tabla `maestro` mediante:
-- `tipo = 'M'` (variable macro)
-- `categoria LIKE '%Tipo de cambio%'` o mediante IDs específicos que identifiquen cotizaciones internacionales
+- `nombre LIKE '%USD/LC%'` (el nombre contiene "USD/LC")
 - `periodicidad = 'D'` (diario)
+- `activo = 1` (activo)
+
+**Nota:** La columna `es_cotizacion` está deprecated. Se usa el filtro por nombre en su lugar.
 
 Ejemplos de series incluidas:
-- ID 23: Tipo de cambio USD/BRL (Brasil)
-- ID 24: (otras cotizaciones LATAM según se agreguen)
+- ID 6: USD/LC (Uruguay)
+- ID 22-32: USD/LC (varios países LATAM)
 
 ENDPOINTS DEL MÓDULO:
 ---------------------
@@ -410,5 +417,39 @@ COMPORTAMIENTO POR DEFECTO:
 - Al cargar la página, automáticamente se muestran todos los tipos de cambio disponibles para los últimos 30 días.
 - El usuario puede ajustar el rango de fechas y seleccionar países específicos.
 - Los datos se muestran en su valor original (sin normalización a base 100).
+
+FILTROS ESPECÍFICOS POR MÓDULO
+================================
+
+MÓDULO DCP (Índices de Precios Relativos):
+-------------------------------------------
+
+- **Variables macro fijas (solo Uruguay):**
+  - IPC Uruguay: ID 11
+  - Tipo de cambio USD/UYU: ID 6
+  - Tipo de cambio EUR/UYU: ID 7 (para celulosa)
+
+- **Filtro de productos/servicios:**
+  - Usar `categoria IN ('P', 'S', 'M')` en lugar de `tipo`
+  - El módulo calcula índices relativos usando las variables macro de Uruguay únicamente
+
+MÓDULO PRECIOS CORRIENTES:
+---------------------------
+
+- **Filtro de productos:**
+  - `categoria = "Precios Internacionales"` (solo productos con esta categoría)
+  - `activo = 1`
+
+- **Nota:** Este módulo muestra solo productos clasificados como "Precios Internacionales", no todos los productos del sistema.
+
+MÓDULO COTIZACIONES:
+--------------------
+
+- **Filtro de cotizaciones:**
+  - `nombre LIKE '%USD/LC%'` (el nombre contiene "USD/LC")
+  - `periodicidad = 'D'` (diario)
+  - `activo = 1`
+
+- **Nota:** No usar `es_cotizacion` para filtrar. El criterio es el nombre que contiene "USD/LC".
 
 

@@ -52,8 +52,10 @@ def configurar_driver_descargas(download_dir: str):
 
 def limpiar_archivos_anteriores(data_raw_path: str):
     """
-    Elimina archivos anteriores relacionados (evolucion-semanal-de-exportacion.xlsx,
-    evolucion-semanal-de-exportacion (1).xlsx, etc.) y el archivo destino si existe.
+    Elimina TODOS los archivos relacionados antes de descargar:
+    - El archivo destino si existe
+    - Cualquier archivo que empiece con "evolucion-semanal" (con o sin (1), (2), etc.)
+    - Cualquier archivo que empiece con "webinac---serie-mensual-precios-de-hacienda" (con o sin (1), (2), etc.)
     """
     destino = os.path.join(data_raw_path, DEST_FILENAME)
     
@@ -64,7 +66,9 @@ def limpiar_archivos_anteriores(data_raw_path: str):
     
     # Eliminar archivos que empiecen con "evolucion-semanal" (con o sin (1), (2), etc.)
     for archivo in os.listdir(data_raw_path):
-        if archivo.lower().startswith("evolucion-semanal") and archivo.lower().endswith((".xls", ".xlsx")):
+        archivo_lower = archivo.lower()
+        if (archivo_lower.startswith("evolucion-semanal") or 
+            archivo_lower.startswith("webinac---serie-mensual-precios-de-hacienda")) and archivo_lower.endswith((".xls", ".xlsx")):
             archivo_path = os.path.join(data_raw_path, archivo)
             try:
                 os.remove(archivo_path)

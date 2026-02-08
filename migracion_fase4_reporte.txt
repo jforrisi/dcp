@@ -1,0 +1,31 @@
+REPORTE DE MIGRACIÓN - FASE 4
+================================================================================
+
+Registros migrados exitosamente: 15
+Registros sin match en variable: 0
+Registros sin match en país: 20
+Registros sin match en ambos: 0
+
+
+REGISTROS SIN MATCH EN PAÍS:
+--------------------------------------------------------------------------------
+ID 1: 'Precio hacienda' (país: Precios transables)
+ID 2: 'Leche en polvo' (país: Precios transables)
+ID 3: 'Queso' (país: Precios transables)
+ID 4: 'Precio leche productor' (país: Precios transables)
+ID 5: 'Precio carne export' (país: Precios transables)
+ID 8: 'Soja' (país: Precios transables)
+ID 9: 'Arroz' (país: Precios transables)
+ID 10: 'Trigo' (país: Precios transables)
+ID 12: 'Celulosa -indice-' (país: Precios transables)
+ID 13: 'Software' (país: Precios transables)
+ID 14: 'Ingeniería' (país: Precios transables)
+ID 15: 'Arquitectura' (país: Precios transables)
+ID 16: 'Contabilidad (CPA)' (país: Precios transables)
+ID 17: 'Bookkeeping / payroll' (país: Precios transables)
+ID 18: 'Servicios no tradicionales - sin software' (país: Precios transables)
+ID 30: 'USD/LC' (país: Zudáfrica)
+ID 33: 'IPC - Chile' (país: None)
+ID 34: 'IPC - Brasil (IPCA)' (país: None)
+ID 35: 'IPC - México (INPC)' (país: None)
+ID 36: 'IPC - Perú' (país: None)

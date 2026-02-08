@@ -1,0 +1,326 @@
+"""API routes for Yield Curve (Curva de Rendimiento)."""
+from datetime import date, datetime, timedelta
+from typing import List, Dict, Optional
+from flask import Blueprint, request, jsonify
+from ...database import execute_query, execute_query_single
+
+bp = Blueprint('yield_curve', __name__)
+
+# Configuración de variables de la curva de rendimiento
+# ID en variables -> id_variable -> nombre
+YIELD_CURVE_VARIABLES = {
+    57: {"id_variable": 37, "nombre": "1 mes"},
+    58: {"id_variable": 38, "nombre": "2 meses"},
+    59: {"id_variable": 39, "nombre": "3 meses"},
+    60: {"id_variable": 40, "nombre": "6 meses"},
+    61: {"id_variable": 41, "nombre": "9 meses"},
+    62: {"id_variable": 42, "nombre": "1 año"},
+    63: {"id_variable": 43, "nombre": "2 años"},
+    64: {"id_variable": 44, "nombre": "3 años"},
+    65: {"id_variable": 45, "nombre": "4 años"},
+    66: {"id_variable": 46, "nombre": "5 años"},
+    67: {"id_variable": 47, "nombre": "6 años"},
+    68: {"id_variable": 48, "nombre": "7 años"},
+    69: {"id_variable": 49, "nombre": "8 años"},
+    70: {"id_variable": 50, "nombre": "9 años"},
+    71: {"id_variable": 51, "nombre": "10 años"},
+}
+
+ID_PAIS = 858  # Uruguay
+
+
+def parse_fecha(fecha_val):
+    """Convierte fecha de SQLite (puede ser date o datetime string) a date."""
+    if isinstance(fecha_val, date):
+        return fecha_val
+    fecha_str = str(fecha_val)
+    # Si tiene hora (contiene espacio), tomar solo la parte de fecha
+    if ' ' in fecha_str:
+        fecha_str = fecha_str.split(' ')[0]
+    return date.fromisoformat(fecha_str)
+
+
+def obtener_ultima_fecha_disponible() -> Optional[date]:
+    """
+    Obtiene la última fecha disponible para cualquier variable de la curva.
+    
+    Returns:
+        date o None si no hay datos
+    """
+    # Obtener todas las id_variable de la curva
+    id_variables = [var["id_variable"] for var in YIELD_CURVE_VARIABLES.values()]
+    
+    # Construir query para obtener la fecha máxima
+    placeholders = ','.join(['?' for _ in id_variables])
+    query = f"""
+        SELECT MAX(fecha) as ultima_fecha
+        FROM maestro_precios
+        WHERE id_pais = ? 
+        AND id_variable IN ({placeholders})
+    """
+    params = [ID_PAIS] + id_variables
+    
+    result = execute_query_single(query, tuple(params))
+    
+    if result and result.get('ultima_fecha'):
+        return parse_fecha(result['ultima_fecha'])
+    
+    return None
+
+
+@bp.route('/yield-curve/dates', methods=['GET'])
+def get_yield_curve_dates():
+    """
+    Obtiene las fechas disponibles para la curva de rendimiento.
+    
+    Returns:
+        {
+            "ultima_fecha": "YYYY-MM-DD",
+            "fechas_disponibles": ["YYYY-MM-DD", ...]
+        }
+    """
+    try:
+        ultima_fecha = obtener_ultima_fecha_disponible()
+        
+        if not ultima_fecha:
+            return jsonify({
+                "ultima_fecha": None,
+                "fechas_disponibles": []
+            })
+        
+        # Obtener todas las fechas disponibles (únicas) para las variables de la curva
+        id_variables = [var["id_variable"] for var in YIELD_CURVE_VARIABLES.values()]
+        placeholders = ','.join(['?' for _ in id_variables])
+        
+        query = f"""
+            SELECT DISTINCT fecha
+            FROM maestro_precios
+            WHERE id_pais = ? 
+            AND id_variable IN ({placeholders})
+            ORDER BY fecha DESC
+        """
+        params = [ID_PAIS] + id_variables
+        
+        fechas_raw = execute_query(query, tuple(params))
+        fechas_disponibles = sorted([parse_fecha(f['fecha']) for f in fechas_raw], reverse=True)
+        
+        return jsonify({
+            "ultima_fecha": ultima_fecha.isoformat() if ultima_fecha else None,
+            "fechas_disponibles": [f.isoformat() for f in fechas_disponibles]
+        })
+    
+    except Exception as e:
+        return jsonify({'error': f'Error al obtener fechas: {str(e)}'}), 500
+
+
+@bp.route('/yield-curve/data', methods=['GET'])
+def get_yield_curve_data():
+    """
+    Obtiene los datos de la curva de rendimiento para una fecha específica.
+    
+    Query params:
+    - fecha: Fecha en formato YYYY-MM-DD (opcional, por defecto usa la última fecha disponible)
+    
+    Returns:
+        {
+            "fecha": "YYYY-MM-DD",
+            "data": [
+                {
+                    "id": 57,
+                    "nombre": "1 mes",
+                    "id_variable": 37,
+                    "valor": 5.25
+                },
+                ...
+            ]
+        }
+    """
+    try:
+        fecha_str = request.args.get('fecha')
+        
+        # Si no se proporciona fecha, usar la última disponible
+        if not fecha_str:
+            fecha_obj = obtener_ultima_fecha_disponible()
+            if not fecha_obj:
+                return jsonify({'error': 'No hay datos disponibles'}), 404
+        else:
+            fecha_obj = date.fromisoformat(fecha_str)
+        
+        fecha_str_query = fecha_obj.isoformat()
+        
+        # Obtener datos para todas las variables de la curva en la fecha especificada
+        result_data = []
+        
+        for id_var_table, var_info in YIELD_CURVE_VARIABLES.items():
+            id_variable = var_info["id_variable"]
+            nombre = var_info["nombre"]
+            
+            query = """
+                SELECT valor
+                FROM maestro_precios
+                WHERE id_variable = ? AND id_pais = ? 
+                AND DATE(fecha) = DATE(?)
+                ORDER BY fecha DESC
+                LIMIT 1
+            """
+            
+            result = execute_query_single(query, (id_variable, ID_PAIS, fecha_str_query))
+            
+            valor = result['valor'] if result and result.get('valor') is not None else None
+            
+            result_data.append({
+                "id": id_var_table,
+                "nombre": nombre,
+                "id_variable": id_variable,
+                "valor": float(valor) if valor is not None else None
+            })
+        
+        return jsonify({
+            "fecha": fecha_obj.isoformat(),
+            "data": result_data
+        })
+    
+    except ValueError as e:
+        return jsonify({'error': f'Error en formato de fecha: {str(e)}'}), 400
+    except Exception as e:
+        return jsonify({'error': f'Error al obtener datos de curva: {str(e)}'}), 500
+
+
+@bp.route('/yield-curve/table', methods=['GET'])
+def get_yield_curve_table():
+    """
+    Obtiene la tabla con las tasas, último valor y variaciones.
+    
+    Query params:
+    - fecha: Fecha en formato YYYY-MM-DD (opcional, por defecto usa la última fecha disponible)
+    
+    Returns:
+        {
+            "fecha_referencia": "YYYY-MM-DD",
+            "data": [
+                {
+                    "id": 57,
+                    "nombre": "1 mes",
+                    "id_variable": 37,
+                    "valor_ultimo": 5.25,
+                    "variacion_5_dias": 0.10,
+                    "variacion_30_dias": 0.25,
+                    "variacion_360_dias": 1.50,
+                    "variacion_anio_actual": 0.75
+                },
+                ...
+            ]
+        }
+    """
+    try:
+        # Obtener fecha del parámetro o usar la última disponible
+        fecha_str = request.args.get('fecha')
+        
+        if fecha_str:
+            try:
+                fecha_referencia = date.fromisoformat(fecha_str)
+            except ValueError:
+                return jsonify({'error': 'Formato de fecha inválido. Use YYYY-MM-DD'}), 400
+        else:
+            fecha_referencia = obtener_ultima_fecha_disponible()
+        
+        if not fecha_referencia:
+            return jsonify({
+                "fecha_referencia": None,
+                "data": []
+            })
+        
+        fecha_referencia_str = fecha_referencia.isoformat()
+        
+        result_data = []
+        
+        for id_var_table, var_info in YIELD_CURVE_VARIABLES.items():
+            id_variable = var_info["id_variable"]
+            nombre = var_info["nombre"]
+            
+            # Obtener valor para la fecha de referencia
+            query_valor = """
+                SELECT valor
+                FROM maestro_precios
+                WHERE id_variable = ? AND id_pais = ? 
+                AND DATE(fecha) = DATE(?)
+                ORDER BY fecha DESC
+                LIMIT 1
+            """
+            result_valor = execute_query_single(query_valor, (id_variable, ID_PAIS, fecha_referencia_str))
+            valor_referencia = result_valor['valor'] if result_valor and result_valor.get('valor') is not None else None
+            
+            if valor_referencia is None:
+                result_data.append({
+                    "id": id_var_table,
+                    "nombre": nombre,
+                    "id_variable": id_variable,
+                    "valor_referencia": None,
+                    "variacion_5_dias": None,
+                    "variacion_30_dias": None,
+                    "variacion_360_dias": None,
+                    "variacion_anio_actual": None
+                })
+                continue
+            
+            valor_referencia = float(valor_referencia)
+            
+            # Calcular fechas de referencia para variaciones
+            fecha_5_dias = fecha_referencia - timedelta(days=5)
+            fecha_30_dias = fecha_referencia - timedelta(days=30)
+            fecha_360_dias = fecha_referencia - timedelta(days=360)
+            fecha_inicio_anio = date(fecha_referencia.year, 1, 1)
+            
+            # Función helper para obtener valor en una fecha (o la más cercana anterior)
+            def obtener_valor_en_fecha(fecha_obj):
+                fecha_str = fecha_obj.isoformat()
+                query = """
+                    SELECT valor
+                    FROM maestro_precios
+                    WHERE id_variable = ? AND id_pais = ? 
+                    AND DATE(fecha) <= DATE(?)
+                    ORDER BY fecha DESC
+                    LIMIT 1
+                """
+                result = execute_query_single(query, (id_variable, ID_PAIS, fecha_str))
+                if result and result.get('valor') is not None:
+                    return float(result['valor'])
+                return None
+            
+            # Obtener valores de referencia para variaciones
+            valor_5_dias = obtener_valor_en_fecha(fecha_5_dias)
+            valor_30_dias = obtener_valor_en_fecha(fecha_30_dias)
+            valor_360_dias = obtener_valor_en_fecha(fecha_360_dias)
+            valor_inicio_anio = obtener_valor_en_fecha(fecha_inicio_anio)
+            
+            # Calcular variaciones (en puntos porcentuales)
+            def calcular_variacion(valor_anterior, valor_actual):
+                if valor_anterior is None or valor_actual is None:
+                    return None
+                if valor_anterior == 0:
+                    return None
+                return valor_actual - valor_anterior  # Diferencia en puntos porcentuales
+            
+            variacion_5_dias = calcular_variacion(valor_5_dias, valor_referencia)
+            variacion_30_dias = calcular_variacion(valor_30_dias, valor_referencia)
+            variacion_360_dias = calcular_variacion(valor_360_dias, valor_referencia)
+            variacion_anio_actual = calcular_variacion(valor_inicio_anio, valor_referencia)
+            
+            result_data.append({
+                "id": id_var_table,
+                "nombre": nombre,
+                "id_variable": id_variable,
+                "valor_referencia": valor_referencia,
+                "variacion_5_dias": round(variacion_5_dias, 4) if variacion_5_dias is not None else None,
+                "variacion_30_dias": round(variacion_30_dias, 4) if variacion_30_dias is not None else None,
+                "variacion_360_dias": round(variacion_360_dias, 4) if variacion_360_dias is not None else None,
+                "variacion_anio_actual": round(variacion_anio_actual, 4) if variacion_anio_actual is not None else None
+            })
+        
+        return jsonify({
+            "fecha_referencia": fecha_referencia_str,
+            "data": result_data
+        })
+    
+    except Exception as e:
+        return jsonify({'error': f'Error al obtener tabla: {str(e)}'}), 500

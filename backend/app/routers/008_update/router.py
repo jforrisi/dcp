@@ -35,6 +35,10 @@ def run_update():
     if not expected_token:
         return jsonify({'error': 'UPDATE_TOKEN not configured'}), 500
     
+    # Remover "Bearer " si está presente
+    if token and token.startswith('Bearer '):
+        token = token[7:]
+    
     if token != expected_token:
         return jsonify({'error': 'Unauthorized'}), 401
     

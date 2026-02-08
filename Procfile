@@ -1,1 +1,1 @@
-web: cd backend && venv/bin/python run.py
+web: cd backend && venv/bin/gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 app.main:app

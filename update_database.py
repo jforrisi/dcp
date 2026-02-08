@@ -33,7 +33,8 @@ def descubrir_scripts_download() -> Dict[str, List[Path]]:
     """
     scripts = {
         'precios_productos': [],
-        'precios_servicios': []
+        'precios_servicios': [],
+        'update_download': []
     }
     
     # Scripts de precios/productos/download
@@ -49,6 +50,13 @@ def descubrir_scripts_download() -> Dict[str, List[Path]]:
         for script_file in precios_servicios_dir.glob("*.py"):
             if script_file.name != "__init__.py" and not script_file.name.startswith("_"):
                 scripts['precios_servicios'].append(script_file)
+    
+    # Scripts de update/download
+    update_download_dir = Path("update/download")
+    if update_download_dir.exists():
+        for script_file in sorted(update_download_dir.glob("*.py")):
+            if script_file.name != "__init__.py" and not script_file.name.startswith("_"):
+                scripts['update_download'].append(script_file)
     
     # Ordenar por nombre para ejecución consistente
     for categoria in scripts:
@@ -67,7 +75,8 @@ def descubrir_scripts_update() -> Dict[str, List[Path]]:
     scripts = {
         'precios_productos': [],
         'precios_servicios': [],
-        'macro': []
+        'macro': [],
+        'direct': []
     }
     
     # Scripts de precios/productos/update
@@ -78,11 +87,15 @@ def descubrir_scripts_update() -> Dict[str, List[Path]]:
                 scripts['precios_productos'].append(script_file)
     
     # Scripts de precios/servicios/update
+    # EXCLUIR scripts complicados que requieren procesamiento especial
+    scripts_complicados = ['servicios_no_tradicionales.py']
     precios_servicios_dir = Path("precios/update/servicios")
     if precios_servicios_dir.exists():
         for script_file in precios_servicios_dir.glob("*.py"):
             if script_file.name != "__init__.py" and not script_file.name.startswith("_"):
-                scripts['precios_servicios'].append(script_file)
+                # Excluir scripts complicados del proceso normal
+                if script_file.name not in scripts_complicados:
+                    scripts['precios_servicios'].append(script_file)
     
     # Scripts de macro/update
     macro_dir = Path("macro/update")
@@ -92,6 +105,15 @@ def descubrir_scripts_update() -> Dict[str, List[Path]]:
                 # Excluir scripts de carga histórica manual
                 if "historico" not in script_file.name.lower() and "cargar" not in script_file.name.lower():
                     scripts['macro'].append(script_file)
+    
+    # Scripts de update/direct
+    direct_dir = Path("update/direct")
+    if direct_dir.exists():
+        for script_file in sorted(direct_dir.glob("*.py")):
+            if script_file.name != "__init__.py" and not script_file.name.startswith("_"):
+                # Excluir scripts de carga histórica manual
+                if "historico" not in script_file.name.lower() and "cargar" not in script_file.name.lower():
+                    scripts['direct'].append(script_file)
     
     # Ordenar por nombre para ejecución consistente
     for categoria in scripts:
@@ -117,9 +139,23 @@ def ejecutar_script(ruta_script: Path, modo_automatico: bool = True) -> Tuple[bo
     output_completo = []
     
     try:
+        # Determinar qué Python usar
+        # En Railway, usar el Python del venv si está disponible
+        if os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY'):
+            # Estamos en Railway, intentar usar el venv
+            project_root = Path(__file__).parent
+            venv_python = project_root / 'backend' / 'venv' / 'bin' / 'python'
+            if venv_python.exists():
+                python_cmd = str(venv_python)
+            else:
+                python_cmd = sys.executable
+        else:
+            # Desarrollo local, usar sys.executable
+            python_cmd = sys.executable
+        
         # Ejecutar el script como subprocess
         proceso = subprocess.Popen(
-            [sys.executable, str(ruta_script)],
+            [python_cmd, str(ruta_script)],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,  # Combinar stderr con stdout

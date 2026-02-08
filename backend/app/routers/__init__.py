@@ -1,18 +1,31 @@
 """API routers package."""
-import importlib
+import importlib.util
+from pathlib import Path
 
-# Import blueprints from numbered folders using importlib
+# Import blueprints from numbered folders using importlib.util
 # Python doesn't allow direct imports of modules starting with numbers
-# Use absolute import path instead of relative
-ticker_000 = importlib.import_module('app.routers.000_ticker')
-dcp_001 = importlib.import_module('app.routers.001_dcp')
-cotizaciones_002 = importlib.import_module('app.routers.002_cotizaciones')
-inflacion_dolares_003 = importlib.import_module('app.routers.003_inflacion_dolares')
-prices_004 = importlib.import_module('app.routers.004_prices')
-yield_curve_005 = importlib.import_module('app.routers.005_yield_curve')
-data_export_006 = importlib.import_module('app.routers.006_data_export')
-licitaciones_lrm_007 = importlib.import_module('app.routers.007_licitaciones_lrm')
-update_008 = importlib.import_module('app.routers.008_update')
+# Load modules directly from their __init__.py files
+
+def load_module_from_path(module_name, folder_name):
+    """Load a module from a numbered folder using file path."""
+    routers_dir = Path(__file__).parent
+    init_file = routers_dir / folder_name / '__init__.py'
+    spec = importlib.util.spec_from_file_location(module_name, init_file)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Cannot load module {module_name} from {init_file}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+ticker_000 = load_module_from_path('ticker_000', '000_ticker')
+dcp_001 = load_module_from_path('dcp_001', '001_dcp')
+cotizaciones_002 = load_module_from_path('cotizaciones_002', '002_cotizaciones')
+inflacion_dolares_003 = load_module_from_path('inflacion_dolares_003', '003_inflacion_dolares')
+prices_004 = load_module_from_path('prices_004', '004_prices')
+yield_curve_005 = load_module_from_path('yield_curve_005', '005_yield_curve')
+data_export_006 = load_module_from_path('data_export_006', '006_data_export')
+licitaciones_lrm_007 = load_module_from_path('licitaciones_lrm_007', '007_licitaciones_lrm')
+update_008 = load_module_from_path('update_008', '008_update')
 
 # Export modules/blueprints with original names for backward compatibility
 # ticker module exports a blueprint named 'ticker'

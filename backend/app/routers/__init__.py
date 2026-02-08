@@ -3,15 +3,16 @@ import importlib
 
 # Import blueprints from numbered folders using importlib
 # Python doesn't allow direct imports of modules starting with numbers
-ticker_000 = importlib.import_module('.000_ticker', package=__name__)
-dcp_001 = importlib.import_module('.001_dcp', package=__name__)
-cotizaciones_002 = importlib.import_module('.002_cotizaciones', package=__name__)
-inflacion_dolares_003 = importlib.import_module('.003_inflacion_dolares', package=__name__)
-prices_004 = importlib.import_module('.004_prices', package=__name__)
-yield_curve_005 = importlib.import_module('.005_yield_curve', package=__name__)
-data_export_006 = importlib.import_module('.006_data_export', package=__name__)
-licitaciones_lrm_007 = importlib.import_module('.007_licitaciones_lrm', package=__name__)
-update_008 = importlib.import_module('.008_update', package=__name__)
+# Use absolute import path instead of relative
+ticker_000 = importlib.import_module('app.routers.000_ticker')
+dcp_001 = importlib.import_module('app.routers.001_dcp')
+cotizaciones_002 = importlib.import_module('app.routers.002_cotizaciones')
+inflacion_dolares_003 = importlib.import_module('app.routers.003_inflacion_dolares')
+prices_004 = importlib.import_module('app.routers.004_prices')
+yield_curve_005 = importlib.import_module('app.routers.005_yield_curve')
+data_export_006 = importlib.import_module('app.routers.006_data_export')
+licitaciones_lrm_007 = importlib.import_module('app.routers.007_licitaciones_lrm')
+update_008 = importlib.import_module('app.routers.008_update')
 
 # Export modules/blueprints with original names for backward compatibility
 # ticker module exports a blueprint named 'ticker'

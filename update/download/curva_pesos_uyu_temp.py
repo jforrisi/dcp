@@ -62,13 +62,14 @@ def configurar_driver():
         chrome_options.add_argument("--disable-extensions")
         
         # Azure App Service suele tener Chrome en /usr/bin/google-chrome
-        # Railway suele tener Chromium en /usr/bin/chromium-browser
+        # Railway/Nixpacks suele tener Chromium en /root/.nix-profile/bin/chromium
         chrome_bin = os.getenv('CHROME_BIN')
         if not chrome_bin:
             # Intentar detectar automáticamente
             possible_paths = [
+                '/root/.nix-profile/bin/chromium',  # Railway/Nixpacks (prioridad)
                 '/usr/bin/google-chrome',  # Azure App Service
-                '/usr/bin/chromium-browser',  # Railway
+                '/usr/bin/chromium-browser',  # Railway (legacy)
                 '/usr/bin/chromium',  # Otra ubicación común
             ]
             for path in possible_paths:
@@ -79,12 +80,15 @@ def configurar_driver():
         if chrome_bin and os.path.exists(chrome_bin):
             chrome_options.binary_location = chrome_bin
             print(f"[INFO] Usando Chrome/Chromium en: {chrome_bin}")
+        else:
+            print(f"[WARNING] Chrome/Chromium no encontrado. CHROME_BIN={os.getenv('CHROME_BIN')}")
         
         # Configurar ChromeDriver
         chromedriver_path = os.getenv('CHROMEDRIVER_PATH')
         if not chromedriver_path:
             # Intentar detectar automáticamente
             possible_paths = [
+                '/root/.nix-profile/bin/chromedriver',  # Railway/Nixpacks (prioridad)
                 '/usr/bin/chromedriver',
                 '/usr/local/bin/chromedriver',
             ]
@@ -92,6 +96,11 @@ def configurar_driver():
                 if os.path.exists(path):
                     chromedriver_path = path
                     break
+        
+        if chromedriver_path and os.path.exists(chromedriver_path):
+            print(f"[INFO] Usando ChromeDriver en: {chromedriver_path}")
+        else:
+            print(f"[WARNING] ChromeDriver no encontrado. CHROMEDRIVER_PATH={os.getenv('CHROMEDRIVER_PATH')}")
         
         if chromedriver_path and os.path.exists(chromedriver_path):
             service = Service(chromedriver_path)

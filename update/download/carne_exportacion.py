@@ -59,17 +59,47 @@ def configurar_driver_descargas(download_dir: str):
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
         
-        # Intentar usar Chromium si está disponible (Railway)
-        chrome_bin = os.getenv('CHROME_BIN', '/usr/bin/chromium-browser')
-        if os.path.exists(chrome_bin):
-            chrome_options.binary_location = chrome_bin
+        # Intentar usar Chromium si está disponible (Railway/Nixpacks)
+        chrome_bin = os.getenv('CHROME_BIN')
+        if not chrome_bin:
+            # Intentar detectar automáticamente
+            possible_paths = [
+                '/root/.nix-profile/bin/chromium',  # Railway/Nixpacks (prioridad)
+                '/usr/bin/chromium-browser',
+                '/usr/bin/chromium',
+                '/usr/bin/google-chrome',
+            ]
+            for path in possible_paths:
+                if os.path.exists(path):
+                    chrome_bin = path
+                    break
         
-        # Configurar ChromeDriver si está en PATH de Railway
-        chromedriver_path = os.getenv('CHROMEDRIVER_PATH', '/usr/bin/chromedriver')
-        if os.path.exists(chromedriver_path):
+        if chrome_bin and os.path.exists(chrome_bin):
+            chrome_options.binary_location = chrome_bin
+            print(f"[INFO] Usando Chrome/Chromium en: {chrome_bin}")
+        else:
+            print(f"[WARNING] Chrome/Chromium no encontrado. CHROME_BIN={os.getenv('CHROME_BIN')}")
+        
+        # Configurar ChromeDriver si está en PATH de Railway/Nixpacks
+        chromedriver_path = os.getenv('CHROMEDRIVER_PATH')
+        if not chromedriver_path:
+            # Intentar detectar automáticamente
+            possible_paths = [
+                '/root/.nix-profile/bin/chromedriver',  # Railway/Nixpacks (prioridad)
+                '/usr/bin/chromedriver',
+                '/usr/local/bin/chromedriver',
+            ]
+            for path in possible_paths:
+                if os.path.exists(path):
+                    chromedriver_path = path
+                    break
+        
+        if chromedriver_path and os.path.exists(chromedriver_path):
             service = Service(chromedriver_path)
+            print(f"[INFO] Usando ChromeDriver en: {chromedriver_path}")
             driver = webdriver.Chrome(service=service, options=chrome_options)
         else:
+            print(f"[WARNING] ChromeDriver no encontrado. CHROMEDRIVER_PATH={os.getenv('CHROMEDRIVER_PATH')}")
             driver = webdriver.Chrome(options=chrome_options)
     else:
         # En desarrollo local, usar Chrome normal (visible)

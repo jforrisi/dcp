@@ -62,6 +62,7 @@ def configurar_driver():
         chrome_bin = os.getenv('CHROME_BIN')
         if not chrome_bin:
             possible_paths = [
+                '/root/.nix-profile/bin/chromium',  # Railway/Nixpacks (prioridad)
                 '/usr/bin/google-chrome',
                 '/usr/bin/chromium-browser',
                 '/usr/bin/chromium',
@@ -74,10 +75,13 @@ def configurar_driver():
         if chrome_bin and os.path.exists(chrome_bin):
             chrome_options.binary_location = chrome_bin
             print(f"[INFO] Usando Chrome/Chromium en: {chrome_bin}")
+        else:
+            print(f"[WARNING] Chrome/Chromium no encontrado. CHROME_BIN={os.getenv('CHROME_BIN')}")
         
         chromedriver_path = os.getenv('CHROMEDRIVER_PATH')
         if not chromedriver_path:
             possible_paths = [
+                '/root/.nix-profile/bin/chromedriver',  # Railway/Nixpacks (prioridad)
                 '/usr/bin/chromedriver',
                 '/usr/local/bin/chromedriver',
             ]
@@ -85,6 +89,11 @@ def configurar_driver():
                 if os.path.exists(path):
                     chromedriver_path = path
                     break
+        
+        if chromedriver_path and os.path.exists(chromedriver_path):
+            print(f"[INFO] Usando ChromeDriver en: {chromedriver_path}")
+        else:
+            print(f"[WARNING] ChromeDriver no encontrado. CHROMEDRIVER_PATH={os.getenv('CHROMEDRIVER_PATH')}")
         
         if chromedriver_path and os.path.exists(chromedriver_path):
             service = Service(chromedriver_path)

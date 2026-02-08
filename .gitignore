@@ -23,6 +23,7 @@ pnpm-debug.log*
 dist/
 build/
 *.dist
+backend/app/static/
 
 # Environment variables
 .env

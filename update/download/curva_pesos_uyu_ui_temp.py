@@ -343,10 +343,11 @@ def extraer_tabla(driver):
     
     # Leer la tabla HTML con pandas
     try:
-        dfs = pd.read_html(tabla_html)
+        import io
+        dfs = pd.read_html(io.StringIO(tabla_html))
         if not dfs:
             print("[INFO] Intentando extraer desde el HTML completo de la página...")
-            dfs = pd.read_html(page_source)
+            dfs = pd.read_html(io.StringIO(page_source))
         
         if not dfs:
             raise ValueError("No se pudo extraer ninguna tabla del HTML")
@@ -362,7 +363,8 @@ def extraer_tabla(driver):
             print("[INFO] Intentando esperar más tiempo y recargar la tabla...")
             time.sleep(5)
             tabla_html = tabla.get_attribute('outerHTML')
-            dfs = pd.read_html(tabla_html)
+            import io
+            dfs = pd.read_html(io.StringIO(tabla_html))
             if dfs:
                 df = dfs[0]
                 print(f"[INFO] Segunda extracción: {len(df)} filas, {len(df.columns)} columnas")

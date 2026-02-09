@@ -68,6 +68,34 @@ def configurar_driver():
         chrome_options.add_argument("--window-size=1920,1080")
         chrome_options.add_argument("--disable-software-rasterizer")
         chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--disable-setuid-sandbox")
+        chrome_options.add_argument("--disable-web-security")
+        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
+        chrome_options.add_argument("--remote-debugging-port=9222")
+        chrome_options.add_argument("--remote-debugging-address=0.0.0.0")
+        # En Railway, no usar perfil persistente (puede causar problemas)
+        chrome_options.add_argument("--no-first-run")
+        chrome_options.add_argument("--no-default-browser-check")
+        chrome_options.add_argument("--disable-background-networking")
+        chrome_options.add_argument("--disable-background-timer-throttling")
+        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
+        chrome_options.add_argument("--disable-breakpad")
+        chrome_options.add_argument("--disable-client-side-phishing-detection")
+        chrome_options.add_argument("--disable-default-apps")
+        chrome_options.add_argument("--disable-hang-monitor")
+        chrome_options.add_argument("--disable-popup-blocking")
+        chrome_options.add_argument("--disable-prompt-on-repost")
+        chrome_options.add_argument("--disable-sync")
+        chrome_options.add_argument("--disable-translate")
+        chrome_options.add_argument("--metrics-recording-only")
+        chrome_options.add_argument("--no-crash-upload")
+        chrome_options.add_argument("--enable-features=NetworkService,NetworkServiceInProcess")
+        chrome_options.add_argument("--force-color-profile=srgb")
+        chrome_options.add_argument("--hide-scrollbars")
+        chrome_options.add_argument("--mute-audio")
+        chrome_options.add_argument("--use-mock-keychain")
+        # NO usar user-data-dir en Railway (causa problemas)
+        # chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
         
         # Azure App Service suele tener Chrome en /usr/bin/google-chrome
         # Railway/Nixpacks suele tener Chromium en /root/.nix-profile/bin/chromium
@@ -115,6 +143,23 @@ def configurar_driver():
             driver = webdriver.Chrome(service=service, options=chrome_options)
         else:
             driver = webdriver.Chrome(options=chrome_options)
+        
+        # Esperar a que Chrome esté completamente inicializado
+        time.sleep(2)
+        
+        # Verificar que el driver esté conectado
+        try:
+            driver.current_url
+        except Exception as e:
+            print(f"[WARN] Error al verificar conexión inicial: {e}")
+            print("[INFO] Reintentando crear driver...")
+            time.sleep(3)
+            if chromedriver_path and os.path.exists(chromedriver_path):
+                service = Service(chromedriver_path)
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+            else:
+                driver = webdriver.Chrome(options=chrome_options)
+            time.sleep(2)
     else:
         # Desarrollo local: Chrome visible
         driver = webdriver.Chrome(options=chrome_options)
@@ -768,6 +813,19 @@ def main():
             # Navegar a la página
             logger.info(f"Navegando a: {BEVSA_URL}")
             driver.get(BEVSA_URL)
+            
+            # Esperar a que la página cargue completamente
+            logger.info("Esperando a que la página cargue...")
+            time.sleep(5)
+            
+            # Verificar que el driver sigue conectado
+            try:
+                current_url = driver.current_url
+                logger.debug(f"URL después de navegar: {current_url}")
+            except Exception as e:
+                logger.error(f"Chrome se desconectó después de navegar: {e}")
+                raise
+            
             logger.log_selenium_state(driver, "Después de navegar")
             
             # Aceptar términos si es necesario

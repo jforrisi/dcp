@@ -47,16 +47,18 @@ def configurar_driver():
     """
     chrome_options = Options()
     
-    # Usar perfil persistente para guardar cookies (evita disclaimer repetido)
-    base_dir = os.getcwd()
-    user_data_dir = os.path.join(base_dir, ".chrome_profile_bevsa")
-    os.makedirs(user_data_dir, exist_ok=True)
-    chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
-    
     # Detectar entornos cloud (Railway, Azure, etc.)
     is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY')
     is_azure = os.getenv('WEBSITE_INSTANCE_ID') or os.getenv('AZURE_FUNCTIONS_ENVIRONMENT') or os.getenv('CONTAINER_NAME')
     is_cloud = is_railway or is_azure
+    
+    # Usar perfil persistente para guardar cookies (evita disclaimer repetido)
+    # PERO NO en cloud (causa problemas de desconexión)
+    if not is_cloud:
+        base_dir = os.getcwd()
+        user_data_dir = os.path.join(base_dir, ".chrome_profile_bevsa")
+        os.makedirs(user_data_dir, exist_ok=True)
+        chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
     
     if is_cloud:
         chrome_options.add_argument("--headless=new")
@@ -558,11 +560,15 @@ def main():
             time.sleep(5)
             
             # Verificar que el driver sigue conectado
+            from selenium.common.exceptions import NoSuchWindowException, WebDriverException
             try:
                 current_url = driver.current_url
                 logger.debug(f"URL después de navegar: {current_url}")
-            except Exception as e:
+            except (NoSuchWindowException, WebDriverException) as e:
                 logger.error(f"Chrome se desconectó después de navegar: {e}")
+                raise RuntimeError(f"Chrome se cerró inesperadamente después de navegar: {e}")
+            except Exception as e:
+                logger.error(f"Error al obtener URL después de navegar: {e}")
                 raise
             
             logger.log_selenium_state(driver, "Después de navegar")

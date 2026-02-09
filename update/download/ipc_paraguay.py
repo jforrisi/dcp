@@ -173,6 +173,95 @@ def limpiar_archivos_anteriores(data_raw_path: str):
                 print(f"[WARN] No se pudo eliminar '{archivo}': {e}")
 
 
+def detectar_anti_bot(driver):
+    """
+    Detecta si hay un anti-bot/CAPTCHA en la página.
+    Retorna True si detecta anti-bot, False si no.
+    """
+    try:
+        from selenium.common.exceptions import NoSuchWindowException, WebDriverException
+        try:
+            _ = driver.current_url
+        except (NoSuchWindowException, WebDriverException):
+            return False
+        
+        try:
+            page_source_lower = driver.page_source.lower()
+            page_title_lower = driver.title.lower()
+        except (NoSuchWindowException, WebDriverException):
+            return False
+        
+        anti_bot_indicators = [
+            "captcha", "cloudflare", "challenge", "verification",
+            "bot detection", "security check", "hcaptcha", "recaptcha",
+            "turnstile", "just a moment"
+        ]
+        
+        for indicator in anti_bot_indicators:
+            if indicator in page_source_lower or indicator in page_title_lower:
+                print(f"[INFO] Posible anti-bot detectado: {indicator}")
+                return True
+        
+        # Buscar por elementos comunes de Cloudflare
+        try:
+            driver.find_element(By.ID, "challenge-form")
+            print("[INFO] Cloudflare challenge detectado")
+            return True
+        except:
+            pass
+        
+        try:
+            driver.find_element(By.CLASS_NAME, "cf-browser-verification")
+            print("[INFO] Cloudflare verification detectado")
+            return True
+        except:
+            pass
+        
+        return False
+    except Exception as e:
+        print(f"[WARN] Error al detectar anti-bot: {e}")
+        return False
+
+
+def esperar_resolucion_anti_bot(driver):
+    """
+    Espera automáticamente a que se resuelva el anti-bot/CAPTCHA.
+    Espera hasta 60 segundos antes de continuar.
+    Verifica periódicamente que Chrome sigue abierto.
+    """
+    print("\n" + "=" * 60)
+    print("ANTI-BOT DETECTADO")
+    print("=" * 60)
+    print("[INFO] Esperando automáticamente hasta 60 segundos para que se resuelva...")
+    print("[INFO] Si el anti-bot persiste, el script continuará de todas formas.")
+    print("=" * 60 + "\n")
+    
+    from selenium.common.exceptions import NoSuchWindowException, WebDriverException
+    total_wait = 60
+    waited = 0
+    check_interval = 5
+    
+    while waited < total_wait:
+        try:
+            _ = driver.current_url
+            time.sleep(check_interval)
+            waited += check_interval
+            if waited % 15 == 0:
+                print(f"[INFO] Esperando... ({waited}/{total_wait} segundos)")
+        except (NoSuchWindowException, WebDriverException) as e:
+            print(f"[ERROR] Chrome se cerró durante la espera: {e}")
+            raise RuntimeError("Chrome se cerró inesperadamente durante la espera de Cloudflare")
+    
+    print("[INFO] Continuando...")
+    
+    try:
+        _ = driver.current_url
+        time.sleep(2)
+    except (NoSuchWindowException, WebDriverException) as e:
+        print(f"[ERROR] Chrome se cerró justo después de la espera: {e}")
+        raise RuntimeError("Chrome se cerró inesperadamente después de la espera de Cloudflare")
+
+
 def encontrar_enlace_descarga(driver):
     """
     Encuentra el enlace de descarga en la página del BCP.
@@ -340,6 +429,13 @@ def main():
                     raise
                 
                 logger.log_selenium_state(driver, "Después de navegar")
+                
+                # Verificar anti-bot/CAPTCHA antes de buscar el enlace
+                logger.info("Verificando anti-bot/CAPTCHA...")
+                if detectar_anti_bot(driver):
+                    logger.warn("Anti-bot detectado, esperando resolución...")
+                    esperar_resolucion_anti_bot(driver)
+                    logger.log_selenium_state(driver, "Después de anti-bot")
                 
                 # Encontrar el enlace de descarga
                 logger.info("Buscando enlace de descarga...")

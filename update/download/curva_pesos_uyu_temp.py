@@ -174,15 +174,22 @@ def aceptar_terminos(driver):
     2. Espera a que el botón se habilite (ya no esté disabled)
     3. Hace clic en el botón 'ContentPlaceHolder1_btnContinue'
     """
+    from selenium.common.exceptions import NoSuchWindowException, WebDriverException
     try:
         wait = WebDriverWait(driver, 10)
         
         # Verificar si estamos en la página de disclaimer
-        if "Disclaimer.aspx" in driver.current_url:
+        try:
+            current_url = driver.current_url
+        except (NoSuchWindowException, WebDriverException) as e:
+            print(f"[WARN] No se pudo obtener URL (Chrome puede haberse cerrado): {e}")
+            return
+        
+        if "Disclaimer.aspx" in current_url:
             print("[INFO] Detectada página de términos y condiciones (Disclaimer)")
         else:
             # Verificar si hay redirección al disclaimer
-            print(f"[INFO] URL actual: {driver.current_url}")
+            print(f"[INFO] URL actual: {current_url}")
             print("[INFO] Verificando si hay formulario de términos en la página actual...")
         
         # Buscar el checkbox por su ID específico
@@ -225,8 +232,13 @@ def aceptar_terminos(driver):
         time.sleep(3)  # Esperar a que la página cargue después de aceptar
         
     except Exception as e:
+        from selenium.common.exceptions import NoSuchWindowException, WebDriverException
         print(f"[WARN] No se encontró el formulario de términos (puede que ya esté aceptado o no aparezca): {e}")
-        print(f"[INFO] URL actual: {driver.current_url}")
+        try:
+            current_url = driver.current_url
+            print(f"[INFO] URL actual: {current_url}")
+        except (NoSuchWindowException, WebDriverException):
+            print("[WARN] No se pudo obtener URL (Chrome puede haberse cerrado)")
         print("[INFO] Continuando...")
 
 
@@ -234,6 +246,7 @@ def esperar_resolucion_anti_bot(driver):
     """
     Espera automáticamente a que se resuelva el anti-bot/CAPTCHA.
     Espera hasta 60 segundos antes de continuar.
+    Verifica periódicamente que Chrome sigue abierto.
     """
     print("\n" + "=" * 60)
     print("ANTI-BOT DETECTADO")
@@ -242,11 +255,33 @@ def esperar_resolucion_anti_bot(driver):
     print("[INFO] Si el anti-bot persiste, el script continuará de todas formas.")
     print("=" * 60 + "\n")
     
-    # Esperar automáticamente hasta 60 segundos
-    time.sleep(60)
+    # Esperar en intervalos de 5 segundos, verificando que Chrome sigue abierto
+    from selenium.common.exceptions import NoSuchWindowException, WebDriverException
+    total_wait = 60
+    waited = 0
+    check_interval = 5
+    
+    while waited < total_wait:
+        try:
+            # Verificar que Chrome sigue abierto
+            _ = driver.current_url
+            time.sleep(check_interval)
+            waited += check_interval
+            if waited % 15 == 0:  # Log cada 15 segundos
+                print(f"[INFO] Esperando... ({waited}/{total_wait} segundos)")
+        except (NoSuchWindowException, WebDriverException) as e:
+            print(f"[ERROR] Chrome se cerró durante la espera: {e}")
+            raise RuntimeError("Chrome se cerró inesperadamente durante la espera de Cloudflare")
     
     print("[INFO] Continuando con la extracción de la tabla...")
-    time.sleep(2)  # Dar un momento para que la página termine de cargar
+    
+    # Verificar una última vez que Chrome sigue abierto
+    try:
+        _ = driver.current_url
+        time.sleep(2)  # Dar un momento para que la página termine de cargar
+    except (NoSuchWindowException, WebDriverException) as e:
+        print(f"[ERROR] Chrome se cerró justo después de la espera: {e}")
+        raise RuntimeError("Chrome se cerró inesperadamente después de la espera de Cloudflare")
 
 
 def detectar_anti_bot(driver):
@@ -268,8 +303,19 @@ def detectar_anti_bot(driver):
             "turnstile"
         ]
         
-        page_source_lower = driver.page_source.lower()
-        page_title_lower = driver.title.lower()
+        from selenium.common.exceptions import NoSuchWindowException, WebDriverException
+        try:
+            _ = driver.current_url
+        except (NoSuchWindowException, WebDriverException) as e:
+            print(f"[WARN] Chrome se cerró durante detección de anti-bot: {e}")
+            return False
+        
+        try:
+            page_source_lower = driver.page_source.lower()
+            page_title_lower = driver.title.lower()
+        except (NoSuchWindowException, WebDriverException) as e:
+            print(f"[WARN] No se pudo obtener page_source/title: {e}")
+            return False
         
         for indicator in anti_bot_indicators:
             if indicator in page_source_lower or indicator in page_title_lower:
@@ -339,14 +385,24 @@ def extraer_tabla(driver):
     
     # Verificar si hay anti-bot
     if detectar_anti_bot(driver):
-        esperar_resolucion_anti_bot(driver)
+        try:
+            esperar_resolucion_anti_bot(driver)
+        except RuntimeError as e:
+            print(f"[ERROR] Error durante la espera de Cloudflare: {e}")
+            raise
     
     # Verificar que estamos en la página correcta
-    if "Historico.aspx" not in driver.current_url and "ITLUP" not in driver.current_url:
-        print(f"[WARN] No estamos en la página correcta. URL actual: {driver.current_url}")
-        print(f"[INFO] Navegando explícitamente a: {BEVSA_URL}")
-        driver.get(BEVSA_URL)
-        time.sleep(3)
+    from selenium.common.exceptions import NoSuchWindowException, WebDriverException
+    try:
+        current_url = driver.current_url
+        if "Historico.aspx" not in current_url and "ITLUP" not in current_url:
+            print(f"[WARN] No estamos en la página correcta. URL actual: {current_url}")
+            print(f"[INFO] Navegando explícitamente a: {BEVSA_URL}")
+            driver.get(BEVSA_URL)
+            time.sleep(3)
+    except (NoSuchWindowException, WebDriverException) as e:
+        print(f"[ERROR] Chrome se cerró inesperadamente: {e}")
+        raise RuntimeError(f"Chrome se cerró inesperadamente: {e}")
     
     # Esperar a que la tabla se cargue
     print("[INFO] Esperando a que la tabla se cargue...")

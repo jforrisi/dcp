@@ -1,13 +1,13 @@
 """Admin routes for filtros_graph_pais."""
 from flask import Blueprint, request, jsonify
 from ...database import execute_query, execute_query_single, execute_update
-from ...middleware import admin_only
+from ...middleware import admin_session_required
 
 bp = Blueprint('admin_filtros', __name__)
 
 
 @bp.route('/filtros', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_filtros():
     """Get filtros, optionally filtered by graph_id."""
     try:
@@ -39,7 +39,7 @@ def get_filtros():
 
 
 @bp.route('/filtros', methods=['POST'])
-@admin_only
+@admin_session_required
 def create_filtro():
     """Add a filtro (graph_id, pais_id)."""
     try:
@@ -85,7 +85,7 @@ def create_filtro():
 
 
 @bp.route('/filtros', methods=['DELETE'])
-@admin_only
+@admin_session_required
 def delete_filtro():
     """Delete a filtro (using query params: graph_id, pais_id)."""
     try:
@@ -115,7 +115,7 @@ def delete_filtro():
 
 
 @bp.route('/filtros/bulk', methods=['PUT'])
-@admin_only
+@admin_session_required
 def update_filtros_bulk():
     """Update multiple filtros for a graph (replaces all existing filtros)."""
     try:

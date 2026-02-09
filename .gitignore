@@ -37,6 +37,9 @@ build/
 *~
 .DS_Store
 
+# Chrome profile (cache/selenium)
+.chrome_profile_bevsa/
+
 # Excel temporary files
 ~$*.xlsx
 ~$*.xls
@@ -47,6 +50,11 @@ build/
 # Logs
 *.log
 logs/
+*_log.txt
+*log*.txt
+status*.json
+resultado*.json
+start_result.json
 
 # OS
 Thumbs.db

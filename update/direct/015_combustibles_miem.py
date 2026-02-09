@@ -20,8 +20,6 @@ from _helpers import (
 
 # Configuración
 EXCEL_PATH = os.path.join("data_raw", "miem_derivados", "precios medios de derivados de petroleo con y sin impuestos.xls")
-DB_NAME = "series_tiempo.db"
-
 # Configuración de IDs (desde maestro_database.xlsx Sheet1_old)
 ID_VARIABLE_GASOIL = 7  # Gasoil
 ID_PAIS_GASOIL = 858  # Uruguay
@@ -107,7 +105,7 @@ def main():
         print("[ERROR] ID_VARIABLE_GASOIL e ID_PAIS_GASOIL deben estar configurados.")
     else:
         print(f"[INFO] Actualizando Gasoil (id_variable={ID_VARIABLE_GASOIL}, id_pais={ID_PAIS_GASOIL})...")
-        insertar_en_bd_unificado(ID_VARIABLE_GASOIL, ID_PAIS_GASOIL, df_gasoil, DB_NAME)
+        insertar_en_bd_unificado(ID_VARIABLE_GASOIL, ID_PAIS_GASOIL, df_gasoil)
     
     # Procesar Propano (si está configurado)
     if ID_VARIABLE_PROPANO is not None and ID_PAIS_PROPANO is not None:
@@ -116,7 +114,7 @@ def main():
         df_propano = validar_fechas_solo_nulas(df_propano)
         
         print(f"[INFO] Actualizando Propano (id_variable={ID_VARIABLE_PROPANO}, id_pais={ID_PAIS_PROPANO})...")
-        insertar_en_bd_unificado(ID_VARIABLE_PROPANO, ID_PAIS_PROPANO, df_propano, DB_NAME)
+        insertar_en_bd_unificado(ID_VARIABLE_PROPANO, ID_PAIS_PROPANO, df_propano)
     else:
         print("\n[INFO] Propano no está configurado. Agregar ID_VARIABLE_PROPANO e ID_PAIS_PROPANO cuando esté en maestro_database.xlsx")
     

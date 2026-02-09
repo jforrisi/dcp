@@ -29,13 +29,17 @@ Estructura del archivo:
 """
 
 import os
-import pandas as pd
-import sqlite3
+import sys
 from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+from db.connection import execute_update, execute_query, insert_dataframe
 
 # Configuración
 ARCHIVO_EXCEL = "update/historicos/web_exp_ciiu_ip.xls"
-DB_NAME = "series_tiempo.db"
 ID_PAIS_URUGUAY = 858
 
 # Mapeo de filas (índice) a id_variable
@@ -155,68 +159,32 @@ def leer_y_transponer():
 
 def insertar_en_bd(df):
     """Inserta los datos en maestro_precios para todas las variables."""
-    base_dir = os.getcwd()
-    ruta_db = os.path.join(base_dir, DB_NAME)
-    
-    if not os.path.exists(ruta_db):
-        raise FileNotFoundError(
-            f"No se encontró la base de datos: {ruta_db}. "
-            "Asegúrate de ejecutar este script desde la raíz del proyecto."
+    print("\n[INFO] Conectando a base de datos...")
+
+    id_variables = df['id_variable'].unique().tolist()
+
+    print(f"[INFO] Eliminando registros existentes para {len(id_variables)} variables...")
+
+    placeholders = ','.join(['?'] * len(id_variables))
+    success, error, _ = execute_update(
+        f"DELETE FROM maestro_precios WHERE id_variable IN ({placeholders}) AND id_pais = ?",
+        tuple(id_variables) + (ID_PAIS_URUGUAY,),
+    )
+    if not success:
+        raise RuntimeError(error or "Error al eliminar registros")
+
+    print(f"\n[INFO] Insertando {len(df)} registros en maestro_precios...")
+    insert_dataframe("maestro_precios", df, if_exists="append", index=False)
+    print(f"[OK] {len(df):,} registros insertados exitosamente")
+
+    print("\n[INFO] Verificando inserción...")
+    for id_var in sorted(id_variables):
+        rows = execute_query(
+            "SELECT COUNT(*) as cnt FROM maestro_precios WHERE id_variable = ? AND id_pais = ?",
+            (id_var, ID_PAIS_URUGUAY),
         )
-    
-    print(f"\n[INFO] Conectando a base de datos: {ruta_db}")
-    conn = sqlite3.connect(ruta_db)
-    cursor = conn.cursor()
-    
-    try:
-        # Obtener los id_variable únicos que se van a insertar
-        id_variables = df['id_variable'].unique().tolist()
-        
-        print(f"[INFO] Eliminando registros existentes para {len(id_variables)} variables...")
-        
-        # Eliminar registros existentes para estas variables y Uruguay
-        placeholders = ','.join(['?'] * len(id_variables))
-        cursor.execute(f"""
-            DELETE FROM maestro_precios 
-            WHERE id_variable IN ({placeholders}) AND id_pais = ?
-        """, id_variables + [ID_PAIS_URUGUAY])
-        
-        registros_eliminados = cursor.rowcount
-        print(f"[INFO] Eliminados {registros_eliminados} registros existentes")
-        
-        # Insertar nuevos registros
-        print(f"\n[INFO] Insertando {len(df)} registros en maestro_precios...")
-        
-        # Insertar en lotes para mejor performance
-        batch_size = 1000
-        total_insertados = 0
-        
-        for i in range(0, len(df), batch_size):
-            batch = df.iloc[i:i+batch_size]
-            batch.to_sql("maestro_precios", conn, if_exists="append", index=False, method='multi')
-            total_insertados += len(batch)
-            if (i + batch_size) % 5000 == 0 or i + batch_size >= len(df):
-                print(f"  Progreso: {total_insertados:,} / {len(df):,} registros insertados")
-        
-        conn.commit()
-        print(f"[OK] {total_insertados:,} registros insertados exitosamente")
-        
-        # Verificar inserción
-        print(f"\n[INFO] Verificando inserción...")
-        for id_var in sorted(id_variables):
-            cursor.execute("""
-                SELECT COUNT(*) FROM maestro_precios 
-                WHERE id_variable = ? AND id_pais = ?
-            """, (id_var, ID_PAIS_URUGUAY))
-            count = cursor.fetchone()[0]
-            print(f"      id_variable {id_var}: {count} registros")
-        
-    except Exception as e:
-        conn.rollback()
-        print(f"[ERROR] Error al insertar datos: {e}")
-        raise
-    finally:
-        conn.close()
+        count = rows[0]["cnt"] if rows else 0
+        print(f"      id_variable {id_var}: {count} registros")
 
 
 def main():
@@ -225,7 +193,7 @@ def main():
     print("ÍNDICES DE PRECIOS DE EXPORTACIÓN - URUGUAY")
     print("=" * 80)
     print(f"Archivo origen: {ARCHIVO_EXCEL}")
-    print(f"Base de datos: {DB_NAME}")
+    print("Base de datos: PostgreSQL (DATABASE_URL)")
     print(f"País: Uruguay (id_pais={ID_PAIS_URUGUAY})")
     print(f"Variables a procesar: {len(MAPEO_FILAS_VARIABLES)}")
     print("=" * 80)

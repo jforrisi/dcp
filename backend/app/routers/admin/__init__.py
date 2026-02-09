@@ -3,11 +3,9 @@ from flask import Blueprint
 
 bp = Blueprint('admin', __name__, url_prefix='/api/admin')
 
-# Importar y registrar todos los sub-blueprints
-# Cada blueprint aplica su propio middleware @admin_only
+# Importar y registrar todos los sub-blueprints (auth se registra en main.py directamente)
 from . import familia, sub_familia, variables, graph, filtros, maestro, pais_grupo, tipo_serie
 
-# Registrar todos los sub-blueprints
 bp.register_blueprint(familia.bp)
 bp.register_blueprint(sub_familia.bp)
 bp.register_blueprint(variables.bp)

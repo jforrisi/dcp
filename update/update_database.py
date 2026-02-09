@@ -462,14 +462,14 @@ def ejecutar_fase_actualizaciones() -> Dict:
     print(f"Scripts de actualización detectados: {len(scripts_a_ejecutar)}")
     print("-" * 80)
     print("Orden de ejecución:")
-    print("  1. DIRECT (fuentes externas):")
+    cat_actual = None
     for categoria, script in scripts_a_ejecutar:
-        if categoria == 'direct':
-            print(f"     - {script.name}")
-    print(f"  2. CALCULATE (cálculos derivados):")
-    for categoria, script in scripts_a_ejecutar:
-        if categoria == 'calculate':
-            print(f"     - {script.name}")
+        if categoria != cat_actual:
+            cat_actual = categoria
+            etiqueta = "DIRECT (fuentes externas)" if categoria == 'direct' else "CALCULATE (cálculos derivados)"
+            num = 1 if categoria == 'direct' else 2
+            print(f"  {num}. {etiqueta}:")
+        print(f"     - {script.name}")
     print()
     
     # Ejecutar cada script

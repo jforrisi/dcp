@@ -27,7 +27,6 @@ DATA_RAW_DIR = "data_raw"
 LOCAL_EXCEL_NAME = "serie_semanal_ingreso_medio_exportacion_inac.xlsx"
 
 # Configuración de base de datos y archivos de salida
-DB_NAME = "series_tiempo.db"
 # Configuración de base de datos
 # NOTA: Estos valores deben existir en maestro_database.xlsx
 # Si no existen, agregar el registro al Excel y ejecutar migracion_maestro_simplificar.py
@@ -167,7 +166,7 @@ def main():
     print("\n[INFO] Actualizando base de datos automáticamente...")
     
     # Insertar automáticamente usando helper unificado
-    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, df_precios, DB_NAME)
+    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, df_precios)
 
 if __name__ == "__main__":
     main()

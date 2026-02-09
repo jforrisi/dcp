@@ -1,13 +1,13 @@
 """Admin routes for tipo_serie."""
 from flask import Blueprint, jsonify
 from ...database import execute_query
-from ...middleware import admin_only
+from ...middleware import admin_session_required
 
 bp = Blueprint('admin_tipo_serie', __name__)
 
 
 @bp.route('/tipo-serie', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_all_tipo_serie():
     """Get all tipo_serie."""
     try:

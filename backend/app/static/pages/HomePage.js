@@ -28,7 +28,7 @@ function HomePage() {
     const modulos = [
         {
             id: 'dcp',
-            nombre: 'MacroData',
+            nombre: 'Precios de Exportación',
             descripcion: 'Análisis de precios corrientes y en pesos uruguayos constantes',
             icono: (
                 <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

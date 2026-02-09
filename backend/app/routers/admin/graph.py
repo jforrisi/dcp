@@ -1,13 +1,13 @@
 """Admin routes for graph."""
 from flask import Blueprint, request, jsonify
 from ...database import execute_query, execute_query_single, execute_update
-from ...middleware import admin_only
+from ...middleware import admin_session_required
 
 bp = Blueprint('admin_graph', __name__)
 
 
 @bp.route('/graph', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_all_graphs():
     """Get all graphs."""
     try:
@@ -23,7 +23,7 @@ def get_all_graphs():
 
 
 @bp.route('/graph/<int:graph_id>', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_graph(graph_id: int):
     """Get a single graph by ID."""
     try:
@@ -41,7 +41,7 @@ def get_graph(graph_id: int):
 
 
 @bp.route('/graph/<int:graph_id>/filtros', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_graph_filtros(graph_id: int):
     """Get filtros for a specific graph."""
     try:
@@ -59,7 +59,7 @@ def get_graph_filtros(graph_id: int):
 
 
 @bp.route('/graph', methods=['POST'])
-@admin_only
+@admin_session_required
 def create_graph():
     """Create a new graph."""
     try:
@@ -90,7 +90,7 @@ def create_graph():
 
 
 @bp.route('/graph/<int:graph_id>', methods=['PUT'])
-@admin_only
+@admin_session_required
 def update_graph(graph_id: int):
     """Update a graph."""
     try:
@@ -128,7 +128,7 @@ def update_graph(graph_id: int):
 
 
 @bp.route('/graph/<int:graph_id>', methods=['DELETE'])
-@admin_only
+@admin_session_required
 def delete_graph(graph_id: int):
     """Delete a graph."""
     try:

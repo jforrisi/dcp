@@ -1,13 +1,14 @@
 """API routes for Licitaciones LRM Analysis."""
 from datetime import date, datetime, timedelta
 from typing import List, Dict, Optional, Tuple
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, send_file
 from ...database import execute_query, execute_query_single
 import subprocess
 import threading
 import sys
 from pathlib import Path
 import os
+from .pdf_generator import crear_pdf_licitacion
 
 bp = Blueprint('licitaciones_lrm', __name__)
 
@@ -853,3 +854,83 @@ def update_licitaciones_lrm():
 def get_update_licitaciones_lrm_status():
     """Obtiene el estado de la última ejecución de actualización."""
     return jsonify(update_lrm_status)
+
+
+@bp.route('/licitaciones-lrm/generate-pdf', methods=['POST'])
+def generate_pdf():
+    """
+    Genera un PDF con el informe de licitación LRM.
+    Espera JSON con: fecha, plazo
+    """
+    try:
+        data = request.get_json()
+        fecha_str = data.get('fecha')
+        plazo = data.get('plazo')
+        
+        if not fecha_str or not plazo:
+            return jsonify({'error': 'Se requieren fecha y plazo'}), 400
+        
+        try:
+            plazo = int(plazo)
+        except ValueError:
+            return jsonify({'error': 'Plazo debe ser un número'}), 400
+        
+        # Convertir fecha string a date object
+        try:
+            fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+        except ValueError:
+            return jsonify({'error': 'Formato de fecha inválido. Use YYYY-MM-DD'}), 400
+        
+        # Obtener datos de la licitación
+        licitacion_data_raw = obtener_datos_licitacion(fecha, plazo)
+        if not licitacion_data_raw:
+            return jsonify({'error': f'No se encontraron datos para fecha {fecha_str} y plazo {plazo}'}), 404
+        
+        # Preparar datos de licitación en el formato del frontend
+        licitacion_data = {
+            'fecha': fecha,
+            'plazo': plazo,
+            'monto_licitado': licitacion_data_raw.get('licitacion'),
+            'adjudicado': licitacion_data_raw.get('adjudicado'),  # Este es el porcentaje (0-1)
+            'tasa_corte': licitacion_data_raw.get('tasa_corte'),
+        }
+        
+        # Obtener tasa BEVSA (con min/max de 5 días)
+        bevsa_rate = obtener_tasa_bevsa(plazo, fecha)
+        
+        # Obtener estadísticas de últimas 5 licitaciones
+        stats = obtener_estadisticas_ultimas_5_licitaciones(plazo, fecha)
+        
+        # Obtener curva BEVSA del día
+        curve_data = obtener_curva_bevsa_por_fecha(fecha)
+        
+        # Obtener serie temporal de últimos 90 días
+        timeseries_data = obtener_timeseries_bevsa(plazo, fecha, dias=90)
+        
+        # Preparar datos para el PDF
+        pdf_data = {
+            'licitacion_data': licitacion_data,
+            'bevsa_rate': bevsa_rate,
+            'stats': stats,
+            'curve_data': curve_data,
+            'timeseries_data': timeseries_data
+        }
+        
+        # Generar PDF
+        pdf_buffer = crear_pdf_licitacion(pdf_data)
+        
+        # Nombre del archivo
+        filename = f"licitacion_lrm_{fecha_str}_{plazo}dias.pdf"
+        
+        return send_file(
+            pdf_buffer,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=filename
+        )
+        
+    except Exception as e:
+        print(f"[ERROR] generate_pdf: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': f'Error al generar PDF: {str(e)}'}), 500

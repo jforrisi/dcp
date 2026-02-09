@@ -71,6 +71,47 @@ function LicitacionesLRMPage() {
         }
     };
 
+    // Función para generar PDF
+    const handleGeneratePDF = async () => {
+        if (!selectedCombinacion || !selectedCombinacion.fecha || !selectedCombinacion.plazo) {
+            alert('Por favor selecciona una licitación para generar el informe.');
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_BASE}/licitaciones-lrm/generate-pdf`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fecha: selectedCombinacion.fecha,
+                    plazo: selectedCombinacion.plazo
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Error ${response.status}`);
+            }
+            
+            // Descargar el PDF
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `licitacion_lrm_${selectedCombinacion.fecha}_${selectedCombinacion.plazo}dias.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            alert(`Error al generar PDF: ${error.message}`);
+        }
+    };
+
     // Función para actualizar datos
     const handleUpdate = async () => {
         if (updating) return;
@@ -114,9 +155,24 @@ function LicitacionesLRMPage() {
                         setUpdating(false);
                         
                         if (status.returncode === 0) {
-                            alert('Actualización completada exitosamente. Recarga la página para ver los nuevos datos.');
-                            // Recargar combinaciones disponibles
-                            window.location.reload();
+                            alert('Actualización completada exitosamente.');
+                            try {
+                                const datesRes = await fetch(`${API_BASE}/licitaciones-lrm/dates`);
+                                if (datesRes.ok) {
+                                    const datesData = await datesRes.json();
+                                    const combinaciones = datesData.combinaciones || [];
+                                    setCombinacionesDisponibles(combinaciones);
+                                    const nuevaUltima = datesData.ultima_fecha && datesData.ultimo_plazo != null
+                                        ? { fecha: datesData.ultima_fecha, plazo: datesData.ultimo_plazo }
+                                        : null;
+                                    if (nuevaUltima) {
+                                        setUltimaCombinacion(nuevaUltima);
+                                        setSelectedCombinacion(nuevaUltima);
+                                    }
+                                }
+                            } catch (err) {
+                                console.error('Error al refrescar combinaciones:', err);
+                            }
                         } else {
                             // Mostrar error más detallado
                             let errorMsg = `Error en la actualización (código: ${status.returncode})\n\n`;
@@ -479,17 +535,34 @@ function LicitacionesLRMPage() {
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-3xl font-bold text-gray-900">Análisis de Licitaciones LRM</h1>
-                    <button
-                        onClick={handleUpdate}
-                        disabled={updating}
-                        className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                            updating
-                                ? 'bg-gray-400 cursor-not-allowed text-white'
-                                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                        }`}
-                    >
-                        {updating ? 'Actualizando...' : 'Actualizar'}
-                    </button>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={handleGeneratePDF}
+                            disabled={!selectedCombinacion || !selectedCombinacion.fecha || !selectedCombinacion.plazo}
+                            className={`px-4 py-2 rounded-md font-medium flex items-center gap-2 transition-colors ${
+                                !selectedCombinacion || !selectedCombinacion.fecha || !selectedCombinacion.plazo
+                                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                    : 'bg-red-600 text-white hover:bg-red-700'
+                            }`}
+                            title="Crear Informe PDF"
+                        >
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clipRule="evenodd" />
+                            </svg>
+                            Crear Informe
+                        </button>
+                        <button
+                            onClick={handleUpdate}
+                            disabled={updating}
+                            className={`px-4 py-2 rounded-md font-medium transition-colors ${
+                                updating
+                                    ? 'bg-gray-400 cursor-not-allowed text-white'
+                                    : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                            }`}
+                        >
+                            {updating ? 'Actualizando...' : 'Actualizar'}
+                        </button>
+                    </div>
                 </div>
                 
                 {updateStatus && (

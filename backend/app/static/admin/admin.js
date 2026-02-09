@@ -1,5 +1,6 @@
 // Main Admin App Component
 function AdminApp() {
+    const [loggedIn, setLoggedIn] = React.useState(null);
     const [activeTab, setActiveTab] = React.useState('familia');
     const [familiaData, setFamiliaData] = React.useState([]);
     const [subFamiliaData, setSubFamiliaData] = React.useState([]);
@@ -21,6 +22,8 @@ function AdminApp() {
     const [errors, setErrors] = React.useState({});
 
     const loadData = async (tab) => {
+        if (tab === 'actualizar') return;
+        
         setLoading(prev => ({ ...prev, [tab]: true }));
         setErrors(prev => ({ ...prev, [tab]: null }));
         
@@ -75,6 +78,36 @@ function AdminApp() {
     React.useEffect(() => {
         loadData(activeTab);
     }, [activeTab]);
+
+    // Verificar sesión al montar
+    React.useEffect(() => {
+        AdminAPI.checkSession()
+            .then(() => setLoggedIn(true))
+            .catch(() => setLoggedIn(false));
+    }, []);
+
+    const handleLogout = async () => {
+        try {
+            await AdminAPI.logout();
+        } catch (e) {
+            // Ignorar error de red
+        } finally {
+            AdminAPI.clearToken();
+            setLoggedIn(false);
+        }
+    };
+
+    if (loggedIn === null) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            </div>
+        );
+    }
+
+    if (!loggedIn) {
+        return <AdminLogin onLoginSuccess={() => setLoggedIn(true)} />;
+    }
 
     const handleCreate = async (tab, data) => {
         try {
@@ -177,6 +210,7 @@ function AdminApp() {
     };
 
     const tabs = [
+        { id: 'actualizar', label: 'Actualizar' },
         { id: 'familia', label: 'Familia' },
         { id: 'sub-familia', label: 'Sub-Familia' },
         { id: 'variables', label: 'Variables' },
@@ -190,7 +224,15 @@ function AdminApp() {
         <div className="min-h-screen bg-gray-50">
             <div className="bg-white shadow-sm border-b">
                 <div className="max-w-7xl mx-auto px-4 py-4">
-                    <h1 className="text-2xl font-bold text-gray-900 mb-4">Panel de Administración</h1>
+                    <div className="flex justify-between items-center mb-4">
+                        <h1 className="text-2xl font-bold text-gray-900">Panel de Administración</h1>
+                        <button
+                            onClick={handleLogout}
+                            className="text-sm text-gray-600 hover:text-gray-900 px-3 py-1 rounded hover:bg-gray-100"
+                        >
+                            Cerrar sesión
+                        </button>
+                    </div>
                     <div className="flex space-x-1 border-b">
                         {tabs.map(tab => (
                             <button
@@ -210,6 +252,8 @@ function AdminApp() {
             </div>
 
             <div className="max-w-7xl mx-auto px-4 py-6">
+                {activeTab === 'actualizar' && <UpdateTab />}
+
                 {activeTab === 'familia' && (
                     <CRUDTable
                         title="Familias"

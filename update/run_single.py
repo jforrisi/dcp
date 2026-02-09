@@ -16,6 +16,7 @@ def main():
         print("\nScripts disponibles:")
         print("  - curva_pesos_uyu_temp")
         print("  - curva_pesos_uyu_ui_temp")
+        print("  - dolar_bevsa_uyu")
         print("  - ipc_colombia")
         print("  - ipc_paraguay")
         sys.exit(1)
@@ -26,6 +27,7 @@ def main():
     scripts = {
         'curva_pesos_uyu_temp': 'update.download.curva_pesos_uyu_temp',
         'curva_pesos_uyu_ui_temp': 'update.download.curva_pesos_uyu_ui_temp',
+        'dolar_bevsa_uyu': 'update.download.dolar_bevsa_uyu',
         'ipc_colombia': 'update.download.ipc_colombia',
         'ipc_paraguay': 'update.download.ipc_paraguay',
     }

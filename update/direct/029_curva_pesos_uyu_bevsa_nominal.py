@@ -1,12 +1,16 @@
 """Script para insertar datos de curva de pesos NOMINALES en maestro_precios"""
 
-import sqlite3
-import pandas as pd
 import os
+import sys
 from datetime import datetime
+from pathlib import Path
+
+import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+from db.connection import execute_query, execute_update, insert_dataframe
 
 # Configuración
-DB_NAME = "series_tiempo.db"
 ID_PAIS_URUGUAY = 858
 ARCHIVO_EXCEL_NOMINAL = "update/historicos/curva_pesos_uyu.xlsx"
 
@@ -67,45 +71,35 @@ MAPEO_COLUMNAS_VARIABLES_NOMINAL = {
     "10 AOS": "10 años",
 }
 
-def get_db_connection():
-    """Establece conexión con la base de datos."""
-    db_path = os.path.join(os.getcwd(), DB_NAME)
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    return conn
-
-def obtener_mapeo_variables(conn):
+def obtener_mapeo_variables():
     """
     Obtiene el mapeo de nombres de variables a id_variable desde maestro.
     Solo para variables NOMINALES.
     """
-    cursor = conn.cursor()
-    
-    # Obtener todas las variables de curva de pesos NOMINALES para Uruguay
-    cursor.execute("""
+    resultados = execute_query(
+        """
         SELECT m.id_variable, v.id_nombre_variable, v.nominal_o_real
         FROM maestro m
         JOIN variables v ON m.id_variable = v.id_variable
         WHERE m.id_pais = ? AND m.fuente = 'BEVSA' AND v.nominal_o_real = 'n'
         ORDER BY m.id_variable
-    """, (ID_PAIS_URUGUAY,))
-    
-    resultados = cursor.fetchall()
+        """,
+        (ID_PAIS_URUGUAY,),
+    )
+
     mapeo = {}
-    
     for row in resultados:
-        nombre_var = row['id_nombre_variable']
-        id_var = row['id_variable']
+        nombre_var = row["id_nombre_variable"]
+        id_var = row["id_variable"]
         mapeo[nombre_var] = id_var
-        # También mapear variantes con problemas de encoding
-        if 'año' in nombre_var:
-            nombre_var_alt = nombre_var.replace('año', 'ao')
+        if "año" in str(nombre_var):
+            nombre_var_alt = str(nombre_var).replace("año", "ao")
             mapeo[nombre_var_alt] = id_var
-    
+
     print(f"[INFO] Mapeo obtenido (NOMINALES): {len(mapeo)} variables encontradas")
     for nombre, id_var in sorted(mapeo.items()):
         print(f"  {nombre} -> id_variable {id_var}")
-    
+
     return mapeo
 
 def leer_excel(ruta_archivo):
@@ -197,142 +191,113 @@ def transformar_a_formato_largo(df, mapeo_variables, mapeo_columnas):
     
     return df_final
 
-def insertar_en_bd(conn, df_precios):
+def insertar_en_bd(df_precios):
     """Inserta los datos en maestro_precios."""
-    cursor = conn.cursor()
-    
-    # Obtener los id_variable únicos que se van a insertar
-    id_variables = df_precios['id_variable'].unique().tolist()
-    
-    print(f"\n[INFO] Eliminando registros existentes para {len(id_variables)} variables NOMINALES...")
-    
-    # Eliminar registros existentes para estas variables y Uruguay
-    placeholders = ','.join(['?'] * len(id_variables))
-    cursor.execute(f"""
-        DELETE FROM maestro_precios 
-        WHERE id_variable IN ({placeholders}) AND id_pais = ?
-    """, id_variables + [ID_PAIS_URUGUAY])
-    
-    registros_eliminados = cursor.rowcount
-    print(f"[INFO] Eliminados {registros_eliminados} registros existentes")
-    
-    # Insertar nuevos registros
-    print(f"\n[INFO] Insertando {len(df_precios)} registros NOMINALES en maestro_precios...")
-    
-    # Insertar en lotes para mejor performance
-    batch_size = 1000
-    total_insertados = 0
-    
-    for i in range(0, len(df_precios), batch_size):
-        batch = df_precios.iloc[i:i+batch_size]
-        batch.to_sql("maestro_precios", conn, if_exists="append", index=False, method='multi')
-        total_insertados += len(batch)
-        if (i + batch_size) % 5000 == 0 or i + batch_size >= len(df_precios):
-            print(f"  Progreso: {total_insertados:,} / {len(df_precios):,} registros insertados")
-    
-    conn.commit()
-    print(f"[OK] {total_insertados:,} registros NOMINALES insertados exitosamente")
+    id_variables = df_precios["id_variable"].unique().tolist()
 
-def verificar_insercion(conn):
+    print(f"\n[INFO] Eliminando registros existentes para {len(id_variables)} variables NOMINALES...")
+
+    placeholders = ",".join(["?"] * len(id_variables))
+    success, error, _ = execute_update(
+        f"DELETE FROM maestro_precios WHERE id_variable IN ({placeholders}) AND id_pais = ?",
+        tuple(id_variables) + (ID_PAIS_URUGUAY,),
+    )
+    if not success:
+        raise RuntimeError(error or "Error al eliminar registros")
+
+    print(f"\n[INFO] Insertando {len(df_precios)} registros NOMINALES en maestro_precios...")
+    insert_dataframe("maestro_precios", df_precios, if_exists="append", index=False)
+    print(f"[OK] {len(df_precios):,} registros NOMINALES insertados exitosamente")
+
+
+def verificar_insercion():
     """Verifica que los datos se insertaron correctamente."""
-    cursor = conn.cursor()
-    
-    # Obtener los id_variable de las variables NOMINALES de curva de pesos
-    cursor.execute("""
+    rows = execute_query(
+        """
         SELECT DISTINCT m.id_variable
         FROM maestro m
         JOIN variables v ON m.id_variable = v.id_variable
         WHERE m.id_pais = ? AND m.fuente = 'BEVSA' AND v.nominal_o_real = 'n'
-    """, (ID_PAIS_URUGUAY,))
-    
-    id_variables = [row['id_variable'] for row in cursor.fetchall()]
-    
+        """,
+        (ID_PAIS_URUGUAY,),
+    )
+    id_variables = [r["id_variable"] for r in rows]
+
     if not id_variables:
         print("[WARN] No se encontraron variables NOMINALES de curva de pesos en maestro")
         return
-    
-    placeholders = ','.join(['?'] * len(id_variables))
-    cursor.execute(f"""
-        SELECT 
-            COUNT(*) as total_registros,
-            COUNT(DISTINCT id_variable) as variables,
-            MIN(fecha) as fecha_min,
-            MAX(fecha) as fecha_max
+
+    placeholders = ",".join(["?"] * len(id_variables))
+    resultado = execute_query(
+        f"""
+        SELECT COUNT(*) as total_registros, COUNT(DISTINCT id_variable) as variables,
+               MIN(fecha) as fecha_min, MAX(fecha) as fecha_max
         FROM maestro_precios
         WHERE id_variable IN ({placeholders}) AND id_pais = ?
-    """, id_variables + [ID_PAIS_URUGUAY])
-    
-    resultado = cursor.fetchone()
-    
+        """,
+        tuple(id_variables) + (ID_PAIS_URUGUAY,),
+    )
+    r = resultado[0] if resultado else {}
+
     print("\n" + "=" * 80)
     print("VERIFICACIÓN DE INSERCIÓN - NOMINALES")
     print("=" * 80)
-    print(f"Total de registros: {resultado['total_registros']:,}")
-    print(f"Variables: {resultado['variables']}")
-    print(f"Rango de fechas: {resultado['fecha_min']} a {resultado['fecha_max']}")
+    print(f"Total de registros: {r.get('total_registros', 0):,}")
+    print(f"Variables: {r.get('variables', 0)}")
+    print(f"Rango de fechas: {r.get('fecha_min')} a {r.get('fecha_max')}")
     print("=" * 80)
+
 
 def main():
     print("=" * 80)
     print("INSERCIÓN DE DATOS DE CURVA DE PESOS NOMINALES".center(80))
     print("=" * 80)
-    print(f"Base de datos: {DB_NAME}")
+    print(f"Base de datos: PostgreSQL (Azure)")
     print(f"Archivo Excel NOMINAL: {ARCHIVO_EXCEL_NOMINAL}")
     print(f"País: Uruguay (id_pais = {ID_PAIS_URUGUAY})")
     print("=" * 80)
-    
-    conn = None
+
     try:
-        # 1. Conectar a la base de datos
-        conn = get_db_connection()
-        print(f"\n[OK] Conectado a la base de datos: {DB_NAME}")
-        
-        # 2. Obtener mapeo de variables NOMINALES
+        # 1. Obtener mapeo de variables NOMINALES
         print("\n" + "=" * 80)
         print("PROCESANDO VARIABLES NOMINALES".center(80))
         print("=" * 80)
-        mapeo_variables_nominal = obtener_mapeo_variables(conn)
-        
+        mapeo_variables_nominal = obtener_mapeo_variables()
+
         if not mapeo_variables_nominal:
             raise ValueError("No se encontraron variables NOMINALES de curva de pesos en maestro")
-        
-        # 3. Leer Excel NOMINAL
+
+        # 2. Leer Excel NOMINAL
         df_excel_nominal = leer_excel(ARCHIVO_EXCEL_NOMINAL)
         if df_excel_nominal is None:
             raise ValueError(f"No se pudo leer el archivo: {ARCHIVO_EXCEL_NOMINAL}")
-        
-        # 4. Transformar a formato largo
+
+        # 3. Transformar a formato largo
         df_precios_nominal = transformar_a_formato_largo(
-            df_excel_nominal, 
-            mapeo_variables_nominal, 
-            MAPEO_COLUMNAS_VARIABLES_NOMINAL
+            df_excel_nominal,
+            mapeo_variables_nominal,
+            MAPEO_COLUMNAS_VARIABLES_NOMINAL,
         )
-        
+
         if df_precios_nominal.empty:
             raise ValueError("No hay datos NOMINALES para insertar")
-        
+
         print(f"\n[INFO] Datos NOMINALES preparados: {len(df_precios_nominal)} registros")
         print(f"[INFO] Variables únicas: {df_precios_nominal['id_variable'].nunique()}")
-        
-        # 5. Insertar en base de datos
-        insertar_en_bd(conn, df_precios_nominal)
-        
-        # 6. Verificar inserción
-        verificar_insercion(conn)
-        
+
+        # 4. Insertar en base de datos
+        insertar_en_bd(df_precios_nominal)
+
+        # 5. Verificar inserción
+        verificar_insercion()
+
         print("\n[OK] Proceso completado exitosamente para datos NOMINALES")
-        
+
     except Exception as e:
-        if conn:
-            conn.rollback()
         print(f"\n[ERROR] Error durante el proceso: {e}")
         import traceback
         traceback.print_exc()
         raise
-    finally:
-        if conn:
-            conn.close()
-            print("\n[OK] Conexión cerrada")
 
 if __name__ == "__main__":
     main()

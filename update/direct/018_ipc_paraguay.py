@@ -24,8 +24,6 @@ from _helpers import (
 
 
 # Configuración de base de datos
-DB_NAME = "series_tiempo.db"
-
 # Carpeta para leer archivos descargados
 DATA_RAW_DIR = "data_raw"
 LOCAL_EXCEL_NAME = "ipc_paraguay.xlsx"
@@ -252,7 +250,7 @@ def main():
         return
     
     print("\n[INFO] Actualizando base de datos...")
-    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, df_ipc, DB_NAME)
+    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, df_ipc)
     
     print("\n" + "=" * 80)
     print("PROCESO COMPLETADO")

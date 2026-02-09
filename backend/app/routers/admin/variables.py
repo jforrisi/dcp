@@ -1,13 +1,13 @@
 """Admin routes for variables."""
 from flask import Blueprint, request, jsonify
 from ...database import execute_query, execute_query_single, execute_update
-from ...middleware import admin_only
+from ...middleware import admin_session_required
 
 bp = Blueprint('admin_variables', __name__)
 
 
 @bp.route('/variables', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_all_variables():
     """Get all variables, optionally filtered by sub_familia_id."""
     try:
@@ -45,7 +45,7 @@ def get_all_variables():
 
 
 @bp.route('/variables/<int:variable_id>', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_variable(variable_id: int):
     """Get a single variable by ID."""
     try:
@@ -68,7 +68,7 @@ def get_variable(variable_id: int):
 
 
 @bp.route('/variables', methods=['POST'])
-@admin_only
+@admin_session_required
 def create_variable():
     """Create a new variable."""
     try:
@@ -113,18 +113,22 @@ def create_variable():
         if existing:
             return jsonify({'error': 'Ya existe una variable con ese nombre'}), 400
         
+        # Obtener siguiente id_variable (PostgreSQL no tiene autoincrement en INTEGER PRIMARY KEY)
+        next_id_row = execute_query_single("SELECT COALESCE(MAX(id_variable), 0) + 1 AS next_id FROM variables")
+        id_variable = int(next_id_row.get("next_id", 1)) if next_id_row else 1
+        
         # Insertar
         insert_query = """
-            INSERT INTO variables (id_nombre_variable, id_sub_familia, nominal_o_real, moneda, id_tipo_serie)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO variables (id_variable, id_nombre_variable, id_sub_familia, nominal_o_real, moneda, id_tipo_serie)
+            VALUES (?, ?, ?, ?, ?, ?)
         """
-        success, error, lastrowid = execute_update(insert_query, (nombre, id_sub_familia, nominal_o_real, moneda, id_tipo_serie))
+        success, error, _ = execute_update(insert_query, (id_variable, nombre, id_sub_familia, nominal_o_real, moneda, id_tipo_serie))
         
         if not success:
             return jsonify({'error': f'Error al crear variable: {error}'}), 500
         
         return jsonify({
-            'id_variable': lastrowid,
+            'id_variable': id_variable,
             'id_nombre_variable': nombre,
             'id_sub_familia': id_sub_familia,
             'nominal_o_real': nominal_o_real,
@@ -137,7 +141,7 @@ def create_variable():
 
 
 @bp.route('/variables/<int:variable_id>', methods=['PUT'])
-@admin_only
+@admin_session_required
 def update_variable(variable_id: int):
     """Update a variable."""
     try:
@@ -212,7 +216,7 @@ def update_variable(variable_id: int):
 
 
 @bp.route('/variables/<int:variable_id>', methods=['DELETE'])
-@admin_only
+@admin_session_required
 def delete_variable(variable_id: int):
     """Delete a variable."""
     try:

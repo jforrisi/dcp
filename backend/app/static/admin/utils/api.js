@@ -1,12 +1,18 @@
-// API utilities for admin panel
-const API_BASE_ADMIN = '/api/admin';
+// API utilities for admin panel - usar origin para mismo host/puerto (evita CORS y Tracking Prevention)
+const API_BASE_ADMIN = `${window.location.origin}/api/admin`;
+
+// Token en memoria (evita cookies bloqueadas por Tracking Prevention de Edge)
+let _adminToken = null;
 
 async function fetchAdmin(endpoint, options = {}) {
     const url = `${API_BASE_ADMIN}${endpoint}`;
+    const headers = { 'Content-Type': 'application/json' };
+    if (_adminToken) {
+        headers['Authorization'] = `Bearer ${_adminToken}`;
+    }
     const defaultOptions = {
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        credentials: 'include',
+        headers,
     };
     
     try {
@@ -47,6 +53,9 @@ async function fetchAdmin(endpoint, options = {}) {
 }
 
 const AdminAPI = {
+    setToken: (token) => { _adminToken = token; },
+    clearToken: () => { _adminToken = null; },
+    getToken: () => _adminToken,
     // Familia
     getFamilias: () => fetchAdmin('/familia'),
     getFamilia: (id) => fetchAdmin(`/familia/${id}`),
@@ -119,4 +128,37 @@ const AdminAPI = {
     
     // Tipo Serie
     getTiposSerie: () => fetchAdmin('/tipo-serie'),
+    
+    // Auth
+    login: (user, password) => fetchAdmin('/login', { method: 'POST', body: JSON.stringify({ user, password }) }),
+    logout: () => fetchAdmin('/logout', { method: 'POST' }),
+    checkSession: () => fetchAdmin('/check'),
+    
+    // Update (usa /api/update, mismo origin, con token si hay)
+    runUpdate: async () => {
+        const opts = { method: 'POST', credentials: 'include' };
+        if (_adminToken) opts.headers = { 'Authorization': `Bearer ${_adminToken}` };
+        const r = await fetch(`${window.location.origin}/api/update/run`, opts);
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.error || `Error ${r.status}`);
+        return data;
+    },
+    getUpdateStatus: () => {
+        const opts = { credentials: 'include' };
+        if (_adminToken) opts.headers = { 'Authorization': `Bearer ${_adminToken}` };
+        return fetch(`${window.location.origin}/api/update/status`, opts).then(r => r.json());
+    },
+    cancelUpdate: async () => {
+        const opts = { method: 'POST', credentials: 'include' };
+        if (_adminToken) opts.headers = { 'Authorization': `Bearer ${_adminToken}` };
+        const r = await fetch(`${window.location.origin}/api/update/cancel`, opts);
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.error || `Error ${r.status}`);
+        return data;
+    },
+    getUpdateLogs: () => {
+        const opts = { credentials: 'include' };
+        if (_adminToken) opts.headers = { 'Authorization': `Bearer ${_adminToken}` };
+        return fetch(`${window.location.origin}/api/update/logs`, opts).then(r => r.json());
+    },
 };

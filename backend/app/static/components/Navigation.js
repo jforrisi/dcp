@@ -8,7 +8,7 @@ function Navigation({ currentPage, onPageChange }) {
     // Módulos disponibles
     const modulos = [
         { id: 'home', nombre: 'Inicio', displayName: 'Inicio' },
-        { id: 'dcp', nombre: 'MacroData', displayName: 'MacroData' },
+        { id: 'dcp', nombre: 'Precios de Exportación', displayName: 'Precios de Exportación' },
         { id: 'cotizaciones', nombre: 'Cotizaciones de monedas', displayName: 'Cotizaciones de monedas' },
         { id: 'inflacion-dolares', nombre: 'Inflación en dólares', displayName: 'Inflación en dólares' },
         { id: 'yield-curve', nombre: 'Curva de Rendimiento', displayName: 'Curva de Rendimiento' },

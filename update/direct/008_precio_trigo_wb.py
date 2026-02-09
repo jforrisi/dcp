@@ -3,10 +3,8 @@ Script: precio_trigo_wb
 -----------------------
 Actualiza la base de datos con la serie de precios de trigo del Banco Mundial.
 
-1) Intentar lectura directa del Excel con pandas desde la URL.
-2) Si falla, leer desde data_raw/.
-3) Validar fechas.
-4) Actualizar automáticamente la base de datos.
+Lee desde update/historicos/commodities_banco_mundial.xlsx (generado por commodities_banco_mundial.py).
+Ejecutá primero el script de descarga: update/download/commodities_banco_mundial.py
 
 NOTA: Los datos están en la hoja "Monthly Prices", empiezan en la fila 7.
 Columna A tiene fechas en formato "2025M12" (diciembre 2025) o "2025M07" (julio 2025).
@@ -23,13 +21,10 @@ from _helpers import (
 )
 
 
-# Configuración de origen de datos
-URL_EXCEL_WB = "https://thedocs.worldbank.org/en/doc/74e8be41ceb20fa0da750cda2f6b9e4e-0050012026/related/CMO-Historical-Data-Monthly.xlsx"
-DATA_RAW_DIR = "data_raw"
-LOCAL_EXCEL_NAME = "cmo_historical_data_monthly_wb.xlsx"
+# Configuración de origen de datos (Excel descargado por commodities_banco_mundial.py)
+COMMODITIES_EXCEL = "update/historicos/commodities_banco_mundial.xlsx"
 
 # Configuración de base de datos
-DB_NAME = "series_tiempo.db"
 ID_VARIABLE = 19  # Trigo (desde maestro_database.xlsx Sheet1_old)
 ID_PAIS = 999  # Economía internacional_database.xlsx Sheet1_old)
 
@@ -62,92 +57,35 @@ def parsear_fecha_wb(fecha_str):
     return None
 
 
-def leer_excel_desde_url():
+def leer_excel_commodities():
     """
-    Intenta leer el Excel directamente desde la URL con pandas.
-    Lee la hoja "Monthly Prices", fila 7 en adelante.
+    Lee el Excel commodities_banco_mundial.xlsx desde update/historicos.
+    Hoja "Monthly Prices", fila 7 en adelante.
     Columna A = fechas (formato "2025M12"), Columna AL = precio trigo.
-    Devuelve un DataFrame o lanza excepción si falla.
-    """
-    print("\n[INFO] Intentando leer Excel directamente desde la URL del Banco Mundial...")
-    print(f"   URL: {URL_EXCEL_WB}")
-    
-    try:
-        # Leer la hoja "Monthly Prices", empezando desde la fila 7 (skiprows=6)
-        # Columna A (índice 0) = fechas, Columna AL (índice 37) = trigo
-        df = pd.read_excel(
-            URL_EXCEL_WB,
-            sheet_name="Monthly Prices",
-            skiprows=6,  # Los datos empiezan en la fila 7
-            usecols=[0, 37],  # Columna A (fechas) y Columna AL (trigo)
-            header=None,
-        )
-        
-        # Renombrar columnas
-        df.columns = ["FECHA_STR", "TRIGO"]
-        
-        # Eliminar filas completamente vacías
-        df = df.dropna(how="all")
-        
-        # Eliminar filas donde fecha o trigo sean nulos
-        df = df.dropna(subset=["FECHA_STR", "TRIGO"])
-        
-        # Filtrar filas donde trigo no sea numérico
-        df = df[pd.to_numeric(df["TRIGO"], errors="coerce").notna()]
-        
-        print(f"[OK] Leido desde URL: {len(df)} registros válidos")
-        return df
-        
-    except Exception as e:
-        print(f"[ERROR] Error al leer desde URL: {e}")
-        raise
-
-
-def leer_excel_desde_data_raw():
-    """
-    Lee el Excel local desde data_raw/cmo_historical_data_monthly_wb.xlsx.
-    Lanza excepción si no existe o falla.
     """
     base_dir = os.getcwd()
-    ruta_local = os.path.join(base_dir, DATA_RAW_DIR, LOCAL_EXCEL_NAME)
+    ruta = os.path.join(base_dir, COMMODITIES_EXCEL)
 
-    if not os.path.exists(ruta_local):
+    if not os.path.exists(ruta):
         raise FileNotFoundError(
-            f"No se encontró el archivo local esperado: {ruta_local}. "
-            "Ejecutá primero el script de descarga (precios/download/productos/precio_trigo_wb.py)."
+            f"No se encontró: {ruta}. "
+            "Ejecutá primero: python update/download/commodities_banco_mundial.py"
         )
 
-    print(f"\n[INFO] Leyendo Excel local desde: {ruta_local}")
-    
-    try:
-        # Leer la hoja "Monthly Prices", empezando desde la fila 7 (skiprows=6)
-        # Columna A (índice 0) = fechas, Columna AL (índice 37) = trigo
-        df = pd.read_excel(
-            ruta_local,
-            sheet_name="Monthly Prices",
-            skiprows=6,  # Los datos empiezan en la fila 7
-            usecols=[0, 37],  # Columna A (fechas) y Columna AL (trigo)
-            header=None,
-        )
-        
-        # Renombrar columnas
-        df.columns = ["FECHA_STR", "TRIGO"]
-        
-        # Eliminar filas completamente vacías
-        df = df.dropna(how="all")
-        
-        # Eliminar filas donde fecha o trigo sean nulos
-        df = df.dropna(subset=["FECHA_STR", "TRIGO"])
-        
-        # Filtrar filas donde trigo no sea numérico
-        df = df[pd.to_numeric(df["TRIGO"], errors="coerce").notna()]
-        
-        print(f"[OK] Leido desde archivo local: {len(df)} registros válidos")
-        return df
-        
-    except Exception as e:
-        print(f"[ERROR] Error al leer desde archivo local: {e}")
-        raise
+    print(f"\n[INFO] Leyendo Excel: {ruta}")
+    df = pd.read_excel(
+        ruta,
+        sheet_name="Monthly Prices",
+        skiprows=6,
+        usecols=[0, 37],  # Columna A (fechas) y Columna AL (trigo)
+        header=None,
+    )
+    df.columns = ["FECHA_STR", "TRIGO"]
+    df = df.dropna(how="all")
+    df = df.dropna(subset=["FECHA_STR", "TRIGO"])
+    df = df[pd.to_numeric(df["TRIGO"], errors="coerce").notna()]
+    print(f"[OK] {len(df)} registros válidos")
+    return df
 
 
 def convertir_fechas_wb(df: pd.DataFrame) -> pd.DataFrame:
@@ -183,17 +121,8 @@ def convertir_fechas_wb(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def obtener_trigo():
-    """
-    Implementa el flujo:
-    1) Intentar lectura directa desde URL.
-    2) Si falla, leer desde data_raw.
-    """
-    try:
-        return leer_excel_desde_url()
-    except Exception as e:
-        print(f"[WARN] No se pudo leer desde URL: {e}")
-        print("       Intentando leer desde data_raw...")
-        return leer_excel_desde_data_raw()
+    """Lee el Excel de commodities desde update/historicos."""
+    return leer_excel_commodities()
 
 
 def main():
@@ -221,7 +150,7 @@ def main():
         return
 
     print("\n[INFO] Actualizando base de datos...")
-    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, trigo_df, DB_NAME)
+    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, trigo_df)
 
 
 if __name__ == "__main__":

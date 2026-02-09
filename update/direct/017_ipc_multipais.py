@@ -30,7 +30,6 @@ from _helpers import (
 
 
 # Configuración de base de datos
-DB_NAME = "series_tiempo.db"
 
 # Credenciales del BCCH
 BCCH_USER = "joaquin.forrisi@gmail.com"
@@ -632,8 +631,7 @@ def procesar_pais(pais_config: dict) -> bool:
         insertar_en_bd_unificado(
             pais_config["id_variable"],
             pais_config["id_pais"],
-            df,
-            DB_NAME
+            df
         )
         
         return True

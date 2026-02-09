@@ -538,16 +538,16 @@ def main():
             logger.info("=" * 80)
             logger.info("ACTUALIZACIÓN DE CURVA_PESOS_UYU_UI.XLSX - BEVSA (CUI)")
             logger.info("=" * 80)
-            
+
             download_path = asegurar_directorio()
             logger.info(f"Carpeta de destino: {download_path}")
-            
+
             # Configurar driver con logging
             logger.info("Configurando Chrome/Chromium...")
             logger.debug(f"CHROME_BIN={os.getenv('CHROME_BIN')}")
             logger.debug(f"CHROMEDRIVER_PATH={os.getenv('CHROMEDRIVER_PATH')}")
             logger.debug(f"RAILWAY_ENVIRONMENT={os.getenv('RAILWAY_ENVIRONMENT')}")
-            
+
             driver = configurar_driver()
             logger.info("Driver configurado exitosamente")
             
@@ -589,31 +589,31 @@ def main():
             logger.info("Extrayendo tabla de datos...")
             df = extraer_tabla(driver)
             logger.info(f"Tabla extraída: {len(df)} filas, {len(df.columns)} columnas")
-            
+
             # Procesar fechas y valores
             logger.info("Procesando fechas y valores...")
             df = procesar_fechas_y_valores(df)
-            
+
             # Mostrar primeros y últimos datos
             logger.info("Primeros datos:")
             logger.debug(f"\n{df.head()}")
             logger.info("Últimos datos:")
             logger.debug(f"\n{df.tail()}")
-            
+
             # Guardar como Excel temporal
             logger.info("Guardando Excel...")
             destino = guardar_excel(df, download_path)
             logger.info(f"Excel guardado: {destino}")
-            
+
             # Actualizar archivo histórico
             logger.info("Actualizando archivo histórico...")
             actualizar_historico(download_path)
             logger.info("Archivo histórico actualizado")
-            
+        
             logger.info("=" * 80)
             logger.info("PROCESO COMPLETADO EXITOSAMENTE")
             logger.info("=" * 80)
-            
+
         except Exception as e:
             logger.log_exception(e, "main()")
             if 'driver' in locals():

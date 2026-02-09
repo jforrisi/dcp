@@ -397,9 +397,9 @@ def extraer_tabla(driver):
         current_url = driver.current_url
         if "Historico.aspx" not in current_url and "ITLUP" not in current_url:
             print(f"[WARN] No estamos en la página correcta. URL actual: {current_url}")
-            print(f"[INFO] Navegando explícitamente a: {BEVSA_URL}")
-            driver.get(BEVSA_URL)
-            time.sleep(3)
+        print(f"[INFO] Navegando explícitamente a: {BEVSA_URL}")
+        driver.get(BEVSA_URL)
+        time.sleep(3)
     except (NoSuchWindowException, WebDriverException) as e:
         print(f"[ERROR] Chrome se cerró inesperadamente: {e}")
         raise RuntimeError(f"Chrome se cerró inesperadamente: {e}")
@@ -857,16 +857,16 @@ def main():
             logger.info("=" * 80)
             logger.info("EXTRACCIÓN DE CURVA DE PESOS UYU - BEVSA")
             logger.info("=" * 80)
-            
+
             download_path = asegurar_directorio()
             logger.info(f"Carpeta de destino: {download_path}")
-            
+
             # Configurar driver con logging
             logger.info("Configurando Chrome/Chromium...")
             logger.debug(f"CHROME_BIN={os.getenv('CHROME_BIN')}")
             logger.debug(f"CHROMEDRIVER_PATH={os.getenv('CHROMEDRIVER_PATH')}")
             logger.debug(f"RAILWAY_ENVIRONMENT={os.getenv('RAILWAY_ENVIRONMENT')}")
-            
+
             driver = configurar_driver()
             logger.info("Driver configurado exitosamente")
             
@@ -904,27 +904,27 @@ def main():
             logger.info("Extrayendo tabla de datos...")
             df = extraer_tabla(driver)
             logger.info(f"Tabla extraída: {len(df)} filas, {len(df.columns)} columnas")
-            
+
             # Mostrar primeros y últimos datos
             logger.info("Primeros datos:")
             logger.debug(f"\n{df.head()}")
             logger.info("Últimos datos:")
             logger.debug(f"\n{df.tail()}")
-            
+
             # Guardar como Excel temporal
             logger.info("Guardando Excel...")
             destino = guardar_excel(df, download_path)
             logger.info(f"Excel guardado: {destino}")
-            
+
             # Actualizar archivo histórico
             logger.info("Actualizando archivo histórico...")
             actualizar_historico(download_path)
             logger.info("Archivo histórico actualizado")
-            
+        
             logger.info("=" * 80)
             logger.info("PROCESO COMPLETADO EXITOSAMENTE")
             logger.info("=" * 80)
-            
+
         except Exception as e:
             logger.log_exception(e, "main()")
             if 'driver' in locals():

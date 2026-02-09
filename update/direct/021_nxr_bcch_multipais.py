@@ -35,13 +35,13 @@ if str(script_dir) not in sys.path:
     sys.path.insert(0, str(script_dir))
 
 from _helpers import (
+    completar_dias_faltantes,
     validar_fechas_solo_nulas,
     insertar_en_bd_unificado
 )
 
 
 # Configuración de base de datos
-DB_NAME = "series_tiempo.db"
 
 # Credenciales del BCCH
 BCCH_USER = "joaquin.forrisi@gmail.com"
@@ -184,42 +184,6 @@ def extraer_bcch_pais(codigo_serie: str, nombre_pais: str, fecha_inicio: str = "
         traceback.print_exc()
         return None
 
-def completar_dias_faltantes(df: pd.DataFrame, columna_fecha: str = 'Fecha', columna_valor: str = 'Tipo_Cambio') -> pd.DataFrame:
-    """
-    Completa días faltantes en una serie diaria usando forward fill.
-    """
-    print("\n[INFO] Completando días faltantes en serie diaria...")
-    
-    df = df.copy()
-    df[columna_fecha] = pd.to_datetime(df[columna_fecha])
-    df = df.sort_values(columna_fecha).reset_index(drop=True)
-    
-    fecha_min = df[columna_fecha].min()
-    fecha_max = df[columna_fecha].max()
-    
-    rango_completo = pd.date_range(start=fecha_min, end=fecha_max, freq='D')
-    df_completo = pd.DataFrame({columna_fecha: rango_completo})
-    
-    df_completo = df_completo.merge(
-        df[[columna_fecha, columna_valor]], 
-        on=columna_fecha, 
-        how='left'
-    )
-    
-    df_completo[columna_valor] = df_completo[columna_valor].ffill()
-    
-    dias_originales = len(df)
-    dias_completados = len(df_completo)
-    dias_agregados = dias_completados - dias_originales
-    
-    if dias_agregados > 0:
-        print(f"[INFO] Se completaron {dias_agregados} días faltantes (de {dias_originales} a {dias_completados} días)")
-        print(f"   Rango: {fecha_min.strftime('%d/%m/%Y')} a {fecha_max.strftime('%d/%m/%Y')}")
-    else:
-        print(f"[OK] No había días faltantes ({dias_originales} días en el rango)")
-    
-    return df_completo
-
 def procesar_pais(pais_config: dict) -> bool:
     """
     Procesa un país completo: extrae, valida e inserta datos.
@@ -248,8 +212,10 @@ def procesar_pais(pais_config: dict) -> bool:
             print(f"[ERROR] No se pudieron extraer datos para {pais_config['nombre']}")
             return False
         
-        # Completar días faltantes
-        df = completar_dias_faltantes(df, columna_fecha='Fecha', columna_valor='Tipo_Cambio')
+        # Completar días faltantes y solo lunes a viernes
+        df = completar_dias_faltantes(
+            df, columna_fecha='Fecha', columna_valor='Tipo_Cambio', solo_lunes_a_viernes=True
+        )
         
         # Renombrar columnas para el helper
         df = df.rename(columns={'Fecha': 'FECHA', 'Tipo_Cambio': 'VALOR'})
@@ -262,8 +228,7 @@ def procesar_pais(pais_config: dict) -> bool:
         insertar_en_bd_unificado(
             pais_config["id_variable"],
             pais_config["id_pais"],
-            df,
-            DB_NAME
+            df
         )
         
         return True

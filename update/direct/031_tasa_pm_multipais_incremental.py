@@ -19,25 +19,20 @@ Países incluidos:
 
 import os
 import sys
-import sqlite3
 from datetime import datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
 from bcchapi import Siete
 
-# Asegurar que podemos importar _helpers
+# Asegurar que podemos importar _helpers y db
 script_dir = Path(__file__).parent
-if str(script_dir) not in sys.path:
-    sys.path.insert(0, str(script_dir))
-
-from _helpers import (
-    validar_fechas_solo_nulas
-)
-
-# Configuración de base de datos (ruta desde la raíz del proyecto)
 base_dir = Path(__file__).parent.parent.parent
-DB_NAME = str(base_dir / "series_tiempo.db")
+if str(base_dir) not in sys.path:
+    sys.path.insert(0, str(base_dir))
+
+from db.connection import execute_query_single, execute_update
+from _helpers import validar_fechas_solo_nulas
 
 # Credenciales del BCCH (desde 017_ipc_multipais.py)
 BCCH_USER = "joaquin.forrisi@gmail.com"
@@ -164,8 +159,7 @@ def extraer_tasa_pm_bcch(codigo_serie: str, nombre_pais: str, fecha_inicio: str,
 
 def insertar_con_replace(id_variable: int, id_pais: int, df: pd.DataFrame):
     """
-    Inserta datos en maestro_precios usando INSERT OR REPLACE.
-    Esto reemplaza automáticamente registros existentes para las mismas fechas.
+    Inserta datos en maestro_precios (insert o update según exista).
     
     Args:
         id_variable: ID de la variable
@@ -173,64 +167,53 @@ def insertar_con_replace(id_variable: int, id_pais: int, df: pd.DataFrame):
         df: DataFrame con columnas FECHA y VALOR
     """
     print(f"\n[INFO] Actualizando base de datos para id_variable={id_variable}, id_pais={id_pais}...")
-    
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    
+
+    # Verificar que existe registro en maestro
+    row = execute_query_single(
+        "SELECT id_variable, id_pais FROM maestro WHERE id_variable = ? AND id_pais = ?",
+        (id_variable, id_pais),
+    )
+    if not row:
+        print(f"[ERROR] No existe registro en 'maestro' para id_variable={id_variable}, id_pais={id_pais}.")
+        return False
+
+    registros_insertados = 0
+    registros_actualizados = 0
+
     try:
-        # Verificar que existe registro en maestro
-        cursor.execute("""
-            SELECT id_variable, id_pais FROM maestro 
-            WHERE id_variable = ? AND id_pais = ?
-        """, (id_variable, id_pais))
-        if not cursor.fetchone():
-            print(f"[ERROR] No existe registro en 'maestro' para id_variable={id_variable}, id_pais={id_pais}.")
-            return False
-        
-        # Preparar datos para inserción
-        registros_insertados = 0
-        registros_actualizados = 0
-        
         for _, row in df.iterrows():
-            fecha = row['FECHA']
-            valor = row['VALOR']
-            
-            # Verificar si ya existe
-            cursor.execute("""
-                SELECT rowid FROM maestro_precios 
-                WHERE id_variable = ? AND id_pais = ? AND fecha = ?
-            """, (id_variable, id_pais, fecha))
-            existe = cursor.fetchone()
-            
+            fecha = row["FECHA"]
+            valor = row["VALOR"]
+            fecha_str = fecha.strftime("%Y-%m-%d") if hasattr(fecha, "strftime") else str(fecha)
+
+            existe = execute_query_single(
+                "SELECT id FROM maestro_precios WHERE id_variable = ? AND id_pais = ? AND fecha = ?",
+                (id_variable, id_pais, fecha_str),
+            )
+
             if existe:
-                # Actualizar registro existente
-                cursor.execute("""
-                    UPDATE maestro_precios 
-                    SET valor = ? 
-                    WHERE id_variable = ? AND id_pais = ? AND fecha = ?
-                """, (valor, id_variable, id_pais, fecha))
-                registros_actualizados += 1
+                success, error, _ = execute_update(
+                    "UPDATE maestro_precios SET valor = ? WHERE id_variable = ? AND id_pais = ? AND fecha = ?",
+                    (valor, id_variable, id_pais, fecha_str),
+                )
+                if success:
+                    registros_actualizados += 1
             else:
-                # Insertar nuevo registro
-                cursor.execute("""
-                    INSERT INTO maestro_precios (id_variable, id_pais, fecha, valor)
-                    VALUES (?, ?, ?, ?)
-                """, (id_variable, id_pais, fecha, valor))
-                registros_insertados += 1
-        
-        conn.commit()
-        
+                success, error, _ = execute_update(
+                    "INSERT INTO maestro_precios (id_variable, id_pais, fecha, valor) VALUES (?, ?, ?, ?)",
+                    (id_variable, id_pais, fecha_str, valor),
+                )
+                if success:
+                    registros_insertados += 1
+
         print(f"[OK] Insertados: {registros_insertados}, Actualizados: {registros_actualizados}")
         return True
-        
+
     except Exception as e:
-        conn.rollback()
         print(f"[ERROR] Error al insertar datos: {e}")
         import traceback
         traceback.print_exc()
         return False
-    finally:
-        conn.close()
 
 
 def procesar_pais(pais_config: dict, fecha_inicio: str, fecha_fin: str) -> bool:

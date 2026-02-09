@@ -1,13 +1,13 @@
 """Admin routes for pais_grupo."""
 from flask import Blueprint, request, jsonify
 from ...database import execute_query, execute_query_single, execute_update
-from ...middleware import admin_only
+from ...middleware import admin_session_required
 
 bp = Blueprint('admin_pais_grupo', __name__)
 
 
 @bp.route('/pais-grupo', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_all_paises():
     """Get all pais_grupo."""
     try:
@@ -23,7 +23,7 @@ def get_all_paises():
 
 
 @bp.route('/pais-grupo/<int:pais_id>', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_pais(pais_id: int):
     """Get a single pais_grupo by ID."""
     try:
@@ -41,7 +41,7 @@ def get_pais(pais_id: int):
 
 
 @bp.route('/pais-grupo', methods=['POST'])
-@admin_only
+@admin_session_required
 def create_pais():
     """Create a new pais_grupo."""
     try:
@@ -76,7 +76,7 @@ def create_pais():
 
 
 @bp.route('/pais-grupo/<int:pais_id>', methods=['PUT'])
-@admin_only
+@admin_session_required
 def update_pais(pais_id: int):
     """Update a pais_grupo."""
     try:
@@ -118,7 +118,7 @@ def update_pais(pais_id: int):
 
 
 @bp.route('/pais-grupo/<int:pais_id>', methods=['DELETE'])
-@admin_only
+@admin_session_required
 def delete_pais(pais_id: int):
     """Delete a pais_grupo."""
     try:

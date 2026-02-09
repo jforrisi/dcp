@@ -21,7 +21,6 @@ from pathlib import Path
 
 import pandas as pd
 import requests
-import sqlite3
 from bs4 import BeautifulSoup
 from _helpers import (
     validar_fechas_solo_nulas,
@@ -30,7 +29,6 @@ from _helpers import (
 
 
 # Configuración de base de datos
-DB_NAME = "series_tiempo.db"
 
 # URL por defecto para extraer datos
 URL_RAVA_DEFAULT = "https://www.rava.com/perfil/DOLAR%20CCL"
@@ -258,39 +256,37 @@ def crear_dataframe_desde_lista(datos):
     
     return df
 
-def leer_desde_bd(db_name: str, id_variable: int, id_pais: int) -> pd.DataFrame:
+def leer_desde_bd(id_variable: int, id_pais: int) -> pd.DataFrame:
     """
     Lee todos los datos desde la base de datos para una variable/pais específica.
     
     Returns:
         DataFrame con columnas: Fecha, Cierre
     """
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+    from db.connection import execute_query
+
     print("\n[INFO] Leyendo todos los datos desde la base de datos...")
-    
-    conn = sqlite3.connect(db_name)
-    try:
-        query = """
-            SELECT fecha, valor
-            FROM maestro_precios
-            WHERE id_variable = ? AND id_pais = ?
-            ORDER BY fecha ASC
-        """
-        df = pd.read_sql_query(query, conn, params=(id_variable, id_pais))
-        
-        if df.empty:
-            print("[WARN] No se encontraron datos en la base de datos")
-            return pd.DataFrame(columns=['Fecha', 'Cierre'])
-        
-        # Renombrar columnas
-        df = df.rename(columns={'fecha': 'Fecha', 'valor': 'Cierre'})
-        df['Fecha'] = pd.to_datetime(df['Fecha'])
-        
-        print(f"[OK] Se leyeron {len(df)} registros desde la BD")
-        print(f"   Rango: {df['Fecha'].min().strftime('%d/%m/%Y')} a {df['Fecha'].max().strftime('%d/%m/%Y')}")
-        
-        return df
-    finally:
-        conn.close()
+
+    rows = execute_query(
+        "SELECT fecha, valor FROM maestro_precios WHERE id_variable = ? AND id_pais = ? ORDER BY fecha ASC",
+        (id_variable, id_pais),
+    )
+
+    if not rows:
+        print("[WARN] No se encontraron datos en la base de datos")
+        return pd.DataFrame(columns=['Fecha', 'Cierre'])
+
+    df = pd.DataFrame(rows)
+    df = df.rename(columns={'fecha': 'Fecha', 'valor': 'Cierre'})
+    df['Fecha'] = pd.to_datetime(df['Fecha'])
+
+    print(f"[OK] Se leyeron {len(df)} registros desde la BD")
+    print(f"   Rango: {df['Fecha'].min().strftime('%d/%m/%Y')} a {df['Fecha'].max().strftime('%d/%m/%Y')}")
+
+    return df
 
 def reescribir_csv_historico(df_completo: pd.DataFrame):
     """
@@ -364,14 +360,14 @@ def main():
     
     print("\n[INFO] Actualizando base de datos...")
     # El helper ya elimina registros existentes antes de insertar, así que prioriza datos nuevos
-    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, df, DB_NAME)
+    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, df)
     
     # Después de actualizar, leer TODO desde la BD y reescribir el CSV histórico
     print("\n" + "=" * 60)
     print("ACTUALIZANDO CSV HISTÓRICO")
     print("=" * 60)
     
-    df_completo = leer_desde_bd(DB_NAME, ID_VARIABLE, ID_PAIS)
+    df_completo = leer_desde_bd(ID_VARIABLE, ID_PAIS)
     
     if not df_completo.empty:
         reescribir_csv_historico(df_completo)

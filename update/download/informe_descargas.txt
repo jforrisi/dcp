@@ -1,0 +1,155 @@
+======================================================================
+INFORME DE EJECUCIÓN DE SCRIPTS DE DESCARGA
+Fecha: 2026-02-09 12:38:27
+Total scripts: 18
+Exitosos: 14
+Fallidos: 4
+======================================================================
+
+SCRIPTS QUE FALLARON:
+----------------------------------------
+
+  [anexo_estadistico_informe_economico_bcp.py]
+
+[2026-02-09 12:20:54] [INFO] ================================================================================
+[2026-02-09 12:20:54] [INFO] INICIO DE EJECUCIÓN: anexo_estadistico_informe_economico_bcp
+[2026-02-09 12:20:54] [INFO] Timestamp: 2026-02-09T12:20:54.952675
+[2026-02-09 12:20:54] [INFO] ================================================================================
+[2026-02-09 12:20:54] [INFO] ================================================================================
+[2026-02-09 12:20:54] [INFO] DESCARGA DE ANEXO ESTADÍSTICO INFORME ECONÓMICO - BCP
+[2026-02-09 12:20:54] [INFO] ================================================================================
+[2026-02-09 12:20:54] [INFO] Carpeta de descargas: C:\Users\jforrisi\Desktop\desarrollos\gita\update/historicos
+[2026-02-09 12:20:54] [DEBUG] CHROME_BIN=None
+[2026-02-09 12:20:54] [DEBUG] CHROMEDRIVER_PATH=None
+[INFO] Carpeta de descargas: C:\Users\jforrisi\Desktop\desarrollos\gita\update/historicos
+[INFO] Navegando a: https://www.bcp.gov.py/web/institucional/anexo-estadistico-
+[INFO] Posible anti-bot detectado: cloudflare
+
+============================================================
+ANTI-BOT DETECTADO
+============================================================
+[INFO] Esperando automáticamente hasta 60 segundos...
+============================================================
+
+[INFO] Esperando... (15/60 segundos)
+[INFO] Esperando... (30/60 segundos)
+[INFO] Esperando... (45/60 segundos)
+[INFO] Esperando... (60/60 segundos)
+[INFO] Continuando...
+[INFO] Buscando enlace de descarga en la página...
+[OK] Enlace encontrado (método 1): https://www.bcp.gov.py/documents/20117/213069/Anexo_Estad%C3%ADstico_del_Informe_Econ%C3%B3mico_09_02_2026.xlsx/bbd4396a-7c80-05c8-9582-36c317faba8c?t=1770646430056
+[INFO] Descargando Excel desde: https://www.bcp.gov.py/documents/20117/213069/Anexo_Estad%C3%ADstico_del_Informe_Econ%C3%B3mico_09_02_2026.xlsx/bbd4396a-7c80-05c8-9582-36c317faba8c?t=1770646430056
+[INFO] Esperando ...
+
+----------------------------------------
+
+  [commodities_banco_mundial.py]
+
+[2026-02-09 12:23:18] [INFO] ================================================================================
+[2026-02-09 12:23:18] [INFO] INICIO DE EJECUCIÓN: commodities_banco_mundial
+[2026-02-09 12:23:18] [INFO] Timestamp: 2026-02-09T12:23:18.734623
+[2026-02-09 12:23:18] [INFO] ================================================================================
+[2026-02-09 12:23:18] [INFO] ================================================================================
+[2026-02-09 12:23:18] [INFO] DESCARGA DE COMMODITIES - BANCO MUNDIAL (CMO Historical Data Monthly)
+[2026-02-09 12:23:18] [INFO] ================================================================================
+[2026-02-09 12:23:18] [INFO] Carpeta de descargas: C:\Users\jforrisi\Desktop\desarrollos\gita\update/historicos
+[INFO] Destino: C:\Users\jforrisi\Desktop\desarrollos\gita\update/historicos\commodities_banco_mundial.xlsx
+[INFO] Intentando descargar con requests...
+[WARN] requests falló: [Errno 13] Permission denied: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update/historicos\\commodities_banco_mundial.xlsx'
+[INFO] Navegando a la URL del Excel...
+[INFO] Esperando descarga...
+[ERROR] Selenium falló: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update/historicos\\commodities_banco_mundial.xlsx'
+[2026-02-09 12:23:38] [ERROR] EXCEPCIÓN en main(): RuntimeError: No se pudo descargar el Excel del Banco Mundial
+[2026-02-09 12:23:38] [ERROR] Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\commodities_banco_mundial.py", line 150, in main
+    destino = descargar_excel()
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\commodities_banco_mundial.py", line 134, in descargar_excel
+    raise RuntimeError("No se pudo descargar el Excel del Banco Mundial")
+RuntimeError: No se pudo descargar el Excel del B...
+
+----------------------------------------
+
+  [expectativas_empresariales_colombia_banrep_simple.py]
+
+================================================================================
+DESCARGA DE EXPECTATIVAS EMPRESARIALES - BANREP (COLOMBIA) - SIMPLE
+================================================================================
+[INFO] Carpeta de destino: C:\Users\jforrisi\Desktop\desarrollos\gita\update/historicos
+[INFO] Archivo destino: expectativas_empresariales_colombia.xlsx
+[INFO] URL de la página: https://suameca.banrep.gov.co/estadisticas-economicas/encuestas
+================================================================================
+[INFO] Cargando página con Selenium para obtener HTML renderizado...
+[INFO] Esperando a que el contenido se cargue...
+[INFO] Buscando elemento sin expandir secciones...
+[INFO] Elemento no visible, expandiendo sección ETE (Encuesta Trimestral de Expectativas)...
+[OK] Sección ETE expandida
+[INFO] Expandiendo todas las secciones como último recurso...
+[INFO] HTML renderizado obtenido: 214753 caracteres
+[DEBUG] HTML guardado en: C:\Users\jforrisi\Desktop\desarrollos\gita\update/historicos\banrep_page_debug.html
+[INFO] Buscando elemento en el HTML con BeautifulSoup...
+[INFO] Método 1a: Encontrados 0 enlaces con clase exacta 'a-link-download-file'
+[INFO] Método 1b: Encontrados 0 enlaces con clase parcial 'a-link-download-file'
+[INFO] Método 1c: Buscando en 194 enlaces totales por texto...
+[ERROR] No se encontró el enlace al Excel en el HTML
+
+[ERROR] Error durante el proceso: No se pudo encontrar la URL del Excel en el HTML
+[INFO] Navegador cerrado
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_empresariales_colombia_banrep_simple.py", line 404, in main
+    raise RuntimeError("No se pudo encontrar la URL del Excel en el HTML")
+RuntimeError: No se pudo encontrar la URL del Excel en el HTML
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_empresariales_colombia_banrep_simple.py", line 433, in <module>...
+
+----------------------------------------
+
+  [expectativas_eme_analistas_banrep.py]
+
+[2026-02-09 12:33:26] [INFO] ================================================================================
+[2026-02-09 12:33:26] [INFO] INICIO DE EJECUCIÓN: expectativas_eme_analistas_banrep
+[2026-02-09 12:33:26] [INFO] Timestamp: 2026-02-09T12:33:26.974408
+[2026-02-09 12:33:26] [INFO] ================================================================================
+[2026-02-09 12:33:26] [INFO] ================================================================================
+[2026-02-09 12:33:26] [INFO] DESCARGA EME - SERIE HISTÓRICA (BanRep)
+[2026-02-09 12:33:26] [INFO] ================================================================================
+[2026-02-09 12:33:26] [INFO] Carpeta: C:\Users\jforrisi\Desktop\desarrollos\gita\update/historicos
+[INFO] Navegando a: https://suameca.banrep.gov.co/estadisticas-economicas/encuestas
+[OK] Sección principal expandida
+[OK] Clic en: EME
+[OK] Sección Datos expandida
+[2026-02-09 12:34:19] [ERROR] EXCEPCIÓN en main(): PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update/historicos\\expectativas_eme_analistas_banrep.xlsx'
+[2026-02-09 12:34:19] [ERROR] Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_eme_analistas_banrep.py", line 308, in main
+    destino = descargar_excel()
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_eme_analistas_banrep.py", line 284, in descargar_excel
+    os.remove(destino)
+PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update/historicos\\expectativas_eme_analistas_banrep.xlsx'
+
+[2026-02-09 12:34:19] [ERROR] EXCEPCIÓN NO MANEJADA: PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proc...
+
+----------------------------------------
+
+RESUMEN POR SCRIPT:
+----------------------------------------
+  FALLA   anexo_estadistico_informe_economico_bcp.py
+  OK      carne_exportacion.py
+  FALLA   commodities_banco_mundial.py
+  OK      curva_pesos_uyu_temp.py
+  OK      curva_pesos_uyu_ui_temp.py
+  OK      encuesta_expectativas_inflacion_bcu.py
+  OK      expectativas_economicas_paraguay.py
+  OK      expectativas_empresariales_colombia_banrep.py
+  FALLA   expectativas_empresariales_colombia_banrep_simple.py
+  FALLA   expectativas_eme_analistas_banrep.py
+  OK      expectativas_inflacion_mexico_banxico.py
+  OK      expectativas_inflacion_peru_bcrp.py
+  OK      instrumentos_emitidos_bcu_y_gobierno_central.py
+  OK      ipc_colombia.py
+  OK      ipc_paraguay.py
+  OK      leche_polvo_entera.py
+  OK      novillo_hacienda.py
+  OK      precio_leche_productor.py
+
+======================================================================

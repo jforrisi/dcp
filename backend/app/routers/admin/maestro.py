@@ -1,13 +1,13 @@
 """Admin routes for maestro."""
 from flask import Blueprint, request, jsonify
 from ...database import execute_query, execute_query_single, execute_update
-from ...middleware import admin_only
+from ...middleware import admin_session_required
 
 bp = Blueprint('admin_maestro', __name__)
 
 
 @bp.route('/maestro', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_all_maestro():
     """Get all maestro records, with optional filters."""
     try:
@@ -97,7 +97,7 @@ def get_all_maestro():
 
 
 @bp.route('/maestro/<int:id_variable>/<int:id_pais>', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_maestro(id_variable: int, id_pais: int):
     """Get a single maestro record by composite key (id_variable, id_pais)."""
     try:
@@ -121,7 +121,7 @@ def get_maestro(id_variable: int, id_pais: int):
 
 
 @bp.route('/maestro', methods=['POST'])
-@admin_only
+@admin_session_required
 def create_maestro():
     """Create a new maestro record."""
     try:
@@ -166,17 +166,7 @@ def create_maestro():
         
         link = data.get('link', '').strip() or None
         script_update = data.get('script_update', '').strip() or None
-        
-        # Insertar (sin nombre, tipo, categoria, es_cotizacion)
-        insert_query = """
-            INSERT INTO maestro (nombre, tipo, fuente, periodicidad, unidad, categoria, 
-                               activo, es_cotizacion, pais, id_variable, id_pais, link, script_update)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """
-        # nombre y tipo pueden ser None, categoria es None, es_cotizacion es 0 por defecto
         es_cotizacion = 0  # Siempre 0, campo eliminado del formulario
-        params = (nombre, tipo, fuente, periodicidad, unidad, categoria, activo, 
-                 es_cotizacion, observaciones, id_variable, id_pais, link, script_update)
         
         # Verificar si ya existe un registro con esta clave compuesta
         if id_variable is not None and id_pais is not None:
@@ -184,6 +174,18 @@ def create_maestro():
             existing = execute_query_single(check_existing, (id_variable, id_pais))
             if existing:
                 return jsonify({'error': 'Ya existe un registro con esta variable y país'}), 400
+        
+        # Obtener siguiente id (PostgreSQL no tiene autoincrement en INTEGER PRIMARY KEY)
+        next_id_row = execute_query_single("SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM maestro")
+        maestro_id = int(next_id_row.get("next_id", 1)) if next_id_row else 1
+        
+        insert_query = """
+            INSERT INTO maestro (id, nombre, tipo, fuente, periodicidad, unidad, categoria, 
+                               activo, es_cotizacion, pais, id_variable, id_pais, link, script_update)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+        params = (maestro_id, nombre, tipo, fuente, periodicidad, unidad, categoria, activo, 
+                 es_cotizacion, observaciones, id_variable, id_pais, link, script_update)
         
         success, error, _ = execute_update(insert_query, params)
         
@@ -211,7 +213,7 @@ def create_maestro():
 
 
 @bp.route('/maestro/bulk', methods=['POST'])
-@admin_only
+@admin_session_required
 def create_maestro_bulk():
     """Create multiple maestro records for the same variable but different countries."""
     try:
@@ -285,21 +287,26 @@ def create_maestro_bulk():
         
         # Insertar todos los registros
         insert_query = """
-            INSERT INTO maestro (nombre, tipo, fuente, periodicidad, unidad, categoria, 
+            INSERT INTO maestro (id, nombre, tipo, fuente, periodicidad, unidad, categoria, 
                                activo, es_cotizacion, pais, id_variable, id_pais, link, script_update)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         
         created_records = []
         errors = []
         
+        # Obtener el siguiente id disponible
+        next_id_row = execute_query_single("SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM maestro")
+        maestro_id = int(next_id_row.get("next_id", 1)) if next_id_row else 1
+        
         for id_pais in id_paises:
-            params = (nombre, tipo, fuente, periodicidad, unidad, categoria, activo, 
+            params = (maestro_id, nombre, tipo, fuente, periodicidad, unidad, categoria, activo, 
                      es_cotizacion, observaciones, id_variable, id_pais, link, script_update)
             
             success, error, _ = execute_update(insert_query, params)
             
             if success:
+                maestro_id += 1
                 created_records.append({
                     'id_variable': id_variable,
                     'id_pais': id_pais
@@ -324,7 +331,7 @@ def create_maestro_bulk():
 
 
 @bp.route('/maestro/<int:id_variable>/<int:id_pais>', methods=['PUT'])
-@admin_only
+@admin_session_required
 def update_maestro(id_variable: int, id_pais: int):
     """Update a maestro record by composite key."""
     try:
@@ -427,7 +434,7 @@ def update_maestro(id_variable: int, id_pais: int):
 
 
 @bp.route('/maestro/<int:id_variable>/<int:id_pais>', methods=['DELETE'])
-@admin_only
+@admin_session_required
 def delete_maestro(id_variable: int, id_pais: int):
     """Delete a maestro record by composite key."""
     try:

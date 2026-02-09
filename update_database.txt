@@ -1,70 +1,485 @@
 ================================================================================
 REPORTE DE ACTUALIZACIÓN DE BASE DE DATOS
 ================================================================================
-Fecha/Hora de ejecución: 2026-02-05 11:28:09
+Fecha/Hora de ejecución: 2026-02-09 13:22:45
 
 RESUMEN GENERAL
 --------------------------------------------------------------------------------
-Total de scripts ejecutados: 34
-  - FASE 1 (Descargas): 6
-  - FASE 2 (Actualizaciones): 28
+Total de scripts ejecutados: 53
+  - FASE 1 (Descargas): 20
+  - FASE 2 (Actualizaciones): 33
 
-Exitosos: 33
-  - FASE 1: 6
+Exitosos: 22
+  - FASE 1: 16
+  - FASE 2: 6
+
+Fallidos: 31
+  - FASE 1: 4
   - FASE 2: 27
 
-Fallidos: 1
-  - FASE 1: 0
-  - FASE 2: 1
-
-Tiempo total: 485.62 segundos (8.09 minutos)
+Tiempo total: 4846.25 segundos (80.77 minutos)
 
 FASE 1 - SCRIPTS DE DESCARGA EJECUTADOS EXITOSAMENTE
 --------------------------------------------------------------------------------
-  [OK] download/carne_exportacion.py (14.86s)
-  [OK] download/instrumentos_emitidos_bcu_y_gobierno_central.py (12.97s)
-  [OK] download/ipc_paraguay.py (20.10s)
-  [OK] download/leche_polvo_entera.py (21.45s)
-  [OK] download/novillo_hacienda.py (17.08s)
-  [OK] download/precio_leche_productor.py (18.00s)
+  [OK] download/anexo_estadistico_paraguay.py (110.43s)
+  [OK] download/carne_exportacion.py (14.97s)
+  [OK] download/curva_pesos_uyu_temp.py (179.22s)
+  [OK] download/curva_pesos_uyu_ui_temp.py (183.70s)
+  [OK] download/encuesta_expectativas_inflacion_bcu.py (1.65s)
+  [OK] download/expectativas_economicas_paraguay.py (109.55s)
+  [OK] download/expectativas_empresariales_colombia_banrep.py (54.55s)
+  [OK] download/expectativas_inflacion_mexico_banxico.py (8.90s)
+  [OK] download/expectativas_inflacion_peru_bcrp.py (5.29s)
+  [OK] download/instrumentos_emitidos_bcu_y_gobierno_central.py (13.60s)
+  [OK] download/ipc_colombia.py (28.24s)
+  [OK] download/ipc_paraguay.py (106.15s)
+  [OK] download/leche_polvo_entera.py (21.09s)
+  [OK] download/novillo_hacienda.py (14.32s)
+  [OK] download/precio_leche_productor.py (18.35s)
+  [OK] download/run_all_downloads.py (1054.42s)
 
 FASE 2 - SCRIPTS DE ACTUALIZACIÓN EJECUTADOS EXITOSAMENTE
 --------------------------------------------------------------------------------
-  [OK] direct/001_carne_exportacion.py (2.45s)
-  [OK] direct/002_celulosa_pulp.py (3.76s)
-  [OK] direct/003_leche_polvo_entera.py (2.25s)
-  [OK] direct/004_novillo_hacienda.py (2.61s)
-  [OK] direct/005_precio_arroz_wb.py (4.06s)
-  [OK] direct/006_precio_leche_productor.py (1.99s)
-  [OK] direct/007_precio_soja_wb.py (3.29s)
-  [OK] direct/008_precio_trigo_wb.py (2.98s)
-  [OK] direct/009_queso_export.py (3.82s)
-  [OK] direct/010_arquitectura.py (4.02s)
-  [OK] direct/011_bookkeeping.py (3.08s)
-  [OK] direct/012_contabilidad.py (3.53s)
-  [OK] direct/013_ingenieria.py (2.72s)
-  [OK] direct/014_software.py (3.87s)
-  [OK] direct/015_combustibles_miem.py (2.28s)
-  [OK] direct/016_ipc.py (3.39s)
-  [OK] direct/017_ipc_multipais.py (20.50s)
-  [OK] direct/018_ipc_paraguay.py (2.43s)
-  [OK] direct/019_nxr_argy_cargar_historico.py (21.16s)
-  [OK] direct/021_nxr_bcch_multipais.py (123.63s)
-  [OK] direct/022_nxr_bra.py (3.49s)
-  [OK] direct/023_nxr_chile.py (146.43s)
-  [OK] direct/024_nxr_peru.py (3.29s)
-  [OK] direct/025_salario_real.py (2.27s)
-  [OK] direct/026_tipo_cambio_eur.py (3.27s)
-  [OK] direct/027_tipo_cambio_usd.py (3.01s)
-  [OK] calculate/001_servicios_no_tradicionales.py (1.32s)
+  [OK] direct/020_licitaciones_lrm_bcu.py (216.49s)
+  [OK] direct/028_indice_precios_exportacion_uruguay.py (43.45s)
+  [OK] direct/029_curva_pesos_uyu_bevsa_nominal.py (32.43s)
+  [OK] direct/030_curva_pesos_uyu_bevsa_real.py (34.20s)
+  [OK] direct/031_tasa_pm_multipais_incremental.py (2218.49s)
+  [OK] calculate/001_servicios_no_tradicionales.py (26.05s)
+
+================================================================================
+ERRORES EN FASE 1 (DESCARGAS)
+================================================================================
+
+ERROR #1: download/anexo_estadistico_informe_economico_bcp.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 149.70s
+
+Detalle del error:
+Error: El script terminó con código 1
+    destino = descargar_excel_bcp()
+              ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\anexo_estadistico_informe_economico_bcp.py", line 348, in descargar_excel_bcp
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\anexo_estadistico_informe_economico_bcp.py", line 348, in descargar_excel_bcp
+    os.remove(destino)
+PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update/historicos\\anexo_estadistico_informe_economico_bcp.xlsx'
+
+[2026-02-09 12:04:24] [INFO] ================================================================================
+[2026-02-09 12:04:24] [INFO] FIN DE EJECUCIÓN: anexo_estadistico_informe_economico_bcp
+[2026-02-09 12:04:24] [INFO] ================================================================================
+[2026-02-09 12:04:24] [INFO] FIN DE EJECUCIÓN: anexo_estadistico_informe_economico_bcp
+[2026-02-09 12:04:24] [INFO] ================================================================================
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\anexo_estadistico_informe_economico_bcp.py", line 388, in <module>
+    main()
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\anexo_estadistico_informe_economico_bcp.py", line 375, in main
+    destino = descargar_excel_bcp()
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\anexo_estadistico_informe_economico_bcp.py", line 348, in descargar_excel_bcp
+    os.remove(destino)
+PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update/historicos\\anexo_estadistico_informe_economico_bcp.xlsx'
+
+================================================================================
+
+ERROR #2: download/commodities_banco_mundial.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 14.28s
+
+Detalle del error:
+Error: El script terminó con código 1
+    raise RuntimeError("No se pudo descargar el Excel del Banco Mundial")
+RuntimeError: No se pudo descargar el Excel del Banco Mundial
+
+[2026-02-09 12:06:48] [INFO] ================================================================================
+[2026-02-09 12:06:48] [INFO] FIN DE EJECUCIÓN: commodities_banco_mundial
+[2026-02-09 12:06:48] [INFO] ================================================================================
+[2026-02-09 12:06:48] [INFO] FIN DE EJECUCIÓN: commodities_banco_mundial
+[2026-02-09 12:06:48] [INFO] ================================================================================
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\commodities_banco_mundial.py", line 163, in <module>
+    main()
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\commodities_banco_mundial.py", line 150, in main
+    destino = descargar_excel()
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\commodities_banco_mundial.py", line 134, in descargar_excel
+    raise RuntimeError("No se pudo descargar el Excel del Banco Mundial")
+RuntimeError: No se pudo descargar el Excel del Banco Mundial
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\commodities_banco_mundial.py", line 134, in descargar_excel
+    raise RuntimeError("No se pudo descargar el Excel del Banco Mundial")
+RuntimeError: No se pudo descargar el Excel del Banco Mundial
+
+================================================================================
+
+ERROR #3: download/expectativas_eme_analistas_banrep.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 39.81s
+
+Detalle del error:
+Error: El script terminó con código 1
+    destino = descargar_excel()
+              ^^^^^^^^^^^^^^^^^
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_eme_analistas_banrep.py", line 284, in descargar_excel
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_eme_analistas_banrep.py", line 284, in descargar_excel
+    os.remove(destino)
+PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update/historicos\\expectativas_eme_analistas_banrep.xlsx'
+
+[2026-02-09 12:15:18] [INFO] ================================================================================
+[2026-02-09 12:15:18] [INFO] FIN DE EJECUCIÓN: expectativas_eme_analistas_banrep
+[2026-02-09 12:15:18] [INFO] ================================================================================
+[2026-02-09 12:15:18] [INFO] FIN DE EJECUCIÓN: expectativas_eme_analistas_banrep
+[2026-02-09 12:15:18] [INFO] ================================================================================
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_eme_analistas_banrep.py", line 319, in <module>
+    main()
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_eme_analistas_banrep.py", line 308, in main
+    destino = descargar_excel()
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_eme_analistas_banrep.py", line 284, in descargar_excel
+    os.remove(destino)
+PermissionError: [WinError 32] El proceso no tiene acceso al archivo porque está siendo utilizado por otro proceso: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update/historicos\\expectativas_eme_analistas_banrep.xlsx'
+
+================================================================================
+
+ERROR #4: download/expectativas_empresariales_colombia_banrep_simple.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 60.50s
+
+Detalle del error:
+Error: El script terminó con código 1
+
+[ERROR] Error durante el proceso: No se pudo encontrar la URL del Excel en el HTML
+[INFO] Navegador cerrado
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_empresariales_colombia_banrep_simple.py", line 433, in <module>
+    main()
+[ERROR] Error durante el proceso: No se pudo encontrar la URL del Excel en el HTML
+[INFO] Navegador cerrado
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_empresariales_colombia_banrep_simple.py", line 433, in <module>
+    main()
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_empresariales_colombia_banrep_simple.py", line 404, in main
+    raise RuntimeError("No se pudo encontrar la URL del Excel en el HTML")
+    main()
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_empresariales_colombia_banrep_simple.py", line 404, in main
+    raise RuntimeError("No se pudo encontrar la URL del Excel en el HTML")
+RuntimeError: No se pudo encontrar la URL del Excel en el HTML
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\expectativas_empresariales_colombia_banrep_simple.py", line 404, in main
+    raise RuntimeError("No se pudo encontrar la URL del Excel en el HTML")
+RuntimeError: No se pudo encontrar la URL del Excel en el HTML
+
+================================================================================
 
 ================================================================================
 ERRORES EN FASE 2 (ACTUALIZACIONES)
 ================================================================================
 
-ERROR #1: direct/019_nxr_argy.py
+ERROR #1: direct/001_carne_exportacion.py
 --------------------------------------------------------------------------------
-Tiempo de ejecución: 0.20s
+Tiempo de ejecución: 1.93s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\001_carne_exportacion.py", line 20, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #2: direct/002_celulosa_pulp.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 2.30s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\002_celulosa_pulp.py", line 19, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #3: direct/003_leche_polvo_entera.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 2.22s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\003_leche_polvo_entera.py", line 15, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #4: direct/004_novillo_hacienda.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 2.15s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\004_novillo_hacienda.py", line 15, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #5: direct/005_precio_arroz_wb.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 2.19s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\005_precio_arroz_wb.py", line 18, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #6: direct/006_precio_leche_productor.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 3.32s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\006_precio_leche_productor.py", line 15, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #7: direct/007_precio_soja_wb.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 4.02s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\007_precio_soja_wb.py", line 18, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #8: direct/008_precio_trigo_wb.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 3.55s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\008_precio_trigo_wb.py", line 18, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #9: direct/009_queso_export.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 3.28s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\009_queso_export.py", line 15, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #10: direct/010_arquitectura.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 19.20s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\010_arquitectura.py", line 29, in <module>
+    from _helpers import insertar_en_bd_unificado
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #11: direct/011_bookkeeping.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 6.25s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\011_bookkeeping.py", line 29, in <module>
+    from _helpers import insertar_en_bd_unificado
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #12: direct/012_contabilidad.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 2.05s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\012_contabilidad.py", line 29, in <module>
+    from _helpers import insertar_en_bd_unificado
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #13: direct/013_ingenieria.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 2.03s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\013_ingenieria.py", line 29, in <module>
+    from _helpers import insertar_en_bd_unificado
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #14: direct/014_software.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 4.00s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\014_software.py", line 29, in <module>
+    from _helpers import insertar_en_bd_unificado
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #15: direct/015_combustibles_miem.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 5.53s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\015_combustibles_miem.py", line 14, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #16: direct/016_ipc.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 3.61s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\016_ipc.py", line 15, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #17: direct/017_ipc_multipais.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 2.04s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\017_ipc_multipais.py", line 26, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #18: direct/018_ipc_paraguay.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 1.76s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\018_ipc_paraguay.py", line 20, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #19: direct/019_nxr_argy.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 0.23s
 
 Detalle del error:
 Error: El script terminó con código 1
@@ -79,6 +494,142 @@ NameError: name 'en' is not defined. Did you mean: 'len'?
 
 ================================================================================
 
+ERROR #20: direct/021_nxr_bcch_multipais.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 2.25s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\021_nxr_bcch_multipais.py", line 37, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
 ================================================================================
-Fin del reporte - 2026-02-05 11:28:09
+
+ERROR #21: direct/022_nxr_bra.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 1.84s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\022_nxr_bra.py", line 17, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #22: direct/023_nxr_chile.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 1.98s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\023_nxr_chile.py", line 19, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #23: direct/024_nxr_peru.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 1.94s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\024_nxr_peru.py", line 20, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #24: direct/025_salario_real.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 1.74s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\025_salario_real.py", line 15, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #25: direct/026_tipo_cambio_eur.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 1.80s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\026_tipo_cambio_eur.py", line 17, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #26: direct/027_tipo_cambio_usd.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 1.64s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\027_tipo_cambio_usd.py", line 17, in <module>
+    from _helpers import (
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+ERROR #27: direct/032_ipc_colombia.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 0.85s
+
+Detalle del error:
+Error: El script terminó con código 1
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\032_ipc_colombia.py", line 11, in <module>
+    from _helpers import insertar_en_bd_unificado
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\_helpers.py", line 7, in <module>
+    from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
+ModuleNotFoundError: No module named 'db'
+
+================================================================================
+
+================================================================================
+Fin del reporte - 2026-02-09 13:22:45
 ================================================================================

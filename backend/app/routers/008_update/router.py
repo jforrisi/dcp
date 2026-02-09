@@ -1,5 +1,6 @@
 """Router for database update automation endpoints."""
 from flask import Blueprint, jsonify, request, send_file
+from ...middleware import admin_session_required
 import subprocess
 import os
 import sys
@@ -11,6 +12,8 @@ bp = Blueprint('update', __name__)
 
 # Variable global para evitar ejecuciones simultáneas
 update_in_progress = False
+update_process = None  # Referencia al subprocess para poder cancelarlo
+update_cancelled = False  # True si el usuario canceló (para no sobrescribir status)
 update_status = {
     'running': False,
     'started_at': None,
@@ -18,7 +21,9 @@ update_status = {
     'returncode': None,
     'output': None,
     'error': None,
-    'log_file': None
+    'log_file': None,
+    'progress': [],
+    'elapsed_seconds': None,
 }
 
 # Estado de scripts individuales
@@ -31,6 +36,7 @@ LOGS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @bp.route('/update/run', methods=['POST'])
+@admin_session_required
 def run_update():
     """
     Ejecuta update/update_database.py y guarda el log con timestamp.
@@ -50,8 +56,10 @@ def run_update():
     
     # Ejecutar en thread separado para no bloquear
     def run_script():
-        global update_in_progress, update_status
+        global update_in_progress, update_status, update_process, update_cancelled
         update_in_progress = True
+        update_process = None
+        update_cancelled = False
         update_status = {
             'running': True,
             'started_at': datetime.now().isoformat(),
@@ -145,6 +153,7 @@ def run_update():
                     bufsize=1,
                     universal_newlines=True
                 )
+                update_process = process
             except FileNotFoundError as e:
                 error_msg = f'Failed to execute subprocess: {e}\nPython: {python_path_str}\nScript: {script_path_str}'
                 print(f"[ERROR] {error_msg}")
@@ -159,7 +168,8 @@ def run_update():
                 update_in_progress = False
                 return
             
-            # Escribir output en tiempo real al archivo y al status
+            # Escribir output en tiempo real al archivo y al status (con timestamps)
+            PROGRESS_LINES = 25  # Más líneas para debug
             output_lines = []
             with open(log_file, 'w', encoding='utf-8') as f:
                 f.write(f"=== ACTUALIZACIÓN DE BASE DE DATOS ===\n")
@@ -167,29 +177,41 @@ def run_update():
                 f.write("=" * 80 + "\n\n")
                 
                 for line in process.stdout:
-                    output_lines.append(line)
+                    ts = datetime.now().strftime('%H:%M:%S')
+                    line_with_ts = f"[{ts}] {line}"
+                    output_lines.append(line_with_ts)
                     f.write(line)
                     f.flush()
                     
-                    # Mantener solo las últimas 100 líneas en memoria
-                    if len(output_lines) > 100:
+                    # Mantener últimas 200 líneas en memoria para progress
+                    if len(output_lines) > 200:
                         output_lines.pop(0)
                     
-                    # Actualizar progress con las últimas 5 líneas
-                    update_status['progress'] = output_lines[-5:]
+                    # Actualizar progress con las últimas N líneas
+                    update_status['progress'] = output_lines[-PROGRESS_LINES:]
+                    # Tiempo transcurrido
+                    start = datetime.fromisoformat(update_status['started_at'])
+                    update_status['elapsed_seconds'] = int((datetime.now() - start).total_seconds())
             
             process.wait()
+            
+            # No sobrescribir si el usuario canceló (el cancel handler ya actualizó el status)
+            if update_cancelled:
+                return
             
             # Leer el archivo completo para el output
             with open(log_file, 'r', encoding='utf-8') as f:
                 full_output = f.read()
             
+            start = datetime.fromisoformat(update_status['started_at'])
+            elapsed = int((datetime.now() - start).total_seconds())
             update_status.update({
                 'running': False,
                 'completed_at': datetime.now().isoformat(),
                 'returncode': process.returncode,
-                'output': full_output[-50000:] if len(full_output) > 50000 else full_output,  # Últimos 50KB
-                'error': None if process.returncode == 0 else f'Script exited with code {process.returncode}'
+                'output': full_output[-50000:] if len(full_output) > 50000 else full_output,
+                'error': None if process.returncode == 0 else f'Script exited with code {process.returncode}',
+                'elapsed_seconds': elapsed,
             })
             
         except subprocess.TimeoutExpired:
@@ -203,19 +225,24 @@ def run_update():
             with open(log_file, 'a', encoding='utf-8') as f:
                 f.write(f"\n\nERROR: {error_msg}\n")
         except Exception as e:
-            error_msg = str(e)
-            update_status.update({
-                'running': False,
-                'completed_at': datetime.now().isoformat(),
-                'returncode': -1,
-                'error': error_msg
-            })
-            with open(log_file, 'a', encoding='utf-8') as f:
-                f.write(f"\n\nERROR: {error_msg}\n")
-                import traceback
-                f.write(traceback.format_exc())
+            # Si fue cancelado por el usuario, no sobrescribir el status
+            if update_cancelled:
+                pass
+            else:
+                error_msg = str(e)
+                update_status.update({
+                    'running': False,
+                    'completed_at': datetime.now().isoformat(),
+                    'returncode': -1,
+                    'error': error_msg
+                })
+                with open(log_file, 'a', encoding='utf-8') as f:
+                    f.write(f"\n\nERROR: {error_msg}\n")
+                    import traceback
+                    f.write(traceback.format_exc())
         finally:
             update_in_progress = False
+            update_process = None
     
     thread = threading.Thread(target=run_script, daemon=True)
     thread.start()
@@ -228,13 +255,56 @@ def run_update():
     })
 
 
+@bp.route('/update/cancel', methods=['POST'])
+@admin_session_required
+def cancel_update():
+    """Cancela la actualización en curso si hay una."""
+    global update_in_progress, update_process, update_status, update_cancelled
+    if not update_in_progress or update_process is None:
+        return jsonify({
+            'status': 'nothing_to_cancel',
+            'message': 'No hay actualización en curso'
+        }), 200
+    try:
+        update_cancelled = True
+        update_process.terminate()
+        # Dar tiempo a que termine
+        try:
+            update_process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            update_process.kill()
+        update_status.update({
+            'running': False,
+            'completed_at': datetime.now().isoformat(),
+            'returncode': -9,
+            'error': 'Actualización cancelada por el usuario',
+            'elapsed_seconds': int((datetime.now() - datetime.fromisoformat(update_status['started_at'])).total_seconds()) if update_status.get('started_at') else None
+        })
+        update_process = None
+        update_in_progress = False
+        return jsonify({
+            'status': 'cancelled',
+            'message': 'Actualización cancelada correctamente'
+        })
+    except Exception as e:
+        return jsonify({
+            'error': f'Error al cancelar: {str(e)}'
+        }), 500
+
+
 @bp.route('/update/status', methods=['GET'])
+@admin_session_required
 def get_update_status():
     """Obtiene el estado de la última ejecución."""
-    return jsonify(update_status)
+    status = dict(update_status)
+    if status.get('running') and status.get('started_at'):
+        start = datetime.fromisoformat(status['started_at'])
+        status['elapsed_seconds'] = int((datetime.now() - start).total_seconds())
+    return jsonify(status)
 
 
 @bp.route('/update/logs', methods=['GET'])
+@admin_session_required
 def list_logs():
     """Lista los últimos 5 archivos de log."""
     try:
@@ -254,6 +324,7 @@ def list_logs():
 
 
 @bp.route('/update/logs/<filename>', methods=['GET'])
+@admin_session_required
 def download_log(filename):
     """Descarga un archivo de log específico."""
     try:
@@ -273,6 +344,7 @@ def download_log(filename):
 
 
 @bp.route('/update/run-single/<script_name>', methods=['POST'])
+@admin_session_required
 def run_single_script(script_name):
     """Ejecuta un script individual de descarga."""
     global single_script_in_progress, single_script_status
@@ -280,6 +352,7 @@ def run_single_script(script_name):
     allowed_scripts = [
         'curva_pesos_uyu_temp',
         'curva_pesos_uyu_ui_temp',
+        'dolar_bevsa_uyu',
         'ipc_colombia',
         'ipc_paraguay'
     ]
@@ -296,19 +369,21 @@ def run_single_script(script_name):
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     log_file = LOGS_DIR / f"{script_name}_{timestamp}.log"
     
+    # Inicializar estado antes de iniciar el thread
+    single_script_in_progress[script_name] = True
+    started_at = datetime.now().isoformat()
+    single_script_status[script_name] = {
+        'running': True,
+        'started_at': started_at,
+        'completed_at': None,
+        'returncode': None,
+        'output': None,
+        'error': None,
+        'log_file': str(log_file.name)
+    }
+    
     def run_script():
         global single_script_in_progress, single_script_status
-        
-        single_script_in_progress[script_name] = True
-        single_script_status[script_name] = {
-            'running': True,
-            'started_at': datetime.now().isoformat(),
-            'completed_at': None,
-            'returncode': None,
-            'output': None,
-            'error': None,
-            'log_file': str(log_file.name)
-        }
         
         try:
             project_root = Path(__file__).parent.parent.parent.parent.parent
@@ -405,12 +480,13 @@ def run_single_script(script_name):
     return jsonify({
         'status': 'started',
         'message': f'Script {script_name} iniciado en background',
-        'started_at': single_script_status[script_name]['started_at'],
-        'log_file': single_script_status[script_name]['log_file']
+        'started_at': started_at,
+        'log_file': str(log_file.name)
     })
 
 
 @bp.route('/update/status-single/<script_name>', methods=['GET'])
+@admin_session_required
 def get_single_script_status(script_name):
     """Obtiene el estado de un script individual."""
     if script_name not in single_script_status:

@@ -1,13 +1,13 @@
 """Admin routes for familia."""
 from flask import Blueprint, request, jsonify
 from ...database import execute_query, execute_query_single, execute_update
-from ...middleware import admin_only
+from ...middleware import admin_session_required
 
 bp = Blueprint('admin_familia', __name__)
 
 
 @bp.route('/familia', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_all_familias():
     """Get all familias."""
     try:
@@ -34,7 +34,7 @@ def get_all_familias():
 
 
 @bp.route('/familia/<int:familia_id>', methods=['GET'])
-@admin_only
+@admin_session_required
 def get_familia(familia_id: int):
     """Get a single familia by ID."""
     try:
@@ -52,7 +52,7 @@ def get_familia(familia_id: int):
 
 
 @bp.route('/familia', methods=['POST'])
-@admin_only
+@admin_session_required
 def create_familia():
     """Create a new familia."""
     try:
@@ -87,7 +87,7 @@ def create_familia():
 
 
 @bp.route('/familia/<int:familia_id>', methods=['PUT'])
-@admin_only
+@admin_session_required
 def update_familia(familia_id: int):
     """Update a familia."""
     try:
@@ -129,7 +129,7 @@ def update_familia(familia_id: int):
 
 
 @bp.route('/familia/<int:familia_id>', methods=['DELETE'])
-@admin_only
+@admin_session_required
 def delete_familia(familia_id: int):
     """Delete a familia."""
     try:

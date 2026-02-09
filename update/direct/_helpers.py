@@ -1,8 +1,18 @@
 """
 Funciones helper compartidas para scripts de actualización de precios.
+Usa PostgreSQL vía DATABASE_URL.
 """
-import sqlite3
+import sys
+from pathlib import Path
+
+# Permitir importar db desde la raíz del proyecto (update/direct/ -> update/ -> raíz)
+_project_root = Path(__file__).resolve().parent.parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
 import pandas as pd
+
+from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
 
 
 def insertar_en_bd_helper(
@@ -13,41 +23,32 @@ def insertar_en_bd_helper(
     preparar_datos_func=None
 ) -> None:
     """
-    Función helper para insertar datos en maestro_precios.
-    
-    Args:
-        db_name: Nombre de la base de datos SQLite
-        id_variable: ID de la variable (FK a tabla variables)
-        id_pais: ID del país (FK a tabla pais_grupo)
-        df_precios: DataFrame con columnas FECHA y VALOR (o ya con id_variable, id_pais, fecha, valor)
-        preparar_datos_func: Función opcional para preparar los datos antes de insertar
+    Inserta datos en maestro_precios (PostgreSQL vía DATABASE_URL).
+    db_name se ignora (mantenido por compatibilidad).
     """
     print("\n[INFO] Insertando datos en la base de datos...")
     print(f"[INFO] Usando id_variable={id_variable}, id_pais={id_pais}")
 
-    conn = sqlite3.connect(db_name)
-    cursor = conn.cursor()
-    
     try:
         # Verificar que id_variable e id_pais existen en sus tablas de referencia
-        cursor.execute("SELECT id_variable FROM variables WHERE id_variable = ?", (id_variable,))
-        if not cursor.fetchone():
+        row = execute_query_single("SELECT id_variable FROM variables WHERE id_variable = ?", (id_variable,))
+        if not row:
             print(f"[ERROR] id_variable={id_variable} no existe en la tabla 'variables'.")
             print(f"[ERROR] Debes agregar este registro al Excel 'maestro_database.xlsx' y ejecutar la migración.")
             return
-        
-        cursor.execute("SELECT id_pais FROM pais_grupo WHERE id_pais = ?", (id_pais,))
-        if not cursor.fetchone():
+
+        row = execute_query_single("SELECT id_pais FROM pais_grupo WHERE id_pais = ?", (id_pais,))
+        if not row:
             print(f"[ERROR] id_pais={id_pais} no existe en la tabla 'pais_grupo'.")
             print(f"[ERROR] Debes agregar este registro al Excel 'maestro_database.xlsx' y ejecutar la migración.")
             return
 
         # Verificar que el registro existe en maestro
-        cursor.execute(
+        row = execute_query_single(
             "SELECT id_variable, id_pais FROM maestro WHERE id_variable = ? AND id_pais = ?",
             (id_variable, id_pais)
         )
-        if not cursor.fetchone():
+        if not row:
             print(f"[ERROR] No existe registro en 'maestro' para id_variable={id_variable}, id_pais={id_pais}.")
             print(f"[ERROR] Debes agregar este registro al Excel 'maestro_database.xlsx' y ejecutar la migración.")
             return
@@ -56,44 +57,44 @@ def insertar_en_bd_helper(
         if preparar_datos_func:
             df_precios = preparar_datos_func(df_precios, id_variable, id_pais)
         elif "id_variable" not in df_precios.columns or "id_pais" not in df_precios.columns:
-            # Preparación básica si no hay función personalizada
             df_precios = df_precios.copy()
             df_precios["id_variable"] = id_variable
             df_precios["id_pais"] = id_pais
-            # Asumir que tiene columnas FECHA y VALOR
             if "FECHA" in df_precios.columns:
                 df_precios = df_precios.rename(columns={"FECHA": "fecha", "VALOR": "valor"})
             df_precios = df_precios[["id_variable", "id_pais", "fecha", "valor"]]
             df_precios["valor"] = pd.to_numeric(df_precios["valor"], errors="coerce")
             df_precios = df_precios.dropna(subset=["valor"])
 
-        # Eliminar registros existentes para esta id_variable y id_pais para evitar duplicados
-        cursor.execute(
-            """
-            DELETE FROM maestro_precios WHERE id_variable = ? AND id_pais = ?
-            """,
+        # Contar registros a eliminar
+        count_rows = execute_query(
+            "SELECT COUNT(*) as cnt FROM maestro_precios WHERE id_variable = ? AND id_pais = ?",
             (id_variable, id_pais)
         )
-        registros_eliminados = cursor.rowcount
+        registros_eliminados = count_rows[0]["cnt"] if count_rows else 0
+
+        # Eliminar registros existentes
+        success, error, _ = execute_update(
+            "DELETE FROM maestro_precios WHERE id_variable = ? AND id_pais = ?",
+            (id_variable, id_pais)
+        )
+        if not success:
+            raise RuntimeError(error or "Error al eliminar registros antiguos")
         if registros_eliminados > 0:
             print(f"[INFO] Se eliminaron {registros_eliminados} registros antiguos de 'maestro_precios' para id_variable={id_variable}, id_pais={id_pais}")
 
         # Insertar todos los precios nuevos
         if not df_precios.empty:
             print(f"[INFO] Insertando {len(df_precios)} registros en 'maestro_precios'...")
-            df_precios.to_sql("maestro_precios", conn, if_exists="append", index=False)
+            insert_dataframe("maestro_precios", df_precios, if_exists="append", index=False)
             print(f"[OK] Insertados {len(df_precios)} registro(s) en tabla 'maestro_precios'")
         else:
             print(f"[WARN] No hay datos para insertar en maestro_precios")
 
-        conn.commit()
-        print(f"\n[OK] Datos insertados exitosamente en '{db_name}'")
+        print(f"\n[OK] Datos insertados exitosamente")
     except Exception as exc:
-        conn.rollback()
         print(f"[ERROR] Error al insertar datos: {exc}")
         raise
-    finally:
-        conn.close()
 
 
 def combinar_anio_mes_a_fecha(
@@ -224,6 +225,60 @@ def validar_fechas_unificado(
     return df
 
 
+def completar_dias_faltantes(
+    df: pd.DataFrame,
+    columna_fecha: str = 'FECHA',
+    columna_valor: str = 'VALOR',
+    solo_lunes_a_viernes: bool = False
+) -> pd.DataFrame:
+    """
+    Completa días faltantes en una serie diaria usando forward fill.
+    Si solo_lunes_a_viernes=True: después de completar, elimina sábados y domingos.
+    """
+    print("\n[INFO] Completando días faltantes en serie diaria...")
+    df = df.copy()
+    df[columna_fecha] = pd.to_datetime(df[columna_fecha])
+    df = df.sort_values(columna_fecha).reset_index(drop=True)
+
+    fecha_min = df[columna_fecha].min()
+    fecha_max = df[columna_fecha].max()
+    rango_completo = pd.date_range(start=fecha_min, end=fecha_max, freq='D')
+    df_completo = pd.DataFrame({columna_fecha: rango_completo})
+    df_completo = df_completo.merge(
+        df[[columna_fecha, columna_valor]], on=columna_fecha, how='left'
+    )
+    df_completo[columna_valor] = df_completo[columna_valor].ffill()
+
+    dias_originales = len(df)
+    dias_completados = len(df_completo)
+    dias_agregados = dias_completados - dias_originales
+    if dias_agregados > 0:
+        print(f"[INFO] Se completaron {dias_agregados} días faltantes (de {dias_originales} a {dias_completados})")
+    else:
+        print(f"[OK] No había días faltantes ({dias_originales} días)")
+
+    if solo_lunes_a_viernes:
+        df_completo = filtrar_solo_lunes_a_viernes(df_completo, columna_fecha)
+    return df_completo
+
+
+def filtrar_solo_lunes_a_viernes(
+    df: pd.DataFrame,
+    columna_fecha: str = 'FECHA'
+) -> pd.DataFrame:
+    """
+    Conserva solo fechas de lunes a viernes (elimina sábados y domingos).
+    """
+    df = df.copy()
+    df[columna_fecha] = pd.to_datetime(df[columna_fecha])
+    antes = len(df)
+    df = df[df[columna_fecha].dt.weekday < 5]  # 0=Mon ... 4=Fri, 5=Sat, 6=Sun
+    eliminados = antes - len(df)
+    if eliminados > 0:
+        print(f"[INFO] Eliminados {eliminados} fines de semana (solo lunes a viernes: {len(df)} días)")
+    return df.reset_index(drop=True)
+
+
 def validar_fechas_solo_nulas(
     df: pd.DataFrame,
     columna_fecha: str = "FECHA"
@@ -296,20 +351,14 @@ def insertar_en_bd_unificado(
     id_variable: int,
     id_pais: int,
     df_precios: pd.DataFrame,
-    db_name: str = "series_tiempo.db"
+    db_name: str = None
 ) -> None:
     """
-    Inserta los datos en maestro_precios usando la función helper existente.
-    
-    Args:
-        id_variable: ID de la variable (FK a tabla variables)
-        id_pais: ID del país (FK a tabla pais_grupo)
-        df_precios: DataFrame con columnas FECHA y VALOR
-        db_name: Nombre de la base de datos (default: "series_tiempo.db")
+    Inserta los datos en maestro_precios (PostgreSQL vía DATABASE_URL).
+    db_name se ignora; mantenido por compatibilidad.
     """
-    # Usar la función helper existente
     insertar_en_bd_helper(
-        db_name=db_name,
+        db_name=db_name or "",
         id_variable=id_variable,
         id_pais=id_pais,
         df_precios=df_precios,

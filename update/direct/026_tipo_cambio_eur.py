@@ -26,7 +26,6 @@ DATA_RAW_DIR = "data_raw"
 LOCAL_EXCEL_NAME = "cotizacion_monedas_ine.xlsx"
 
 # Configuración de base de datos
-DB_NAME = "series_tiempo.db"
 ID_VARIABLE = 6  # EUR/LC (desde maestro_database.xlsx Sheet1_old)
 ID_PAIS = 858  # Uruguay_database.xlsx Sheet1_old)
 
@@ -175,7 +174,7 @@ def main():
         return
 
     print("\n[INFO] Actualizando base de datos...")
-    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, tc_df, DB_NAME)
+    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, tc_df)
 
 
 if __name__ == "__main__":

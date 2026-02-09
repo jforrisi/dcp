@@ -17,17 +17,18 @@ como promedio mensual de las series:
 import sys
 import os
 from pathlib import Path
-import sqlite3
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 import pandas as pd
 
-# Agregar el directorio padre al path para importar _helpers
+# Agregar paths para importar db y _helpers
 SCRIPT_DIR = Path(__file__).parent.absolute()
 PROJECT_ROOT = SCRIPT_DIR.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "update" / "direct"))
 
+from db.connection import execute_query
 from _helpers import (
     validar_fechas_solo_nulas,
     insertar_en_bd_unificado
@@ -35,7 +36,6 @@ from _helpers import (
 
 
 # Configuración de base de datos
-DB_NAME = "series_tiempo.db"
 
 # IDs de las series fuente (id_variable, id_pais)
 # Todas las series fuente tienen id_pais=999 (Economía internacional)
@@ -66,29 +66,27 @@ def leer_series_fuente():
     fecha_limite_str = fecha_limite.strftime('%Y-%m-%d')
     
     print(f"   Fecha límite: {fecha_limite_str} (últimos 24 meses)")
-    
-    conn = sqlite3.connect(DB_NAME)
-    
-    # Leer todas las series fuente (solo últimos 24 meses)
+
     dfs = []
     for id_variable, id_pais in SERIES_FUENTE:
-        query = """
+        rows = execute_query(
+            """
             SELECT fecha, valor
             FROM maestro_precios
             WHERE id_variable = ? AND id_pais = ? AND fecha >= ?
             ORDER BY fecha ASC
-        """
-        df = pd.read_sql_query(query, conn, params=(id_variable, id_pais, fecha_limite_str))
-        if len(df) == 0:
+            """,
+            (id_variable, id_pais, fecha_limite_str),
+        )
+        if not rows:
             print(f"[WARN] Serie id_variable={id_variable}, id_pais={id_pais} no tiene datos en los últimos 24 meses")
             continue
-        
-        df['fecha'] = pd.to_datetime(df['fecha'])
-        df = df.rename(columns={'valor': f'valor_{id_variable}'})
+
+        df = pd.DataFrame(rows)
+        df["fecha"] = pd.to_datetime(df["fecha"])
+        df = df.rename(columns={"valor": f"valor_{id_variable}"})
         dfs.append(df)
         print(f"[OK] Serie id_variable={id_variable}, id_pais={id_pais}: {len(df)} registros (últimos 24 meses)")
-    
-    conn.close()
     
     if not dfs:
         raise ValueError("No se encontraron datos en ninguna serie fuente (últimos 24 meses)")
@@ -173,7 +171,7 @@ def main():
         return
 
     print("\n[INFO] Actualizando base de datos...")
-    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, df_promedio, DB_NAME)
+    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, df_promedio)
 
 
 if __name__ == "__main__":

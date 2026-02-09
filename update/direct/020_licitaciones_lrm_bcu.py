@@ -13,8 +13,13 @@ Para cada plazo, procesa 3 variables:
 """
 
 import os
-import sqlite3
+import sys
+from pathlib import Path
+
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+from db.connection import execute_query_single
 from _helpers import (
     validar_fechas_solo_nulas,
     insertar_en_bd_unificado
@@ -23,7 +28,6 @@ from _helpers import (
 # Configuración
 DATA_RAW_DIR = "data_raw"
 EXCEL_NAME = "instrumentos_emitidos_bcu_y_gobierno_central.xlsx"
-DB_NAME = "series_tiempo.db"
 ID_PAIS = 858  # Uruguay
 
 # Configuración por valor de "Plazo ref."
@@ -96,27 +100,20 @@ def verificar_registro_maestro(id_variable: int, id_pais: int, var_nombre: str, 
     Returns:
         True si existe, False si no existe
     """
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    
     try:
-        # Verificar si existe
-        cursor.execute(
+        row = execute_query_single(
             "SELECT id_variable, id_pais FROM maestro WHERE id_variable = ? AND id_pais = ?",
-            (id_variable, id_pais)
+            (id_variable, id_pais),
         )
-        if cursor.fetchone():
-            return True  # Ya existe
-        
+        if row:
+            return True
+
         print(f"    [ERROR] No existe registro en 'maestro' para id_variable={id_variable}, id_pais={id_pais}")
         print(f"    [ERROR] Variable: {var_nombre} (plazo {plazo_valor}d)")
         return False
-        
     except Exception as e:
         print(f"    [ERROR] Error al verificar registro en maestro: {e}")
         return False
-    finally:
-        conn.close()
 
 
 def procesar_variable(df_plazo: pd.DataFrame, var_config: dict, var_nombre: str, plazo_valor: int):
@@ -178,8 +175,7 @@ def procesar_variable(df_plazo: pd.DataFrame, var_config: dict, var_nombre: str,
         insertar_en_bd_unificado(
             var_config['id_variable'],
             ID_PAIS,
-            df_var,
-            DB_NAME
+            df_var
         )
         return True, len(df_var)
     except Exception as e:

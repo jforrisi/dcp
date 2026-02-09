@@ -20,12 +20,13 @@ Para obtener datos desde 2010, se hacen múltiples consultas si es necesario.
 """
 
 import os
-import sqlite3
 import sys
 from datetime import datetime
 
 import pandas as pd
 import requests
+
+from _helpers import insertar_en_bd_unificado
 
 # Configuración de origen de datos
 BLS_API_URL_V2 = "https://api.bls.gov/publicAPI/v2/timeseries/data/"
@@ -35,7 +36,6 @@ BLS_START_YEAR = 2010  # Datos desde enero 2010
 BLS_END_YEAR = datetime.now().year
 
 # Configuración de base de datos
-DB_NAME = "series_tiempo.db"
 ID_VARIABLE = 17  # id_variable para "Software" (desde tabla variables)
 ID_PAIS = 999  # id_pais (Uruguay, desde tabla pais_grupo)
 
@@ -200,81 +200,6 @@ def obtener_datos_bls_v2():
     return df
 
 
-def preparar_datos_maestro_precios(df_ppi: pd.DataFrame, id_variable: int, id_pais: int) -> pd.DataFrame:
-    """Prepara el DataFrame para maestro_precios."""
-    df_precios = df_ppi.copy()
-    df_precios["id_variable"] = id_variable
-    df_precios["id_pais"] = id_pais
-    df_precios = df_precios[["id_variable", "id_pais", "FECHA", "VALOR"]]
-    df_precios.columns = ["id_variable", "id_pais", "fecha", "valor"]
-    
-    # Asegurar que valor sea numérico
-    df_precios["valor"] = pd.to_numeric(df_precios["valor"], errors="coerce")
-    
-    # Eliminar filas con valor nulo
-    df_precios = df_precios.dropna(subset=["valor"])
-    return df_precios
-
-
-def insertar_en_bd(id_variable: int, id_pais: int, df_precios: pd.DataFrame) -> None:
-    """Inserta los datos en la base de datos SQLite.
-    
-    Args:
-        id_variable: ID de la variable (FK a tabla variables)
-        id_pais: ID del país (FK a tabla pais_grupo)
-        df_precios: DataFrame con columnas FECHA y VALOR (o ya con id_variable, id_pais, fecha, valor)
-    """
-    print("\n[INFO] Insertando datos en la base de datos...")
-    print(f"[INFO] Usando id_variable={id_variable}, id_pais={id_pais}")
-
-    conn = sqlite3.connect(DB_NAME)
-    cursor = conn.cursor()
-    
-    try:
-        # Verificar que id_variable e id_pais existen en sus tablas de referencia
-        cursor.execute("SELECT id_variable FROM variables WHERE id_variable = ?", (id_variable,))
-        if not cursor.fetchone():
-            print(f"[ERROR] id_variable={id_variable} no existe en la tabla 'variables'.")
-            return
-        
-        cursor.execute("SELECT id_pais FROM pais_grupo WHERE id_pais = ?", (id_pais,))
-        if not cursor.fetchone():
-            print(f"[ERROR] id_pais={id_pais} no existe en la tabla 'pais_grupo'.")
-            return
-
-        # Preparar datos con FKs si no están ya preparados
-        if "id_variable" not in df_precios.columns or "id_pais" not in df_precios.columns:
-            df_precios = preparar_datos_maestro_precios(df_precios, id_variable, id_pais)
-
-        # Eliminar registros existentes para esta id_variable y id_pais para evitar duplicados
-        cursor.execute(
-            """
-            DELETE FROM maestro_precios WHERE id_variable = ? AND id_pais = ?
-            """,
-            (id_variable, id_pais)
-        )
-        registros_eliminados = cursor.rowcount
-        if registros_eliminados > 0:
-            print(f"[INFO] Se eliminaron {registros_eliminados} registros antiguos de 'maestro_precios' para id_variable={id_variable}, id_pais={id_pais}")
-
-        # Insertar todos los precios nuevos
-        if not df_precios.empty:
-            print(f"[INFO] Insertando {len(df_precios)} registros en 'maestro_precios'...")
-            df_precios.to_sql("maestro_precios", conn, if_exists="append", index=False)
-            print(f"[OK] Insertados {len(df_precios)} registro(s) en tabla 'maestro_precios'")
-        else:
-            print(f"[WARN] No hay datos para insertar en maestro_precios")
-
-        conn.commit()
-        print(f"\n[OK] Datos insertados exitosamente en '{DB_NAME}'")
-    except Exception as exc:
-        conn.rollback()
-        print(f"[ERROR] Error al insertar datos: {exc}")
-        raise
-    finally:
-        conn.close()
-
-
 def main():
     print("=" * 60)
     print("ACTUALIZACION DE DATOS: SOFTWARE (BLS)")
@@ -297,7 +222,7 @@ def main():
         return
     
     print("\n[INFO] Actualizando base de datos...")
-    insertar_en_bd(ID_VARIABLE, ID_PAIS, df_precios)
+    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, df_precios)
 
 
 if __name__ == "__main__":

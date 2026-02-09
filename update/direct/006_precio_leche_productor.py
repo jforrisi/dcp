@@ -24,7 +24,6 @@ DATA_RAW_DIR = "data_raw"
 LOCAL_EXCEL_NAME = "precio_leche_productor.xlsx"
 
 # Configuración de base de datos
-DB_NAME = "series_tiempo.db"
 ID_VARIABLE = 13  # Precio leche productor - INALE (desde maestro_database.xlsx Sheet1_old)
 ID_PAIS = 858  # Uruguay_database.xlsx Sheet1_old)
 
@@ -118,7 +117,7 @@ def main():
         return
 
     print("\n[INFO] Actualizando base de datos...")
-    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, leche_productor, DB_NAME)
+    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, leche_productor)
 
 
 if __name__ == "__main__":

@@ -29,7 +29,6 @@ DATA_RAW_DIR = "data_raw"
 LOCAL_FILE_NAME = "celulosa_pulp_insee.xlsx"
 
 # Configuración de base de datos
-DB_NAME = "series_tiempo.db"
 ID_VARIABLE = 4  # Celulosa -indice- (desde maestro_database.xlsx Sheet1_old)
 ID_PAIS = 999  # Economía internacional_database.xlsx Sheet1_old)
 
@@ -259,7 +258,7 @@ def main():
             return
 
         print("\n[INFO] Actualizando base de datos...")
-        insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, celulosa_pulp, DB_NAME)
+        insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, celulosa_pulp)
             
     except Exception as e:
         print(f"\n[ERROR] Error durante la ejecución: {e}")

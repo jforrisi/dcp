@@ -24,7 +24,6 @@ DATA_RAW_DIR = "data_raw"
 LOCAL_EXCEL_NAME = "exportacion_leche_polvo_entera.xlsx"
 
 # Configuración de base de datos
-DB_NAME = "series_tiempo.db"
 ID_VARIABLE = 10  # Leche en polvo - INALE (desde maestro_database.xlsx Sheet1_old)
 ID_PAIS = 858  # Uruguay_database.xlsx Sheet1_old)
 
@@ -118,7 +117,7 @@ def main():
         return
 
     print("\n[INFO] Actualizando base de datos...")
-    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, leche_polvo, DB_NAME)
+    insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, leche_polvo)
 
 
 if __name__ == "__main__":

@@ -489,7 +489,8 @@ def extraer_tabla(driver):
             # Último recurso: usar pd.read_html para obtener headers
             print("[INFO] No se pudieron extraer headers con Selenium, usando pd.read_html...")
             tabla_html = tabla.get_attribute('outerHTML')
-            dfs = pd.read_html(tabla_html)
+            import io
+            dfs = pd.read_html(io.StringIO(tabla_html))
             if dfs:
                 df_temp = dfs[0]
                 headers = list(df_temp.columns)
@@ -517,10 +518,11 @@ def extraer_tabla(driver):
             
             # Intentar extraer usando pd.read_html con diferentes opciones
             tabla_html = tabla.get_attribute('outerHTML')
+            import io
             # Intentar con diferentes parámetros
             for flavor in ['html5lib', 'lxml', 'bs4']:
                 try:
-                    dfs = pd.read_html(tabla_html, flavor=flavor)
+                    dfs = pd.read_html(io.StringIO(tabla_html), flavor=flavor)
                     if dfs:
                         df_temp = dfs[0]
                         headers_alt = list(df_temp.columns)
@@ -582,7 +584,9 @@ def extraer_tabla(driver):
             # Usar pd.read_html si tenemos todos los headers
             print("[INFO] Usando pd.read_html para extraer datos...")
             tabla_html = tabla.get_attribute('outerHTML')
-            dfs = pd.read_html(tabla_html)
+            # pd.read_html necesita un objeto tipo archivo o StringIO para strings HTML
+            import io
+            dfs = pd.read_html(io.StringIO(tabla_html))
             if not dfs:
                 raise ValueError("No se pudo extraer la tabla con pd.read_html")
             df = dfs[0]

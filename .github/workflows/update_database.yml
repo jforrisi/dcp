@@ -1,0 +1,54 @@
+# Actualización completa de base de datos en producción
+# Ejecuta update/update_database.py 2 veces al día (todo: download + direct + calculate)
+name: Update Database (Producción)
+
+on:
+  schedule:
+    # 2 veces al día: 12:00 y 18:00 Uruguay (UTC-3) = 15:00 y 21:00 UTC
+    - cron: '0 15 * * *'
+    - cron: '0 21 * * *'
+  workflow_dispatch:  # Ejecución manual desde GitHub Actions
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120  # Máximo 2 horas
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Chrome (para scripts Selenium)
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: 'stable'
+          install-chromedriver: true
+          install-dependencies: true
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run update database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RAILWAY_ENVIRONMENT: production  # Activa headless en scripts de descarga
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+          CHROMEDRIVER_PATH: ${{ steps.chrome.outputs.chromedriver-path }}
+        run: |
+          python update/update_database.py
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: update-report-${{ github.run_id }}
+          path: update_database.txt
+          retention-days: 7

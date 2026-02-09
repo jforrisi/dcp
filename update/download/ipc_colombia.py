@@ -332,6 +332,9 @@ def main():
                         logger.info("Navegador cerrado")
                     except Exception as e:
                         logger.warn(f"Error al cerrar navegador: {e}")
+        except Exception as e:
+            logger.log_exception(e, "main() - outer")
+            raise
 
 
 if __name__ == "__main__":

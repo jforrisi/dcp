@@ -1,6 +1,6 @@
 // Detectar automáticamente la URL base de la API
 const getApiBase = () => {
-    // En producción (Railway), usar ruta relativa
+    // En producción (Azure), usar ruta relativa
     if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
         return '/api';
     }

@@ -6,7 +6,7 @@ Ejecuta automáticamente todos los scripts de actualización en el orden correct
 2. FASE 2: Actualizar BD (update/direct/ y update/calculate/)
 
 Genera un reporte en update_database.txt con errores y resumen.
-Diseñado para ejecutarse automáticamente (cron/task scheduler/Railway).
+Diseñado para ejecutarse automáticamente (cron/task scheduler/Azure/GitHub Actions).
 """
 
 import subprocess

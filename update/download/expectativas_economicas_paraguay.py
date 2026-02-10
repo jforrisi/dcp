@@ -51,7 +51,7 @@ def configurar_driver_descargas(download_dir: str):
     }
     chrome_options.add_experimental_option("prefs", prefs)
     
-    is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY')
+    is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY') or os.getenv('AZURE_ENVIRONMENT') or os.getenv('AZURE')
     
     if is_railway:
         chrome_options.add_argument("--headless=new")

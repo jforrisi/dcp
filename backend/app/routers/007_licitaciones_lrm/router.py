@@ -736,7 +736,7 @@ def update_licitaciones_lrm():
             project_root = Path(__file__).parent.parent.parent.parent.parent
             
             # Determinar Python a usar
-            if os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY'):
+            if os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY') or os.getenv('AZURE_ENVIRONMENT'):
                 python_path = project_root / 'backend' / 'venv' / 'bin' / 'python'
                 if not python_path.exists():
                     python_path = 'python3'
@@ -904,8 +904,8 @@ def generate_pdf():
         # Obtener curva BEVSA del día
         curve_data = obtener_curva_bevsa_por_fecha(fecha)
         
-        # Obtener serie temporal de últimos 90 días
-        timeseries_data = obtener_timeseries_bevsa(plazo, fecha, dias=90)
+        # Obtener serie temporal de últimos 30 días (para gráfico en PDF)
+        timeseries_data = obtener_timeseries_bevsa(plazo, fecha, dias=30)
         
         # Preparar datos para el PDF
         pdf_data = {

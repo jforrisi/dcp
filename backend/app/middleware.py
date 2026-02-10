@@ -30,11 +30,11 @@ def _is_localhost_or_local_network():
 def admin_only(f):
     """
     Decorator that only allows access from localhost.
-    Blocks access if RAILWAY_ENVIRONMENT is set (production).
+    Blocks access if production env is set (Azure/Railway).
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if os.getenv('RAILWAY_ENVIRONMENT'):
+        if os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('AZURE_ENVIRONMENT'):
             return jsonify({'error': 'Admin panel not available in production'}), 403
         if not _is_localhost_or_local_network():
             return jsonify({'error': 'Admin access only from localhost'}), 403
@@ -60,7 +60,7 @@ def admin_session_required(f):
     """
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if os.getenv('RAILWAY_ENVIRONMENT'):
+        if os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('AZURE_ENVIRONMENT'):
             return jsonify({'error': 'Admin panel not available in production'}), 403
         if not _is_localhost_or_local_network():
             return jsonify({'error': 'Admin access only from localhost'}), 403

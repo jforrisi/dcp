@@ -38,7 +38,7 @@ jobs:
       - name: Run update TC
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          RAILWAY_ENVIRONMENT: production
+          AZURE_ENVIRONMENT: production
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
           CHROMEDRIVER_PATH: ${{ steps.chrome.outputs.chromedriver-path }}
         run: |

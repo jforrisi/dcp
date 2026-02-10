@@ -80,7 +80,7 @@ def descargar_con_selenium(url: str, destino: str) -> bool:
     }
     chrome_options.add_experimental_option("prefs", prefs)
 
-    is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY')
+    is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY') or os.getenv('AZURE_ENVIRONMENT') or os.getenv('AZURE')
     if is_railway:
         chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--no-sandbox")

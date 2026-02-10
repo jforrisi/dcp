@@ -402,7 +402,7 @@ def run_single_script(script_name):
                 single_script_in_progress[script_name] = False
                 return
             
-            if os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY'):
+            if os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY') or os.getenv('AZURE_ENVIRONMENT'):
                 python_path = project_root / 'backend' / 'venv' / 'bin' / 'python'
                 if not python_path.exists():
                     python_path = 'python3'

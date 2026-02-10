@@ -103,8 +103,8 @@ app.register_blueprint(yield_curve.bp, url_prefix='/api')
 app.register_blueprint(licitaciones_lrm.bp, url_prefix='/api')
 app.register_blueprint(update.bp, url_prefix='/api')
 
-# Register admin blueprint only if not in Railway
-if not os.getenv('RAILWAY_ENVIRONMENT'):
+# Register admin blueprint only if not in production (Azure/Railway)
+if not (os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('AZURE_ENVIRONMENT')):
     try:
         from .routers.admin import bp as admin_bp
         app.register_blueprint(admin_bp)
@@ -116,7 +116,7 @@ if not os.getenv('RAILWAY_ENVIRONMENT'):
 @app.route('/admin/<path:path>')
 def serve_admin(path=''):
     """Serve admin panel frontend (only available locally)."""
-    if os.getenv('RAILWAY_ENVIRONMENT'):
+    if os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('AZURE_ENVIRONMENT'):
         return {"error": "Admin panel not available in production"}, 404
     
     # If it's a request for a static file, serve it

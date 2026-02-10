@@ -44,8 +44,8 @@ build/
 ~$*.xlsx
 ~$*.xls
 
-# Database (comentar si quieres incluirla en el repo)
-# series_tiempo.db
+# SQLite (obsoleto; se usa PostgreSQL)
+*.db
 
 # Logs
 *.log

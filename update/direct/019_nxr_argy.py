@@ -1,4 +1,4 @@
-en # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 Script: nxr_argy
 ----------------

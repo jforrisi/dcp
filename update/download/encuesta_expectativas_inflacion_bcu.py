@@ -88,7 +88,7 @@ def configurar_driver_descargas(download_dir: str):
     chrome_options.add_experimental_option("prefs", prefs)
     
     is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY')
-    is_azure = os.getenv('WEBSITE_INSTANCE_ID') or os.getenv('AZURE_FUNCTIONS_ENVIRONMENT') or os.getenv('CONTAINER_NAME')
+    is_azure = os.getenv('AZURE_ENVIRONMENT') or os.getenv('AZURE') or os.getenv('WEBSITE_INSTANCE_ID') or os.getenv('AZURE_FUNCTIONS_ENVIRONMENT') or os.getenv('CONTAINER_NAME')
     is_cloud = is_railway or is_azure
     
     if is_cloud:

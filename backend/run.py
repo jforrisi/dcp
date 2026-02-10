@@ -3,7 +3,7 @@ import os
 from app.main import app
 
 if __name__ == "__main__":
-    # En Railway o producción, usar gunicorn (se ejecuta desde Procfile)
+    # En Azure/producción, usar gunicorn (se ejecuta desde Procfile)
     # Este código solo se usa en desarrollo local
     port = int(os.environ.get("PORT", 8000))
     debug = os.environ.get("FLASK_ENV") == "development"

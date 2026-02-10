@@ -140,7 +140,54 @@ def crear_pdf_licitacion(datos: dict) -> BytesIO:
     story.append(t1)
     story.append(Spacer(1, 0.3*inch))
     
-    # ===== SECCIÓN 2: ESTADÍSTICAS =====
+    # ===== SECCIÓN 2: GRÁFICO TEMPORAL (ÚLTIMOS 30 DÍAS) =====
+    timeseries_data = datos.get('timeseries_data', [])
+    if timeseries_data and len(timeseries_data) > 0:
+        story.append(Paragraph(f"Comportamiento de Tasa BEVSA {plazo} días - Últimos 30 días", styles['SectionTitle']))
+        
+        fechas = []
+        valores_ts = []
+        for item in timeseries_data:
+            fecha_ts = item.get('fecha', '')
+            valor_ts = item.get('valor')
+            if fecha_ts and valor_ts is not None:
+                try:
+                    if isinstance(fecha_ts, str):
+                        fecha_ts_dt = datetime.strptime(fecha_ts, '%Y-%m-%d')
+                        fechas.append(fecha_ts_dt)
+                    else:
+                        fechas.append(fecha_ts)
+                    valores_ts.append(float(valor_ts))
+                except:
+                    continue
+        
+        if fechas and valores_ts:
+            import matplotlib.dates as mdates
+            fig = Figure(figsize=(7, 4))
+            ax = fig.add_subplot(111)
+            ax.plot(fechas, valores_ts, linewidth=2, color='#2563eb', label='Tasa BEVSA')
+            if tasa_corte is not None:
+                ax.axhline(y=float(tasa_corte), color='#dc2626', linestyle='-', linewidth=2, label='Tasa de corte')
+            ax.set_xlabel('Fecha', fontsize=10)
+            ax.set_ylabel('Tasa (%)', fontsize=10)
+            ax.legend(loc='best', fontsize=9)
+            ax.grid(True, alpha=0.3, linestyle='--')
+            ax.tick_params(axis='x', rotation=45, labelsize=8)
+            ax.tick_params(axis='y', labelsize=9)
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
+            ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+            fig.tight_layout()
+            
+            img_buffer_ts = BytesIO()
+            fig.savefig(img_buffer_ts, format='png', dpi=150, bbox_inches='tight')
+            img_buffer_ts.seek(0)
+            plt.close(fig)
+            img_ts = RLImage(img_buffer_ts, width=6.5*inch, height=3.5*inch)
+            story.append(img_ts)
+    
+    story.append(Spacer(1, 0.3*inch))
+    
+    # ===== SECCIÓN 3: ESTADÍSTICAS =====
     if stats:
         story.append(Paragraph(f"Estadísticas - Últimas 5 Licitaciones a {plazo} días", styles['SectionTitle']))
         
@@ -234,7 +281,7 @@ def crear_pdf_licitacion(datos: dict) -> BytesIO:
     
     story.append(Spacer(1, 0.3*inch))
     
-    # ===== SECCIÓN 3: GRÁFICO DE CURVA BEVSA =====
+    # ===== SECCIÓN 4: GRÁFICO DE CURVA BEVSA =====
     if curve_data and curve_data.get('data'):
         fecha_curva = curve_data.get('fecha', '')
         try:
@@ -274,57 +321,6 @@ def crear_pdf_licitacion(datos: dict) -> BytesIO:
             # Agregar imagen al PDF
             img = RLImage(img_buffer, width=6.5*inch, height=3.5*inch)
             story.append(img)
-    
-    story.append(Spacer(1, 0.2*inch))
-    
-    # ===== SECCIÓN 4: GRÁFICO TEMPORAL (ÚLTIMOS 90 DÍAS) =====
-    timeseries_data = datos.get('timeseries_data', [])
-    if timeseries_data and len(timeseries_data) > 0:
-        story.append(Paragraph(f"Comportamiento de Tasa BEVSA {plazo} días - Últimos 90 días", styles['SectionTitle']))
-        
-        # Extraer fechas y valores
-        fechas = []
-        valores_ts = []
-        for item in timeseries_data:
-            fecha_ts = item.get('fecha', '')
-            valor_ts = item.get('valor')
-            if fecha_ts and valor_ts is not None:
-                try:
-                    if isinstance(fecha_ts, str):
-                        fecha_ts_dt = datetime.strptime(fecha_ts, '%Y-%m-%d')
-                        fechas.append(fecha_ts_dt)
-                    else:
-                        fechas.append(fecha_ts)
-                    valores_ts.append(float(valor_ts))
-                except:
-                    continue
-        
-        if fechas and valores_ts:
-            fig = Figure(figsize=(7, 4))
-            ax = fig.add_subplot(111)
-            ax.plot(fechas, valores_ts, linewidth=2, color='#6366f1')
-            ax.set_xlabel('Fecha', fontsize=10)
-            ax.set_ylabel('Tasa (%)', fontsize=10)
-            ax.grid(True, alpha=0.3, linestyle='--')
-            ax.tick_params(axis='x', rotation=45, labelsize=8)
-            ax.tick_params(axis='y', labelsize=9)
-            
-            # Formatear fechas en el eje x
-            import matplotlib.dates as mdates
-            ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
-            ax.xaxis.set_major_locator(mdates.AutoDateLocator())
-            
-            fig.tight_layout()
-            
-            # Guardar gráfico en buffer
-            img_buffer_ts = BytesIO()
-            fig.savefig(img_buffer_ts, format='png', dpi=150, bbox_inches='tight')
-            img_buffer_ts.seek(0)
-            plt.close(fig)
-            
-            # Agregar imagen al PDF
-            img_ts = RLImage(img_buffer_ts, width=6.5*inch, height=3.5*inch)
-            story.append(img_ts)
     
     # Pie de página
     story.append(Spacer(1, 0.4*inch))

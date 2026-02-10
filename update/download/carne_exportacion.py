@@ -49,7 +49,7 @@ def configurar_driver_descargas(download_dir: str):
     chrome_options.add_experimental_option("prefs", prefs)
     
     # Detectar si estamos en Railway (producción)
-    is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY')
+    is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY') or os.getenv('AZURE_ENVIRONMENT') or os.getenv('AZURE')
     
     if is_railway:
         # En Railway, usar headless y configurar Chrome/Chromium

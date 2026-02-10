@@ -39,7 +39,7 @@ jobs:
       - name: Run update database
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          RAILWAY_ENVIRONMENT: production  # Activa headless en scripts de descarga
+          AZURE_ENVIRONMENT: production  # Activa headless en scripts de descarga (Azure / GitHub Actions)
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
           CHROMEDRIVER_PATH: ${{ steps.chrome.outputs.chromedriver-path }}
         run: |

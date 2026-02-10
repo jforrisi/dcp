@@ -42,7 +42,7 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
           CHROMEDRIVER_PATH: ${{ steps.chrome.outputs.chromedriver-path }}
         run: |
-          python update/update_tc.py
+          python -m update.update_tc
 
       - name: Upload report
         if: always()

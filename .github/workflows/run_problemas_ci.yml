@@ -1,0 +1,66 @@
+# Ejecuta los scripts problemáticos DE A UNO (un job por script)
+# Para ver en GitHub cuál pasa y cuál falla. Solo manual.
+name: Run Problemas (de a uno)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-one:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false  # que un fallo no cancele los demás
+      matrix:
+        include:
+          - phase: download
+            script: anexo_estadistico_paraguay.py
+          - phase: download
+            script: expectativas_economicas_paraguay.py
+          - phase: download
+            script: expectativas_eme_analistas_banrep.py
+          - phase: download
+            script: ipc_paraguay.py
+          - phase: direct
+            script: 015_combustibles_miem.py
+          - phase: direct
+            script: 016_ipc.py
+          - phase: direct
+            script: 018_ipc_paraguay.py
+          - phase: direct
+            script: 025_salario_real.py
+          - phase: direct
+            script: 026_tipo_cambio_eur.py
+          - phase: direct
+            script: 028_indice_precios_exportacion_uruguay.py
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up Chrome
+        id: chrome
+        uses: browser-actions/setup-chrome@v2
+        with:
+          chrome-version: 'stable'
+          install-chromedriver: true
+          install-dependencies: true
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run ${{ matrix.phase }}/${{ matrix.script }}
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          AZURE_ENVIRONMENT: production
+          CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
+          CHROMEDRIVER_PATH: ${{ steps.chrome.outputs.chromedriver-path }}
+        run: |
+          python update/${{ matrix.phase }}/${{ matrix.script }}

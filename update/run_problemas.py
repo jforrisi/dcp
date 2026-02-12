@@ -29,21 +29,15 @@ TC_DIRECT = {
     "024_nxr_peru.py",
 }
 
-# Scripts que dieron problema en el run completo (Fase 1 y Fase 2)
-# Excluidos los de update_tc
+# Scripts que probamos en Run Problemas (de a uno) - solo estos 5
 PROBLEMAS_DOWNLOAD = [
     "anexo_estadistico_paraguay.py",
     "expectativas_economicas_paraguay.py",
-    "expectativas_eme_analistas_banrep.py",
     "ipc_paraguay.py",
 ]
 PROBLEMAS_DIRECT = [
-    "015_combustibles_miem.py",
     "016_ipc.py",
     "018_ipc_paraguay.py",
-    "025_salario_real.py",
-    "026_tipo_cambio_eur.py",
-    "028_indice_precios_exportacion_uruguay.py",
 ]
 
 

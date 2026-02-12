@@ -14,6 +14,7 @@ de Paraguay desde el Excel del Banco Central del Paraguay (BCP).
 
 import os
 import re
+import sys
 from datetime import datetime
 
 import pandas as pd
@@ -24,8 +25,8 @@ from _helpers import (
 
 
 # Configuración de base de datos
-# Carpeta para leer archivos descargados
-DATA_RAW_DIR = "data_raw"
+# Carpetas para leer archivos (se prueba en orden: historicos, data_raw)
+RUTAS_BUSQUEDA = ["update/historicos", "data_raw"]
 LOCAL_EXCEL_NAME = "ipc_paraguay.xlsx"
 
 # Configuración de IDs (desde maestro_database.xlsx Sheet1_old)
@@ -95,20 +96,19 @@ def parsear_fecha_paraguay(fecha_str):
 
 def leer_excel_desde_data_raw():
     """
-    Lee el Excel local desde data_raw/ipc_paraguay.xlsx.
-    Lanza excepción si no existe o falla.
+    Lee el Excel local. Busca en update/historicos y data_raw (en ese orden).
+    Lanza excepción si no existe en ninguna ruta.
     """
     base_dir = os.getcwd()
-    ruta_local = os.path.join(base_dir, DATA_RAW_DIR, LOCAL_EXCEL_NAME)
-
-    if not os.path.exists(ruta_local):
-        raise FileNotFoundError(
-            f"No se encontró el archivo local esperado: {ruta_local}. "
-            "Ejecutá primero el script de descarga (ipc_paraguay en update/download/)."
-        )
-
-    print(f"\n[INFO] Leyendo Excel local desde: {ruta_local}")
-    return ruta_local
+    for dir_rel in RUTAS_BUSQUEDA:
+        ruta_local = os.path.join(base_dir, dir_rel, LOCAL_EXCEL_NAME)
+        if os.path.exists(ruta_local):
+            print(f"\n[INFO] Leyendo Excel local desde: {ruta_local}")
+            return ruta_local
+    raise FileNotFoundError(
+        f"No se encontró {LOCAL_EXCEL_NAME} en ninguna de: {RUTAS_BUSQUEDA}. "
+        "Ejecutá primero el script de descarga (ipc_paraguay en update/download/)."
+    )
 
 def extraer_ipc_paraguay():
     """
@@ -219,8 +219,8 @@ def main():
     df_ipc = extraer_ipc_paraguay()
     
     if df_ipc is None or len(df_ipc) == 0:
-        print("\n[ERROR] No se pudieron extraer datos. Abortando.")
-        return
+        print("\n[INFO] No se pudieron extraer datos (archivo faltante o formato distinto). Omitiendo IPC Paraguay.")
+        sys.exit(0)
     
     # Mostrar primeros y últimos datos
     print("\n[INFO] Datos de la serie cruda:")

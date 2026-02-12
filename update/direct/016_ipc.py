@@ -3,15 +3,18 @@ Script: ipc
 -----------
 Actualiza la base de datos con la serie de IPC (Índice de Precios al Consumo) del INE.
 
-1) Intentar lectura directa del Excel con pandas desde la URL.
+1) Descargar Excel con requests (fallback SSL en CI); leer con pandas desde BytesIO.
 2) Si falla, leer desde data_raw/.
 3) Validar fechas.
 4) Actualizar automáticamente la base de datos.
 """
 
 import os
+import sys
+from io import BytesIO
 
 import pandas as pd
+import requests
 from _helpers import (
     validar_fechas_solo_nulas,
     insertar_en_bd_unificado
@@ -28,35 +31,52 @@ ID_VARIABLE = 9  # IPC (desde maestro_database.xlsx Sheet1_old)
 ID_PAIS = 858  # Uruguay_database.xlsx Sheet1_old)
 
 
+def _descargar_excel_ine():
+    """
+    Descarga el Excel del INE por HTTP. Usa requests; si falla por SSL (CI), reintenta con verify=False.
+    """
+    try:
+        r = requests.get(URL_EXCEL_INE, timeout=60)
+        r.raise_for_status()
+        return r.content
+    except requests.exceptions.SSLError as e:
+        print(f"[WARN] SSL al descargar INE: {e}")
+        print("[INFO] Reintentando sin verificación SSL (entorno CI)...")
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        r = requests.get(URL_EXCEL_INE, timeout=60, verify=False)
+        r.raise_for_status()
+        return r.content
+
+
 def leer_excel_desde_url():
     """
-    Intenta leer el Excel directamente desde la URL con pandas.
+    Descarga el Excel con requests y lo lee con pandas (BytesIO).
     Lee columnas A (fecha) y B (IPC) desde la fila 15.
     Devuelve un DataFrame o lanza excepción si falla.
     """
-    print("\n[INFO] Intentando leer Excel directamente desde la URL del INE...")
+    print("\n[INFO] Intentando leer Excel desde la URL del INE (requests + BytesIO)...")
     print(f"   URL: {URL_EXCEL_INE}")
-    
-    # Intentar leer el Excel - empezar desde fila 15 (skiprows=14)
+
+    content = _descargar_excel_ine()
     try:
         ipc_df = pd.read_excel(
-            URL_EXCEL_INE,
-            sheet_name=0,  # primera hoja
-            usecols=[0, 1],  # Columnas A (fecha) y B (IPC)
-            skiprows=14,  # Empezar desde fila 15 (0-indexed)
-            header=None,
-        )
-    except Exception as e:
-        # Si falla con la primera hoja, intentar sin especificar hoja
-        print(f"[WARN] Error al leer primera hoja: {e}")
-        print("[INFO] Intentando leer sin especificar hoja...")
-        ipc_df = pd.read_excel(
-            URL_EXCEL_INE,
-            usecols=[0, 1],  # Columnas A (fecha) y B (IPC)
+            BytesIO(content),
+            sheet_name=0,
+            usecols=[0, 1],
             skiprows=14,
             header=None,
         )
-    
+    except Exception as e:
+        print(f"[WARN] Error al leer primera hoja: {e}")
+        print("[INFO] Intentando leer sin especificar hoja...")
+        ipc_df = pd.read_excel(
+            BytesIO(content),
+            usecols=[0, 1],
+            skiprows=14,
+            header=None,
+        )
+
     ipc_df.columns = ["FECHA", "IPC"]
     
     # Eliminar filas completamente vacías
@@ -140,7 +160,12 @@ def main():
     print("ACTUALIZACION DE DATOS: IPC (INE)")
     print("=" * 60)
 
-    ipc_df = obtener_ipc()
+    try:
+        ipc_df = obtener_ipc()
+    except Exception as e:
+        print(f"[ERROR] No se pudo obtener IPC (URL ni archivo local): {e}")
+        print("[INFO] Verificar conexión o data_raw/ipc_general_ine.xlsx.")
+        sys.exit(1)
     
     # Mostrar primeros y últimos datos
     print("\n[INFO] Datos de la serie cruda:")

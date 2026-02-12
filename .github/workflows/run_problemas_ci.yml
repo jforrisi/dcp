@@ -18,21 +18,11 @@ jobs:
           - phase: download
             script: expectativas_economicas_paraguay.py
           - phase: download
-            script: expectativas_eme_analistas_banrep.py
-          - phase: download
             script: ipc_paraguay.py
-          - phase: direct
-            script: 015_combustibles_miem.py
           - phase: direct
             script: 016_ipc.py
           - phase: direct
             script: 018_ipc_paraguay.py
-          - phase: direct
-            script: 025_salario_real.py
-          - phase: direct
-            script: 026_tipo_cambio_eur.py
-          - phase: direct
-            script: 028_indice_precios_exportacion_uruguay.py
 
     steps:
       - name: Checkout

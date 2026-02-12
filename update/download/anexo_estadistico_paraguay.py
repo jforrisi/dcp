@@ -17,6 +17,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+try:
+    import undetected_chromedriver as uc
+except ImportError:
+    uc = None
+
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 if root_dir not in sys.path:
     sys.path.insert(0, root_dir)
@@ -49,10 +54,24 @@ def configurar_driver_descargas(download_dir: str):
     }
     chrome_options.add_experimental_option("prefs", prefs)
 
-    # En GitHub Actions usar SIEMPRE CHROME_BIN/CHROMEDRIVER_PATH del workflow (evita desajuste Chrome 144 vs 145)
+    # En GitHub Actions usar undetected-chromedriver para evitar Cloudflare "Just a moment..."
     in_ci = os.getenv("GITHUB_ACTIONS") == "true"
     chrome_bin = os.getenv("CHROME_BIN")
     chromedriver_path = os.getenv("CHROMEDRIVER_PATH")
+    if in_ci and uc and chrome_bin and chromedriver_path:
+        uc_options = uc.ChromeOptions()
+        uc_options.add_argument("--headless=new")
+        uc_options.add_argument("--no-sandbox")
+        uc_options.add_argument("--disable-dev-shm-usage")
+        uc_options.add_argument("--disable-gpu")
+        uc_options.add_argument("--window-size=1920,1080")
+        driver = uc.Chrome(
+            options=uc_options,
+            browser_executable_path=chrome_bin,
+            driver_executable_path=chromedriver_path,
+        )
+        driver.execute_cdp_cmd("Page.setDownloadBehavior", {"behavior": "allow", "downloadPath": download_dir})
+        return driver
     if in_ci and chrome_bin and chromedriver_path:
         chrome_options.add_argument("--headless=new")
         chrome_options.add_argument("--no-sandbox")

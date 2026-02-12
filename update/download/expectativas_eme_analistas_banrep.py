@@ -75,6 +75,20 @@ def configurar_driver_descargas(download_dir: str):
     }
     chrome_options.add_experimental_option("prefs", prefs)
 
+    # En GitHub Actions usar SIEMPRE CHROME_BIN/CHROMEDRIVER_PATH del workflow (evita desajuste 144 vs 145)
+    in_ci = os.getenv("GITHUB_ACTIONS") == "true"
+    chrome_bin = os.getenv("CHROME_BIN")
+    chromedriver_path = os.getenv("CHROMEDRIVER_PATH")
+    if in_ci and chrome_bin and chromedriver_path:
+        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--window-size=1920,1080")
+        chrome_options.binary_location = chrome_bin
+        service = Service(chromedriver_path)
+        return webdriver.Chrome(service=service, options=chrome_options)
+
     is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY') or os.getenv('AZURE_ENVIRONMENT') or os.getenv('AZURE')
     if is_railway:
         chrome_options.add_argument("--headless=new")
@@ -82,8 +96,25 @@ def configurar_driver_descargas(download_dir: str):
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--disable-gpu")
         chrome_options.add_argument("--window-size=1920,1080")
-
-    driver = webdriver.Chrome(options=chrome_options)
+        if not chrome_bin:
+            for path in ['/root/.nix-profile/bin/chromium', '/usr/bin/chromium-browser', '/usr/bin/chromium', '/usr/bin/google-chrome']:
+                if os.path.exists(path):
+                    chrome_bin = path
+                    break
+        if chrome_bin and os.path.exists(chrome_bin):
+            chrome_options.binary_location = chrome_bin
+        if not chromedriver_path:
+            for path in ['/root/.nix-profile/bin/chromedriver', '/usr/bin/chromedriver', '/usr/local/bin/chromedriver']:
+                if os.path.exists(path):
+                    chromedriver_path = path
+                    break
+        if chromedriver_path and os.path.exists(chromedriver_path):
+            service = Service(chromedriver_path)
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+        else:
+            driver = webdriver.Chrome(options=chrome_options)
+    else:
+        driver = webdriver.Chrome(options=chrome_options)
     return driver
 
 

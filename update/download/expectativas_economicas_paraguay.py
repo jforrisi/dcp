@@ -50,7 +50,21 @@ def configurar_driver_descargas(download_dir: str):
         "safebrowsing.enabled": True,
     }
     chrome_options.add_experimental_option("prefs", prefs)
-    
+
+    # En GitHub Actions usar SIEMPRE CHROME_BIN/CHROMEDRIVER_PATH del workflow (evita desajuste Chrome 144 vs 145)
+    in_ci = os.getenv("GITHUB_ACTIONS") == "true"
+    chrome_bin = os.getenv("CHROME_BIN")
+    chromedriver_path = os.getenv("CHROMEDRIVER_PATH")
+    if in_ci and chrome_bin and chromedriver_path:
+        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--window-size=1920,1080")
+        chrome_options.binary_location = chrome_bin
+        service = Service(chromedriver_path)
+        return webdriver.Chrome(service=service, options=chrome_options)
+
     is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY') or os.getenv('AZURE_ENVIRONMENT') or os.getenv('AZURE')
     
     if is_railway:
@@ -319,6 +333,19 @@ def encontrar_enlace_descarga(driver):
                     return href
         except Exception as e:
             print(f"[INFO] Método 4 falló: {e}")
+
+        # Estrategia 5: Cualquier enlace .xlsx que contenga EVE o documents
+        try:
+            enlaces = driver.find_elements(By.XPATH, "//a[contains(@href, '.xlsx')]")
+            for enlace in enlaces:
+                href = enlace.get_attribute('href')
+                if href and ('EVE' in href or 'documents' in href):
+                    if href.startswith('/'):
+                        href = f"https://www.bcp.gov.py{href}"
+                    print(f"[OK] Enlace encontrado (método 5): {href[:80]}...")
+                    return href
+        except Exception as e:
+            print(f"[INFO] Método 5 falló: {e}")
         
         raise RuntimeError("No se pudo encontrar el enlace de descarga con ningún método")
         

@@ -3,7 +3,7 @@ Script: tipo_cambio_eur
 ------------------------
 Actualiza la base de datos con la serie de tipo de cambio EUR/UYU del INE.
 
-1) Intentar lectura directa del Excel con pandas desde la URL.
+1) Intentar lectura directa del Excel desde la URL (requests + certifi; fallback sin verify en CI).
 2) Si falla, leer desde data_raw/.
 3) Validar fechas.
 4) Actualizar automáticamente la base de datos.
@@ -12,8 +12,11 @@ NOTA: El valor es el promedio entre compra (columna E) y venta (columna F).
 """
 
 import os
+import sys
+from io import BytesIO
 
 import pandas as pd
+import requests
 from _helpers import (
     validar_fechas_solo_nulas,
     insertar_en_bd_unificado
@@ -30,9 +33,28 @@ ID_VARIABLE = 6  # EUR/LC (desde maestro_database.xlsx Sheet1_old)
 ID_PAIS = 858  # Uruguay_database.xlsx Sheet1_old)
 
 
+def _descargar_excel_ine():
+    """
+    Descarga el Excel del INE por HTTP. Usa requests (certifi en CI).
+    Si falla por SSL (p. ej. en GitHub Actions), reintenta con verify=False.
+    """
+    try:
+        r = requests.get(URL_EXCEL_INE, timeout=60)
+        r.raise_for_status()
+        return r.content
+    except requests.exceptions.SSLError as e:
+        print(f"[WARN] SSL al descargar INE: {e}")
+        print("[INFO] Reintentando sin verificación SSL (entorno CI)...")
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        r = requests.get(URL_EXCEL_INE, timeout=60, verify=False)
+        r.raise_for_status()
+        return r.content
+
+
 def leer_excel_desde_url():
     """
-    Intenta leer el Excel directamente desde la URL con pandas.
+    Intenta leer el Excel directamente desde la URL (descarga con requests, luego pandas).
     Lee columna A (fecha), E (compra EUR), F (venta EUR).
     Calcula el promedio entre compra y venta.
     Devuelve un DataFrame o lanza excepción si falla.
@@ -40,10 +62,12 @@ def leer_excel_desde_url():
     print("\n[INFO] Intentando leer Excel directamente desde la URL del INE...")
     print(f"   URL: {URL_EXCEL_INE}")
     
+    content = _descargar_excel_ine()
+    
     # Leer columnas A (fecha), E (compra EUR), F (venta EUR)
     try:
         tc_df = pd.read_excel(
-            URL_EXCEL_INE,
+            BytesIO(content),
             sheet_name=0,  # primera hoja
             usecols=[0, 4, 5],  # Columnas A (fecha), E (compra EUR), F (venta EUR)
             header=None,
@@ -53,7 +77,7 @@ def leer_excel_desde_url():
         print(f"[WARN] Error al leer primera hoja: {e}")
         print("[INFO] Intentando leer sin especificar hoja...")
         tc_df = pd.read_excel(
-            URL_EXCEL_INE,
+            BytesIO(content),
             usecols=[0, 4, 5],  # Columnas A (fecha), E (compra EUR), F (venta EUR)
             header=None,
         )
@@ -155,7 +179,12 @@ def main():
     print("ACTUALIZACION DE DATOS: TIPO DE CAMBIO EUR (INE)")
     print("=" * 60)
 
-    tc_df = obtener_tipo_cambio_eur()
+    try:
+        tc_df = obtener_tipo_cambio_eur()
+    except Exception as e:
+        print(f"[ERROR] No se pudo obtener tipo de cambio EUR: {e}")
+        print("[INFO] Verificar URL INE o data_raw/cotizacion_monedas_ine.xlsx.")
+        sys.exit(1)
     
     # Mostrar primeros y últimos datos
     print("\n[INFO] Datos obtenidos:")

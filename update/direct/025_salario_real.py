@@ -3,15 +3,18 @@ Script: salario_real
 --------------------
 Actualiza la base de datos con la serie de Salario Real (índice, sector privado) del INE.
 
-1) Intentar lectura directa del Excel con pandas desde la URL.
+1) Intentar lectura directa desde la URL (requests + fallback SSL para CI).
 2) Si falla, leer desde data_raw/.
 3) Validar fechas.
 4) Actualizar automáticamente la base de datos.
 """
 
 import os
+import sys
+from io import BytesIO
 
 import pandas as pd
+import requests
 from _helpers import (
     validar_fechas_solo_nulas,
     insertar_en_bd_unificado
@@ -28,21 +31,41 @@ ID_VARIABLE = 15  # Salario real (desde maestro_database.xlsx Sheet1_old)
 ID_PAIS = 858  # Uruguay_database.xlsx Sheet1_old)
 
 
+def _descargar_excel_ine():
+    """
+    Descarga el Excel del INE por HTTP. Usa requests; si falla por SSL (CI), reintenta con verify=False.
+    """
+    try:
+        r = requests.get(URL_EXCEL_INE, timeout=60)
+        r.raise_for_status()
+        return r.content
+    except requests.exceptions.SSLError as e:
+        print(f"[WARN] SSL al descargar INE: {e}")
+        print("[INFO] Reintentando sin verificación SSL (entorno CI)...")
+        import urllib3
+        urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        r = requests.get(URL_EXCEL_INE, timeout=60, verify=False)
+        r.raise_for_status()
+        return r.content
+
+
 def leer_excel_desde_url():
     """
-    Intenta leer el Excel directamente desde la URL con pandas.
+    Intenta leer el Excel directamente desde la URL (descarga con requests, luego pandas).
     Usa columnas A (fecha) y C (salario real privado), desde la fila 40.
     Devuelve un DataFrame o lanza excepción si falla.
     """
     print("\n[INFO] Intentando leer Excel directamente desde la URL del INE...")
     print(f"   URL: {URL_EXCEL_INE}")
 
+    content = _descargar_excel_ine()
     salario_df = pd.read_excel(
-        URL_EXCEL_INE,
+        BytesIO(content),
         sheet_name=0,
         usecols=[0, 2],  # Columnas A y C
         skiprows=39,  # comienza en la fila 40 (0-index)
         header=None,
+        engine="xlrd",  # .xls
     )
 
     salario_df.columns = ["FECHA", "SALARIO_REAL"]
@@ -116,6 +139,15 @@ def obtener_salario_real():
 
 
 def main():
+    try:
+        _main()
+    except Exception as e:
+        print(f"[ERROR] No se pudo actualizar salario real: {e}")
+        print("[INFO] Verificar URL INE o data_raw/salario_real_ine.xls.")
+        sys.exit(1)
+
+
+def _main():
     print("=" * 60)
     print("ACTUALIZACION DE DATOS: SALARIO REAL (INE)")
     print("=" * 60)

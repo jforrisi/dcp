@@ -205,30 +205,20 @@ function CotizacionesPage() {
         }
     };
 
-    // Tabla de resumen
-    const SummaryTable = ({ data }) => {
+    // Tabla de variaciones por período (ordenable, con Var gráfico)
+    const VariacionesTable = ({ data, extractCountryName }) => {
         const [sortConfig, setSortConfig] = React.useState({ key: null, direction: 'asc' });
 
-        const tableData = data
-            .filter(item => item.summary && item.summary.precio_inicial !== null)
+        const tableData = (data || [])
+            .filter(item => item.summary && item.summary.fecha_max)
             .map(item => ({
                 nombre: extractCountryName(item.product_name, item.pais, item.id_variable),
-                intervalo: item.summary.fecha_inicial && item.summary.fecha_final
-                    ? (() => {
-                        const fechaIni = new Date(item.summary.fecha_inicial + 'T00:00:00');
-                        const fechaFin = new Date(item.summary.fecha_final + 'T00:00:00');
-                        const diaIni = String(fechaIni.getDate()).padStart(2, '0');
-                        const mesIni = String(fechaIni.getMonth() + 1).padStart(2, '0');
-                        const añoIni = String(fechaIni.getFullYear()).slice(-2);
-                        const diaFin = String(fechaFin.getDate()).padStart(2, '0');
-                        const mesFin = String(fechaFin.getMonth() + 1).padStart(2, '0');
-                        const añoFin = String(fechaFin.getFullYear()).slice(-2);
-                        return `${diaIni}-${mesIni}-${añoIni} - ${diaFin}-${mesFin}-${añoFin}`;
-                    })()
-                    : 'N/A',
-                precioInicial: item.summary.precio_inicial,
-                precioFinal: item.summary.precio_final,
-                variacion: item.summary.variacion || 0.0
+                fechaMax: item.summary.fecha_max,
+                v1d: item.summary.variacion_1d,
+                v5d: item.summary.variacion_5d,
+                v22d: item.summary.variacion_22d,
+                v250d: item.summary.variacion_250d,
+                varGrafico: item.summary.variacion != null ? item.summary.variacion : null
             }));
 
         const handleSort = (key) => {
@@ -244,9 +234,12 @@ function CotizacionesPage() {
             let aVal = a[sortConfig.key];
             let bVal = b[sortConfig.key];
             if (typeof aVal === 'string') {
-                aVal = aVal.toLowerCase();
-                bVal = bVal.toLowerCase();
+                aVal = (aVal || '').toLowerCase();
+                bVal = (bVal || '').toLowerCase();
             }
+            if (aVal == null && bVal == null) return 0;
+            if (aVal == null) return sortConfig.direction === 'asc' ? 1 : -1;
+            if (bVal == null) return sortConfig.direction === 'asc' ? -1 : 1;
             if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
             if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
             return 0;
@@ -256,94 +249,78 @@ function CotizacionesPage() {
             if (sortConfig.key !== columnKey) {
                 return <span className="text-gray-400 ml-1 text-xs">↕</span>;
             }
-            return sortConfig.direction === 'asc' 
+            return sortConfig.direction === 'asc'
                 ? <span className="text-indigo-600 ml-1 text-xs">↑</span>
                 : <span className="text-indigo-600 ml-1 text-xs">↓</span>;
         };
 
-        const getVariacionColor = (valor) => {
-            if (valor === 0 || Math.abs(valor) < 0.01) return 'text-gray-600';
-            return valor >= 0 ? 'text-green-600' : 'text-red-600';
+        const getVarColor = (v) => {
+            if (v == null) return 'text-gray-500';
+            return v >= 0 ? 'text-green-600' : 'text-red-600';
         };
+        const fmtVar = (v) => (v == null ? '—' : `${v >= 0 ? '+' : ''}${Number(v).toFixed(2)}%`);
 
-        if (tableData.length === 0) {
-            return (
-                <div className="text-center py-8 text-gray-500">
-                    <p>No hay datos de resumen disponibles para mostrar.</p>
-                </div>
-            );
-        }
+        if (tableData.length === 0) return null;
 
         return (
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th 
+                            <th
                                 className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                                 onClick={() => handleSort('nombre')}
                             >
-                                <div className="flex items-center">
-                                    País/Cotización
-                                    <SortIcon columnKey="nombre" />
-                                </div>
+                                <div className="flex items-center">País <SortIcon columnKey="nombre" /></div>
                             </th>
-                            <th 
+                            <th
                                 className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                                onClick={() => handleSort('intervalo')}
+                                onClick={() => handleSort('fechaMax')}
                             >
-                                <div className="flex items-center justify-center">
-                                    Intervalo
-                                    <SortIcon columnKey="intervalo" />
-                                </div>
+                                <div className="flex items-center justify-center">Fecha máx. datos <SortIcon columnKey="fechaMax" /></div>
                             </th>
-                            <th 
+                            <th
                                 className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                                onClick={() => handleSort('precioInicial')}
+                                onClick={() => handleSort('v1d')}
                             >
-                                <div className="flex items-center justify-end">
-                                    Cotización Inicial
-                                    <SortIcon columnKey="precioInicial" />
-                                </div>
+                                <div className="flex items-center justify-end">Variación 1 d <SortIcon columnKey="v1d" /></div>
                             </th>
-                            <th 
+                            <th
                                 className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                                onClick={() => handleSort('precioFinal')}
+                                onClick={() => handleSort('v5d')}
                             >
-                                <div className="flex items-center justify-end">
-                                    Cotización Final
-                                    <SortIcon columnKey="precioFinal" />
-                                </div>
+                                <div className="flex items-center justify-end">Variación 1 sem <SortIcon columnKey="v5d" /></div>
                             </th>
-                            <th 
+                            <th
                                 className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                                onClick={() => handleSort('variacion')}
+                                onClick={() => handleSort('v22d')}
                             >
-                                <div className="flex items-center justify-end">
-                                    Variación (%)
-                                    <SortIcon columnKey="variacion" />
-                                </div>
+                                <div className="flex items-center justify-end">Variación 1 mes <SortIcon columnKey="v22d" /></div>
+                            </th>
+                            <th
+                                className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                onClick={() => handleSort('v250d')}
+                            >
+                                <div className="flex items-center justify-end">Variación 1 año <SortIcon columnKey="v250d" /></div>
+                            </th>
+                            <th
+                                className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                onClick={() => handleSort('varGrafico')}
+                            >
+                                <div className="flex items-center justify-end">Var gráfico <SortIcon columnKey="varGrafico" /></div>
                             </th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {sortedData.map((row, index) => (
-                            <tr key={index} className="hover:bg-gray-50">
-                                <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {row.nombre}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-center">
-                                    {row.intervalo}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">
-                                    {row.precioInicial.toFixed(4)}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 text-right">
-                                    {row.precioFinal.toFixed(4)}
-                                </td>
-                                <td className={`px-4 py-3 whitespace-nowrap text-sm text-right font-medium ${getVariacionColor(row.variacion)}`}>
-                                    {row.variacion >= 0 ? '+' : ''}{row.variacion.toFixed(2)}%
-                                </td>
+                        {sortedData.map((row, i) => (
+                            <tr key={i} className="hover:bg-gray-50">
+                                <td className="px-4 py-3 text-sm font-medium text-gray-900 whitespace-nowrap">{row.nombre}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700 text-center whitespace-nowrap">{row.fechaMax}</td>
+                                <td className={`px-4 py-3 text-sm text-right font-medium whitespace-nowrap ${getVarColor(row.v1d)}`}>{fmtVar(row.v1d)}</td>
+                                <td className={`px-4 py-3 text-sm text-right font-medium whitespace-nowrap ${getVarColor(row.v5d)}`}>{fmtVar(row.v5d)}</td>
+                                <td className={`px-4 py-3 text-sm text-right font-medium whitespace-nowrap ${getVarColor(row.v22d)}`}>{fmtVar(row.v22d)}</td>
+                                <td className={`px-4 py-3 text-sm text-right font-medium whitespace-nowrap ${getVarColor(row.v250d)}`}>{fmtVar(row.v250d)}</td>
+                                <td className={`px-4 py-3 text-sm text-right font-medium whitespace-nowrap ${getVarColor(row.varGrafico)}`}>{fmtVar(row.varGrafico)}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -503,11 +480,11 @@ function CotizacionesPage() {
                                     })()}
                                 </div>
                                 
-                                {/* Tabla de resumen - usar rawData para mostrar valores originales */}
+                                {/* Tabla de variaciones por período (ordenable, con Var gráfico) */}
                                 {!fullscreen && (
                                     <div className="card mt-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen de Cotizaciones</h3>
-                                        <SummaryTable data={rawData.length > 0 ? rawData : cotizacionesData} />
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Variaciones por período</h3>
+                                        <VariacionesTable data={rawData.length > 0 ? rawData : cotizacionesData} extractCountryName={extractCountryName} />
                                     </div>
                                 )}
                             </>

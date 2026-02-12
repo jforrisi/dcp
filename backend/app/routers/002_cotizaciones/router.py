@@ -127,11 +127,11 @@ def get_cotizaciones():
             id_variable = product_id // 10000
             id_pais = product_id % 10000
             
-            # Obtener precios diarios en el rango
-            # Usar DATE() para normalizar fechas y asegurar comparación correcta
-            # Esto maneja casos donde fecha puede tener componente de hora
+            # Obtener precios: ampliar rango hacia atrás 250 días para calcular variaciones
+            fecha_desde_eff = min(fecha_desde, fecha_hasta - timedelta(days=250))
             fecha_desde_str = fecha_desde.isoformat()
             fecha_hasta_str = fecha_hasta.isoformat()
+            fecha_desde_eff_str = fecha_desde_eff.isoformat()
             query_prices = """
                 SELECT fecha, valor
                 FROM maestro_precios
@@ -140,28 +140,29 @@ def get_cotizaciones():
                 AND DATE(fecha) <= DATE(?)
                 ORDER BY fecha ASC
             """
-            prices = execute_query(query_prices, (id_variable, id_pais, fecha_desde_str, fecha_hasta_str))
+            prices = execute_query(query_prices, (id_variable, id_pais, fecha_desde_eff_str, fecha_hasta_str))
             
             if not prices:
                 continue
             
-            # Normalizar fechas y preparar datos
-            data = []
+            # Normalizar fechas y preparar datos (para el gráfico solo el rango pedido)
+            data_all = []
             for price_item in prices:
                 fecha_obj = parse_fecha(price_item['fecha'])
-                data.append({
+                data_all.append({
                     'fecha': fecha_obj.isoformat(),
                     'valor': float(price_item['valor'])
                 })
+            # Datos para el gráfico: solo [fecha_desde, fecha_hasta]
+            data = [d for d in data_all if fecha_desde <= parse_fecha(d['fecha']) <= fecha_hasta]
             
-            # Calcular resumen
+            # Calcular resumen (intervalo pedido)
             if data:
                 precio_inicial = data[0]['valor']
                 precio_final = data[-1]['valor']
                 variacion = 0.0
                 if precio_inicial > 0:
                     variacion = ((precio_final - precio_inicial) / precio_inicial) * 100
-                
                 fecha_inicial = data[0]['fecha']
                 fecha_final = data[-1]['fecha']
             else:
@@ -170,6 +171,24 @@ def get_cotizaciones():
                 variacion = 0.0
                 fecha_inicial = None
                 fecha_final = None
+            
+            # Variaciones 1d, 5d (1 sem), 22d (1 mes), 250d (1 año) respecto a la fecha máxima de los datos
+            fecha_max = fecha_final  # última fecha en el rango
+            variacion_1d = variacion_5d = variacion_22d = variacion_250d = None
+            if data_all and fecha_max:
+                fmax = date.fromisoformat(fecha_max)
+                by_date = {parse_fecha(d['fecha']): d['valor'] for d in data_all}
+                v0 = by_date.get(fmax)
+                if v0 is not None and v0 > 0:
+                    for delta_d, key in [(1, 'variacion_1d'), (5, 'variacion_5d'), (22, 'variacion_22d'), (250, 'variacion_250d')]:
+                        f_ant = fmax - timedelta(days=delta_d)
+                        v_ant = by_date.get(f_ant)
+                        if v_ant is not None:
+                            val = ((v0 - v_ant) / v_ant) * 100
+                            if key == 'variacion_1d': variacion_1d = round(val, 2)
+                            elif key == 'variacion_5d': variacion_5d = round(val, 2)
+                            elif key == 'variacion_22d': variacion_22d = round(val, 2)
+                            else: variacion_250d = round(val, 2)
             
             # Obtener id_variable del producto
             product_id_variable = product.get('id_variable')
@@ -187,7 +206,12 @@ def get_cotizaciones():
                     'precio_final': precio_final,
                     'variacion': variacion,
                     'fecha_inicial': fecha_inicial,
-                    'fecha_final': fecha_final
+                    'fecha_final': fecha_final,
+                    'fecha_max': fecha_max,
+                    'variacion_1d': variacion_1d,
+                    'variacion_5d': variacion_5d,
+                    'variacion_22d': variacion_22d,
+                    'variacion_250d': variacion_250d
                 }
             })
         

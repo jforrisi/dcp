@@ -41,16 +41,20 @@ function LicitacionesLRMPage() {
     // Formatear números con separadores de miles
     const formatNumber = (num) => {
         if (num === null || num === undefined) return 'N/A';
+        const n = Number(num);
+        if (Number.isNaN(n)) return 'N/A';
         return new Intl.NumberFormat('es-UY', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
-        }).format(num);
+        }).format(n);
     };
 
-    // Formatear porcentaje
+    // Formatear porcentaje (acepta número, string u objeto desde la API/PostgreSQL)
     const formatPercent = (num) => {
         if (num === null || num === undefined) return 'N/A';
-        return `${num.toFixed(2)}%`;
+        const n = Number(num);
+        if (!Number.isFinite(n)) return 'N/A';
+        return n.toFixed(2) + '%';
     };
 
     // Función para obtener el color basado en la diferencia entre tasa_corte y tasa_bevsa
@@ -319,8 +323,8 @@ function LicitacionesLRMPage() {
                     setCurveData(curve);
                 }
 
-                // Cargar timeseries de últimos 90 días para el plazo de la licitación
-                const timeseriesRes = await fetch(`${API_BASE}/licitaciones-lrm/bevsa-timeseries?plazo=${plazo}&fecha_hasta=${fecha}&dias=90`);
+                // Cargar timeseries de últimos 40 días (igual que en el PDF)
+                const timeseriesRes = await fetch(`${API_BASE}/licitaciones-lrm/bevsa-timeseries?plazo=${plazo}&fecha_hasta=${fecha}&dias=40`);
                 if (timeseriesRes.ok) {
                     const timeseries = await timeseriesRes.json();
                     setTimeseriesData(timeseries.data || []);
@@ -429,7 +433,7 @@ function LicitacionesLRMPage() {
         });
     }, [curveData]);
 
-    // Renderizar gráfico temporal de tasa BEVSA
+    // Renderizar gráfico temporal de tasa BEVSA (40 días, 3 líneas de tasa corte)
     React.useEffect(() => {
         if (!timeseriesData || timeseriesData.length === 0 || !licitacionData) {
             return;
@@ -448,25 +452,56 @@ function LicitacionesLRMPage() {
                 }
 
                 const labels = timeseriesData.map(item => formatFecha(item.fecha));
+                const fechasTs = timeseriesData.map(item => (item.fecha && String(item.fecha).split('T')[0]) || item.fecha);
                 const valores = timeseriesData.map(item => parseFloat(item.valor) || 0);
-                
-                // Obtener el plazo de la licitación seleccionada
                 const plazoActual = licitacionData.plazo || selectedCombinacion?.plazo || 'N/A';
+
+                const datasets = [
+                    {
+                        label: 'Tasa BEVSA',
+                        data: valores,
+                        borderColor: 'rgb(37, 99, 235)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 2,
+                        pointHoverRadius: 4
+                    }
+                ];
+
+                // Últimas 3 tasas de corte: color distinto, leyenda con fecha, punto/cruz en el día de la licitación
+                const licits = (stats && stats.licitaciones) ? stats.licitaciones : [];
+                const colores = ['rgb(220, 38, 38)', 'rgb(13, 148, 136)', 'rgb(124, 58, 237)']; // rojo, teal, violeta
+                for (let idx = 0; idx < Math.min(3, licits.length); idx++) {
+                    const lic = licits[idx];
+                    const tc = lic.tasa_corte;
+                    if (tc != null && Number.isFinite(Number(tc))) {
+                        const valor = Number(tc);
+                        const fechaLic = lic.fecha ? String(lic.fecha).split('T')[0] : null;
+                        const indexDia = fechaLic != null ? fechasTs.indexOf(fechaLic) : -1;
+                        const pointRadiusArr = indexDia >= 0
+                            ? labels.map((_, i) => i === indexDia ? 8 : 0)
+                            : 0;
+                        datasets.push({
+                            label: `Tasa corte ${formatFecha(lic.fecha)}`,
+                            data: labels.map(() => valor),
+                            borderColor: colores[idx],
+                            backgroundColor: colores[idx],
+                            fill: false,
+                            tension: 0,
+                            pointRadius: pointRadiusArr,
+                            pointHoverRadius: indexDia >= 0 ? 10 : 2,
+                            pointStyle: 'circle',
+                            borderDash: [5, 5]
+                        });
+                    }
+                }
 
                 timeseriesChartInstanceRef.current = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: labels,
-                        datasets: [{
-                            label: `Tasa BEVSA ${plazoActual} días (%)`,
-                            data: valores,
-                            borderColor: 'rgb(99, 102, 241)',
-                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                            fill: false,
-                            tension: 0.4,
-                            pointRadius: 2,
-                            pointHoverRadius: 4
-                        }]
+                        datasets: datasets
                     },
                     options: {
                         responsive: true,
@@ -474,7 +509,7 @@ function LicitacionesLRMPage() {
                         plugins: {
                             title: {
                                 display: true,
-                                text: `Comportamiento de Tasa BEVSA ${plazoActual} días - Últimos 90 días`,
+                                text: `Comportamiento de Tasa BEVSA ${plazoActual} días - Últimos 40 días`,
                                 font: {
                                     size: 16,
                                     weight: 'bold'
@@ -520,7 +555,7 @@ function LicitacionesLRMPage() {
                 });
             }, 300);
         });
-    }, [timeseriesData, licitacionData, selectedCombinacion]);
+    }, [timeseriesData, licitacionData, selectedCombinacion, stats]);
 
     console.log('[LicitacionesLRM] Renderizando componente. Estado:', {
         selectedCombinacion,
@@ -534,8 +569,31 @@ function LicitacionesLRMPage() {
         <div className="min-h-screen bg-gray-50 p-6">
             <div className="max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900">Análisis de Licitaciones LRM</h1>
-                    <div className="flex gap-3">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">Análisis de Licitaciones LRM</h1>
+                        {selectedCombinacion && selectedCombinacion.fecha && (
+                            <p className="print-only mt-1 text-lg text-gray-600">
+                                Licitación {formatFecha(selectedCombinacion.fecha)} – {selectedCombinacion.plazo} días
+                            </p>
+                        )}
+                    </div>
+                    <div className="no-print flex gap-3">
+                        <button
+                            type="button"
+                            onClick={() => window.print()}
+                            disabled={!selectedCombinacion || !selectedCombinacion.fecha}
+                            className={`px-4 py-2 rounded-md font-medium flex items-center gap-2 transition-colors ${
+                                !selectedCombinacion || !selectedCombinacion.fecha
+                                    ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                    : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                            }`}
+                            title="Abre el diálogo de impresión para guardar como PDF (vista del front)"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 01-2 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2h-6a2 2 0 00-2 2v4a2 2 0 002 2h2z" />
+                            </svg>
+                            Imprimir / Guardar como PDF
+                        </button>
                         <button
                             onClick={handleGeneratePDF}
                             disabled={!selectedCombinacion || !selectedCombinacion.fecha || !selectedCombinacion.plazo}
@@ -544,12 +602,12 @@ function LicitacionesLRMPage() {
                                     ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
                                     : 'bg-red-600 text-white hover:bg-red-700'
                             }`}
-                            title="Crear Informe PDF"
+                            title="Descargar informe PDF generado en servidor"
                         >
                             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clipRule="evenodd" />
                             </svg>
-                            Crear Informe
+                            Informe PDF (servidor)
                         </button>
                         <button
                             onClick={handleUpdate}
@@ -566,7 +624,7 @@ function LicitacionesLRMPage() {
                 </div>
                 
                 {updateStatus && (
-                    <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                    <div className="no-print mb-6 p-3 bg-blue-50 border border-blue-200 rounded-md">
                         <div className="text-sm text-blue-800">
                             <strong>Estado:</strong> {updateStatus.running ? 'En progreso' : 'Completado'}
                             {updateStatus.step && (
@@ -582,7 +640,7 @@ function LicitacionesLRMPage() {
                 )}
 
                 {/* Selector de licitación (fecha - plazo) */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div className="no-print bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                     <div className="flex items-center gap-4">
                         <div className="flex-1">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -666,9 +724,7 @@ function LicitacionesLRMPage() {
                                 <div>
                                     <p className="text-sm text-gray-600">Tasa de Corte</p>
                                     <p className={`text-lg font-semibold ${getTasaColor(licitacionData.tasa_corte, bevsaRate?.ultimo_valor)}`}>
-                                        {licitacionData.tasa_corte !== null && licitacionData.tasa_corte !== undefined 
-                                            ? `${parseFloat(licitacionData.tasa_corte).toFixed(2)}%` 
-                                            : 'N/A'}
+                                        {formatPercent(licitacionData.tasa_corte)}
                                     </p>
                                 </div>
                                 <div>
@@ -709,8 +765,20 @@ function LicitacionesLRMPage() {
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            )                            }
                         </div>
+
+                        {/* Gráfico temporal 30 días (segundo bloque, igual que en el PDF) */}
+                        {timeseriesData && timeseriesData.length > 0 && licitacionData && (
+                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                                <h2 className="text-xl font-bold text-gray-900 mb-4">
+                                    Comportamiento de Tasa BEVSA {licitacionData.plazo} días - Últimos 40 días
+                                </h2>
+                                <div className="print-chart-container" style={{ height: '400px', position: 'relative' }}>
+                                    <canvas ref={timeseriesChartRef}></canvas>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Estadísticas - Últimas 5 Licitaciones */}
                         {stats && (
@@ -743,8 +811,9 @@ function LicitacionesLRMPage() {
                                 {stats.licitaciones && stats.licitaciones.length > 0 && (
                                     <div>
                                         <button
+                                            type="button"
                                             onClick={() => setExpandedTable(!expandedTable)}
-                                            className="flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 mb-2"
+                                            className="no-print flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700 mb-2"
                                         >
                                             {expandedTable ? (
                                                 <>
@@ -763,8 +832,8 @@ function LicitacionesLRMPage() {
                                             )}
                                         </button>
                                         
-                                        {expandedTable && (
-                                            <div className="overflow-x-auto mt-2">
+                                        {(expandedTable || true) && (
+                                            <div className={`overflow-x-auto mt-2 print-expand-table ${!expandedTable ? 'hidden' : ''}`}>
                                                 <table className="min-w-full divide-y divide-gray-200">
                                                     <thead className="bg-gray-50">
                                                         <tr>
@@ -804,9 +873,7 @@ function LicitacionesLRMPage() {
                                                                     {formatNumber(lic.monto_adjudicado)}
                                                                 </td>
                                                                 <td className={`px-4 py-3 whitespace-nowrap text-sm text-right font-semibold ${getTasaColor(lic.tasa_corte, lic.tasa_bevsa)}`}>
-                                                                    {lic.tasa_corte !== null && lic.tasa_corte !== undefined
-                                                                        ? `${parseFloat(lic.tasa_corte).toFixed(2)}%`
-                                                                        : 'N/A'}
+                                                                    {formatPercent(lic.tasa_corte)}
                                                                 </td>
                                                                 <td className={`px-4 py-3 whitespace-nowrap text-sm text-right font-semibold ${getTasaColor(lic.tasa_corte, lic.tasa_bevsa)}`}>
                                                                     {lic.tasa_bevsa !== null && lic.tasa_bevsa !== undefined
@@ -834,23 +901,12 @@ function LicitacionesLRMPage() {
                                 ? formatFecha(curveData.fecha)
                                 : `${formatFecha(curveData.fecha)} (más cercana)`}
                         </h2>
-                        <div style={{ height: '400px', position: 'relative' }}>
+                        <div className="print-chart-container" style={{ height: '400px', position: 'relative' }}>
                             <canvas ref={chartRef}></canvas>
                         </div>
                     </div>
                 )}
 
-                {/* Gráfico temporal de tasa BEVSA últimos 90 días */}
-                {timeseriesData && timeseriesData.length > 0 && licitacionData && (
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mt-6">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4">
-                            Comportamiento de Tasa BEVSA {licitacionData.plazo} días - Últimos 90 días
-                        </h2>
-                        <div style={{ height: '400px', position: 'relative' }}>
-                            <canvas ref={timeseriesChartRef}></canvas>
-                        </div>
-                    </div>
-                )}
             </div>
         </div>
     );

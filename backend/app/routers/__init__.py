@@ -43,6 +43,7 @@ yield_curve_005 = load_module_from_path('yield_curve_005', '005_yield_curve')
 data_export_006 = load_module_from_path('data_export_006', '006_data_export')
 licitaciones_lrm_007 = load_module_from_path('licitaciones_lrm_007', '007_licitaciones_lrm')
 update_008 = load_module_from_path('update_008', '008_update')
+politica_monetaria_009 = load_module_from_path('politica_monetaria_009', '009_politica_monetaria')
 
 # Export modules/blueprints with original names for backward compatibility
 # ticker module exports a blueprint named 'ticker'
@@ -57,3 +58,4 @@ yield_curve = yield_curve_005
 data_export = data_export_006.data_export
 licitaciones_lrm = licitaciones_lrm_007
 update = update_008
+politica_monetaria = politica_monetaria_009

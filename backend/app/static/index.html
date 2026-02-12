@@ -47,6 +47,20 @@
             ring-color: #6366f1;
             border-color: transparent;
         }
+        /* Impresión: ocultar navegación y botones; vista prolija del contenido */
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            .print-expand-table { display: block !important; }
+            body { background: white; }
+            .min-h-screen { padding-top: 0; }
+            /* Gráficos más chicos para que entren en la hoja */
+            .print-chart-container { height: 260px !important; max-width: 100%; overflow: hidden; }
+            .print-chart-container canvas { max-height: 260px !important; width: 100% !important; }
+            .max-w-7xl { max-width: 100% !important; }
+            .min-h-screen.p-6 { padding: 0.5rem !important; }
+        }
+        .print-only { display: none; }
     </style>
 </head>
 <body>
@@ -73,6 +87,7 @@
     <script type="text/babel" src="/static/pages/YieldCurvePage.js"></script>
     <script type="text/babel" src="/static/pages/DataExportPage.js"></script>
     <script type="text/babel" src="/static/pages/LicitacionesLRMPage.js"></script>
+    <script type="text/babel" src="/static/pages/PoliticaMonetariaPage.js"></script>
     <!-- App Principal -->
     <script type="text/babel" src="/static/app.js"></script>
 </body>

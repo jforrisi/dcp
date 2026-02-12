@@ -904,8 +904,8 @@ def generate_pdf():
         # Obtener curva BEVSA del día
         curve_data = obtener_curva_bevsa_por_fecha(fecha)
         
-        # Obtener serie temporal de últimos 30 días (para gráfico en PDF)
-        timeseries_data = obtener_timeseries_bevsa(plazo, fecha, dias=30)
+        # Obtener serie temporal de últimos 40 días (para gráfico en PDF)
+        timeseries_data = obtener_timeseries_bevsa(plazo, fecha, dias=40)
         
         # Preparar datos para el PDF
         pdf_data = {

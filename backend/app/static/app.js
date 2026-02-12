@@ -21,6 +21,7 @@ function App() {
             {currentPage === 'yield-curve' && <YieldCurvePage />}
             {currentPage === 'data-export' && <DataExportPage />}
             {currentPage === 'licitaciones-lrm' && <LicitacionesLRMPage />}
+            {currentPage === 'politica-monetaria' && <PoliticaMonetariaPage />}
         </div>
     );
 }

@@ -81,21 +81,25 @@ def get_ticker_data():
             if ultimo_valor is not None and ultima_fecha:
                 # Formatear valor con punto como separador de millares y coma como decimal
                 # Ejemplo: 3638.49 -> "3.638,49"
-                valor_str = f"{ultimo_valor:,.2f}"  # Formato: "3,638.49"
+                try:
+                    valor_num = float(ultimo_valor)
+                except (TypeError, ValueError):
+                    valor_num = 0.0
+                valor_str = f"{valor_num:,.2f}"  # Formato: "3,638.49"
                 partes = valor_str.split('.')
-                if len(partes) == 2:
+                if len(partes) >= 2:
                     # Separar miles con punto y decimales con coma
                     parte_entera = partes[0].replace(',', '.')  # "3,638" -> "3.638"
                     parte_decimal = partes[1]  # "49"
                     valor_formateado = f"{parte_entera},{parte_decimal}"  # "3.638,49"
                 else:
-                    # Si no tiene decimales
+                    # Si no tiene punto (un solo segmento)
                     valor_formateado = valor_str.replace(',', '.')
                 
                 ticker_items.append({
                     'pais': nombre_pais,
                     'variable': nombre_variable,
-                    'valor': float(ultimo_valor),
+                    'valor': valor_num,
                     'valor_formateado': valor_formateado,
                     'fecha': str(ultima_fecha),
                     'id_variable': id_variable,
@@ -108,8 +112,9 @@ def get_ticker_data():
         })
         
     except Exception as e:
+        # No devolver 500 para no romper la app (Home/Licitaciones cargan igual)
+        print(f"[Ticker] Error: {e}")
         return jsonify({
-            'success': False,
-            'error': str(e),
+            'success': True,
             'data': []
-        }), 500
+        })

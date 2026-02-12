@@ -140,10 +140,10 @@ def crear_pdf_licitacion(datos: dict) -> BytesIO:
     story.append(t1)
     story.append(Spacer(1, 0.3*inch))
     
-    # ===== SECCIÓN 2: GRÁFICO TEMPORAL (ÚLTIMOS 30 DÍAS) =====
+    # ===== SECCIÓN 2: GRÁFICO TEMPORAL (ÚLTIMOS 40 DÍAS) =====
     timeseries_data = datos.get('timeseries_data', [])
     if timeseries_data and len(timeseries_data) > 0:
-        story.append(Paragraph(f"Comportamiento de Tasa BEVSA {plazo} días - Últimos 30 días", styles['SectionTitle']))
+        story.append(Paragraph(f"Comportamiento de Tasa BEVSA {plazo} días - Últimos 40 días", styles['SectionTitle']))
         
         fechas = []
         valores_ts = []
@@ -166,11 +166,21 @@ def crear_pdf_licitacion(datos: dict) -> BytesIO:
             fig = Figure(figsize=(7, 4))
             ax = fig.add_subplot(111)
             ax.plot(fechas, valores_ts, linewidth=2, color='#2563eb', label='Tasa BEVSA')
-            if tasa_corte is not None:
-                ax.axhline(y=float(tasa_corte), color='#dc2626', linestyle='-', linewidth=2, label='Tasa de corte')
+            # Últimas 3 tasas de corte (de stats) en líneas horizontales con distintos colores
+            licitaciones = (stats or {}).get('licitaciones') or []
+            colores = ['#dc2626', '#ea580c', '#6b7280']  # rojo, naranja, gris
+            etiquetas = ['Tasa corte (última)', 'Tasa corte (anterior)', 'Tasa corte (anterior a la anterior)']
+            for idx in range(min(3, len(licitaciones))):
+                tc = licitaciones[idx].get('tasa_corte')
+                if tc is not None:
+                    try:
+                        y = float(tc)
+                        ax.axhline(y=y, color=colores[idx], linestyle='-', linewidth=1.5, label=etiquetas[idx])
+                    except (TypeError, ValueError):
+                        pass
             ax.set_xlabel('Fecha', fontsize=10)
             ax.set_ylabel('Tasa (%)', fontsize=10)
-            ax.legend(loc='best', fontsize=9)
+            ax.legend(loc='best', fontsize=8)
             ax.grid(True, alpha=0.3, linestyle='--')
             ax.tick_params(axis='x', rotation=45, labelsize=8)
             ax.tick_params(axis='y', labelsize=9)
@@ -187,7 +197,8 @@ def crear_pdf_licitacion(datos: dict) -> BytesIO:
     
     story.append(Spacer(1, 0.3*inch))
     
-    # ===== SECCIÓN 3: ESTADÍSTICAS =====
+    # ===== SECCIÓN 3: ESTADÍSTICAS (hoja 2) =====
+    story.append(PageBreak())
     if stats:
         story.append(Paragraph(f"Estadísticas - Últimas 5 Licitaciones a {plazo} días", styles['SectionTitle']))
         
@@ -281,7 +292,7 @@ def crear_pdf_licitacion(datos: dict) -> BytesIO:
     
     story.append(Spacer(1, 0.3*inch))
     
-    # ===== SECCIÓN 4: GRÁFICO DE CURVA BEVSA =====
+    # ===== SECCIÓN 4: GRÁFICO DE CURVA BEVSA (misma hoja 2, después de estadísticas) =====
     if curve_data and curve_data.get('data'):
         fecha_curva = curve_data.get('fecha', '')
         try:
@@ -293,7 +304,7 @@ def crear_pdf_licitacion(datos: dict) -> BytesIO:
         except:
             fecha_curva_fmt = str(fecha_curva)
         
-        story.append(PageBreak())
+        story.append(Spacer(1, 0.2*inch))
         story.append(Paragraph(f"Curva BEVSA Nominal - {fecha_curva_fmt}", styles['SectionTitle']))
         
         # Generar gráfico de curva

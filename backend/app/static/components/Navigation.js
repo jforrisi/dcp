@@ -13,6 +13,7 @@ function Navigation({ currentPage, onPageChange }) {
         { id: 'inflacion-dolares', nombre: 'Inflación en dólares', displayName: 'Inflación en dólares' },
         { id: 'yield-curve', nombre: 'Curva de Rendimiento', displayName: 'Curva de Rendimiento' },
         { id: 'licitaciones-lrm', nombre: 'Licitaciones LRM', displayName: 'Licitaciones LRM' },
+        { id: 'politica-monetaria', nombre: 'Monitor Monetario LatAm', displayName: 'Monitor Monetario LatAm' },
         { id: 'data-export', nombre: 'Descarga de Datos', displayName: 'Descarga de Datos' },
     ];
 
@@ -73,7 +74,7 @@ function Navigation({ currentPage, onPageChange }) {
     };
 
     return (
-        <nav className="bg-white border-b border-gray-200 shadow-sm">
+        <nav className="no-print bg-white border-b border-gray-200 shadow-sm">
             <div className="w-full px-2 py-2">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">

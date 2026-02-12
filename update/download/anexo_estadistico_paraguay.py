@@ -400,6 +400,10 @@ def main():
             return destino
 
         except Exception as e:
+            # En CI, Cloudflare bloquea el BCP; no fallar el job
+            if os.getenv("GITHUB_ACTIONS") == "true":
+                logger.warn("En CI: BCP/Cloudflare bloqueó la descarga. Ejecutá este script en local o usá update/historicos.")
+                sys.exit(0)
             logger.log_exception(e, "main()")
             raise
 

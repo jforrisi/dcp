@@ -38,6 +38,32 @@ DEST_FILENAME = "ipc_paraguay.xlsx"
 
 # Parte estable del enlace
 STABLE_PATH = "/documents/20117/2275428/AE_IPC.xlsx"
+BCP_BASE_URL = "https://www.bcp.gov.py"
+
+
+def intentar_descarga_directa_ci():
+    """
+    En CI (GitHub Actions), intenta descargar el Excel por requests con la URL estable.
+    Si Cloudflare no protege el documento directo, evita usar el navegador.
+    Returns True si se guardó el archivo, False si no.
+    """
+    if os.getenv("GITHUB_ACTIONS") != "true":
+        return False
+    url = f"{BCP_BASE_URL}{STABLE_PATH}"
+    try:
+        r = requests.get(url, timeout=30)
+        if r.status_code != 200:
+            return False
+        # xlsx es ZIP: empieza con PK
+        if len(r.content) < 100 or not r.content.startswith(b"PK"):
+            return False
+        data_raw_path = asegurar_data_raw()
+        destino = os.path.join(data_raw_path, DEST_FILENAME)
+        with open(destino, "wb") as f:
+            f.write(r.content)
+        return True
+    except Exception:
+        return False
 
 
 def asegurar_data_raw():
@@ -441,6 +467,12 @@ def main():
             logger.info("=" * 80)
             logger.info("DESCARGA DE IPC PARAGUAY - BCP")
             logger.info("=" * 80)
+
+            # En CI, intentar primero descarga directa por requests (evita Cloudflare si el doc está abierto)
+            if intentar_descarga_directa_ci():
+                logger.info("En CI: descarga directa por requests exitosa; omitiendo navegador.")
+                logger.info("PROCESO COMPLETADO EXITOSAMENTE")
+                return os.path.join(asegurar_data_raw(), DEST_FILENAME)
             
             data_raw_path = asegurar_data_raw()
             logger.info(f"Carpeta de descargas configurada en: {data_raw_path}")
@@ -567,6 +599,11 @@ def main():
                         logger.warn(f"Error al cerrar navegador: {e}")
                         
         except Exception as e:
+            # En CI, Cloudflare suele bloquear el navegador; no fallar el job
+            if os.getenv("GITHUB_ACTIONS") == "true":
+                if "enlace" in str(e).lower() or "just a moment" in str(e).lower() or "cloudflare" in str(e).lower():
+                    logger.warn("En CI: BCP/Cloudflare bloqueó la descarga. Ejecutá este script en local o usá update/historicos.")
+                    sys.exit(0)
             logger.log_exception(e, "main()")
             raise
 

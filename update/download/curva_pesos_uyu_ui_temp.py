@@ -32,6 +32,22 @@ DEST_FILENAME = "curva_pesos_uyu_ui_temp.xlsx"
 HISTORICO_FILENAME = "curva_pesos_uyu_ui.xlsx"
 
 
+def normalizar_tasa_a_porcentaje(val, divisor_grande=100000):
+    """
+    Lleva tasas a porcentaje (rango 1-20%). Si ya está en [1, 20] no modifica.
+    CUI puede venir en escala 100000, por eso divisor_grande por defecto 100000.
+    """
+    if pd.isna(val) or val == 0:
+        return val
+    if 1 <= val <= 20:
+        return val
+    if 0 < val < 1:
+        return val * 100
+    if 20 < val <= 10000:
+        return val / 100
+    return val / divisor_grande
+
+
 def asegurar_directorio():
     """Crea el directorio de descarga si no existe y devuelve su ruta absoluta."""
     base_dir = os.getcwd()
@@ -411,22 +427,17 @@ def procesar_fechas_y_valores(df):
     print(f"[OK] Primeros valores de fecha (después):")
     print(df[fecha_col].head())
     
-    # Procesar valores numéricos
-    # Los valores vienen con coma como separador decimal (2,5102)
-    # Necesitamos convertirlos a float y luego dividir entre 100000
-    print(f"[INFO] Procesando valores numéricos (convertir coma a punto y dividir entre 100000)...")
+    # Procesar valores numéricos: coma a punto y normalizar a porcentaje (rango 1-20)
+    print(f"[INFO] Procesando valores numéricos (coma a punto, normalizar a porcentaje 1-20)...")
     
     for col in df.columns:
         if col != fecha_col:
-            # Convertir valores con coma a numérico
-            # Primero reemplazar coma por punto
             df[col] = df[col].astype(str).str.replace(',', '.', regex=False)
-            # Convertir a numérico
-            df[col] = pd.to_numeric(df[col], errors='coerce')
-            # Dividir entre 100000
-            df[col] = df[col] / 100000
+            df[col] = pd.to_numeric(df[col], errors='coerce').apply(
+                lambda x: normalizar_tasa_a_porcentaje(x, divisor_grande=100000)
+            )
     
-    print("[OK] Fechas convertidas y valores procesados")
+    print("[OK] Fechas convertidas y valores normalizados a porcentaje")
     print(f"[INFO] Primeros valores después de procesar:")
     print(df.head())
     

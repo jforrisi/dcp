@@ -18,6 +18,8 @@ function PoliticaMonetariaPage() {
     const [fechaHasta, setFechaHasta] = React.useState(defaultHasta());
     const [tpmSeries, setTpmSeries] = React.useState([]);
     const [expSeries, setExpSeries] = React.useState([]);
+    const [embiSeries, setEmbiSeries] = React.useState([]);
+    const [monedasSeries, setMonedasSeries] = React.useState([]);
     const [loadingCharts, setLoadingCharts] = React.useState(false);
 
     React.useEffect(() => {
@@ -40,14 +42,20 @@ function PoliticaMonetariaPage() {
         Promise.all([
             fetch(`/api/politica-monetaria/series/tpm?${params}`).then(r => r.json()),
             fetch(`/api/politica-monetaria/series/expectativas?${params}`).then(r => r.json()),
+            fetch(`/api/politica-monetaria/series/embi?${params}`).then(r => r.json()),
+            fetch(`/api/politica-monetaria/series/monedas?${params}`).then(r => r.json()),
         ])
-            .then(([tpm, exp]) => {
+            .then(([tpm, exp, embi, monedas]) => {
                 setTpmSeries(Array.isArray(tpm) ? tpm : []);
                 setExpSeries(Array.isArray(exp) ? exp : []);
+                setEmbiSeries(Array.isArray(embi) ? embi : []);
+                setMonedasSeries(Array.isArray(monedas) ? monedas : []);
             })
             .catch(() => {
                 setTpmSeries([]);
                 setExpSeries([]);
+                setEmbiSeries([]);
+                setMonedasSeries([]);
             })
             .finally(() => setLoadingCharts(false));
     };
@@ -111,6 +119,7 @@ function PoliticaMonetariaPage() {
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Tasa de política monetaria</th>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Variación TPM</th>
                             <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Tasa real</th>
+                            <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">EMBI</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -137,6 +146,9 @@ function PoliticaMonetariaPage() {
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                                     {row.tasa_real != null ? `${fmt(row.tasa_real)}%` : '—'}
+                                </td>
+                                <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                                    {row.embi != null ? `${Number(row.embi).toFixed(0)} pb` : '—'}
                                 </td>
                             </tr>
                         ))}
@@ -174,8 +186,8 @@ function PoliticaMonetariaPage() {
                 </button>
             </div>
 
-            {/* Dos gráficos alineados en la misma fila */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Dos gráficos: TPM y Expectativas */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
                     <h2 className="text-lg font-semibold text-gray-800 mb-3">TPM</h2>
                     <div className="h-80">
@@ -193,6 +205,30 @@ function PoliticaMonetariaPage() {
                             <div className="flex items-center justify-center h-full text-gray-500">Cargando...</div>
                         ) : (
                             <CombinateChart data={expSeries} yAxisTitle="%" />
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Dos gráficos más: EMBI diario y Monedas (base 100) */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-3">EMBI (spread diario)</h2>
+                    <div className="h-80">
+                        {loadingCharts && embiSeries.length === 0 ? (
+                            <div className="flex items-center justify-center h-full text-gray-500">Cargando...</div>
+                        ) : (
+                            <CombinateChart data={embiSeries} yAxisTitle="pb" />
+                        )}
+                    </div>
+                </div>
+                <div className="bg-white rounded-lg shadow border border-gray-200 p-4">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-3">Tipo de cambio USD/LC (base 100)</h2>
+                    <div className="h-80">
+                        {loadingCharts && monedasSeries.length === 0 ? (
+                            <div className="flex items-center justify-center h-full text-gray-500">Cargando...</div>
+                        ) : (
+                            <CombinateChart data={monedasSeries} viewMode="base100" yAxisTitle="Base 100" />
                         )}
                     </div>
                 </div>

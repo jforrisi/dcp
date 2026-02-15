@@ -26,7 +26,6 @@ TC_DIRECT = {
     "021_nxr_bcch_multipais.py",
     "022_nxr_bra.py",
     "023_nxr_chile.py",
-    "024_nxr_peru.py",
 }
 
 # Scripts que probamos en Run Problemas (de a uno) - solo estos 5
@@ -46,7 +45,7 @@ def main():
     print("EJECUCIÓN: SOLO SCRIPTS QUE DAN PROBLEMA (excl. update_tc)")
     print("=" * 80)
     print(f"Fecha/Hora: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("Excluidos: scripts de update_tc (dolar_bevsa, 027, 019, 021, 022, 023, 024)")
+    print("Excluidos: scripts de update_tc (dolar_bevsa, 027, 019, 021, 022, 023)")
     print()
 
     download_dir = PROJECT_ROOT / "update" / "download"

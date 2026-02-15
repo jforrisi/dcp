@@ -12,6 +12,7 @@ function Navigation({ currentPage, onPageChange }) {
         { id: 'cotizaciones', nombre: 'Cotizaciones de monedas', displayName: 'Cotizaciones de monedas' },
         { id: 'inflacion-dolares', nombre: 'Inflación en dólares', displayName: 'Inflación en dólares' },
         { id: 'yield-curve', nombre: 'Curva de Rendimiento', displayName: 'Curva de Rendimiento' },
+        { id: 'inflacion-implicita', nombre: 'Inflación implícita', displayName: 'Inflación implícita' },
         { id: 'licitaciones-lrm', nombre: 'Licitaciones LRM', displayName: 'Licitaciones LRM' },
         { id: 'politica-monetaria', nombre: 'Monitor Monetario LatAm', displayName: 'Monitor Monetario LatAm' },
         { id: 'data-export', nombre: 'Descarga de Datos', displayName: 'Descarga de Datos' },

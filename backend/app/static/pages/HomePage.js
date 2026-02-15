@@ -71,6 +71,17 @@ function HomePage() {
             color: 'from-indigo-500 to-indigo-600'
         },
         {
+            id: 'inflacion-implicita',
+            nombre: 'Inflación implícita',
+            descripcion: 'Inflación implícita curva soberana por plazo y evolución temporal',
+            icono: (
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+            ),
+            color: 'from-violet-500 to-violet-600'
+        },
+        {
             id: 'licitaciones-lrm',
             nombre: 'Licitaciones LRM',
             descripcion: 'Análisis de licitaciones LRM del BCU con comparación BEVSA',

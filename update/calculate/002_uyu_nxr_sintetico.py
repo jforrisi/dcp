@@ -123,10 +123,13 @@ def main():
         print(f"[INFO] Fecha base no encontrada; usando {fecha_base.date()}")
 
     df_all = df_all.set_index("fecha").sort_index()
+    # Asegurar dtypes numéricos para evitar FutureWarning al asignar
+    df_all["variacion_uyu_sintetico"] = df_all["variacion_uyu_sintetico"].astype(np.float64)
 
-    # 6) Construir serie sintética
+    # 6) Construir serie sintética (asignaciones en float64 para evitar dtype incompatible)
+    valor_inicial = float(df_all.loc[fecha_base, "nxr_uyu"])
     df_all["nxr_sintetico"] = np.nan
-    valor_inicial = df_all.loc[fecha_base, "nxr_uyu"]
+    df_all["nxr_sintetico"] = df_all["nxr_sintetico"].astype(np.float64)
     df_all.loc[fecha_base, "nxr_sintetico"] = valor_inicial
 
     idx = df_all.index
@@ -136,14 +139,14 @@ def main():
         t = idx[i]
         t_ant = idx[i - 1]
         var = df_all.loc[t, "variacion_uyu_sintetico"]
-        df_all.loc[t, "nxr_sintetico"] = df_all.loc[t_ant, "nxr_sintetico"] * (1 + var)
+        df_all.loc[t, "nxr_sintetico"] = float(df_all.loc[t_ant, "nxr_sintetico"] * (1 + var))
 
     # Hacia atrás (t < fecha_base)
     for i in range(pos_base - 1, -1, -1):
         t = idx[i]
         t_sig = idx[i + 1]
         var_sig = df_all.loc[t_sig, "variacion_uyu_sintetico"]
-        df_all.loc[t, "nxr_sintetico"] = df_all.loc[t_sig, "nxr_sintetico"] / (1 + var_sig)
+        df_all.loc[t, "nxr_sintetico"] = float(df_all.loc[t_sig, "nxr_sintetico"] / (1 + var_sig))
 
     # 7) Salida: FECHA, VALOR
     out = df_all.reset_index()

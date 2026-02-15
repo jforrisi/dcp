@@ -28,6 +28,13 @@ CREATE TABLE IF NOT EXISTS tipo_serie (
     nombre_tipo_serie VARCHAR(50)
 );
 
+-- Valores por defecto de tipo_serie
+INSERT INTO tipo_serie (id_tipo_serie, nombre_tipo_serie) VALUES
+    (1, 'Original'),
+    (2, 'Desestacionalizado'),
+    (3, 'Tendencia-Ciclo')
+ON CONFLICT (id_tipo_serie) DO UPDATE SET nombre_tipo_serie = EXCLUDED.nombre_tipo_serie;
+
 CREATE TABLE IF NOT EXISTS sub_familia (
     id_sub_familia INTEGER PRIMARY KEY,
     nombre_sub_familia VARCHAR(255) NOT NULL UNIQUE,

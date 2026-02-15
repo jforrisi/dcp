@@ -18,7 +18,7 @@ function CotizacionesPage() {
     const [rawData, setRawData] = React.useState([]); // Datos originales sin normalizar
 
     // Función para extraer nombre del país del nombre del producto
-    // Usa id_variable de la base de datos: 20 = oficial (no se muestra), 21 = informal
+    // id_variable: 20 = oficial (sin sufijo), 21 = informal, 85 = sintético
     const extractCountryName = (productName, productPais, idVariable) => {
         // Obtener nombre base del país
         let countryName = productPais;
@@ -65,13 +65,15 @@ function CotizacionesPage() {
             }
         }
         
-        // Si id_variable = 21, agregar "(Informal)"
-        // id_variable = 20 es oficial, no se agrega nada (se sobreentiende)
+        // id_variable 20 = oficial (sin sufijo), 21 = informal, 85 = sintético
         if (idVariable === 21) {
             return `${countryName} (Informal)`;
         }
+        if (idVariable === 85) {
+            return `${countryName} (Sintético)`;
+        }
         
-        // Para id_variable = 20 o sin id_variable, solo devolver el país
+        // id_variable 20 u otro: solo el país (oficial)
         return countryName;
     };
 

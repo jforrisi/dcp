@@ -1,292 +1,145 @@
 ================================================================================
 REPORTE DE ACTUALIZACIÓN DE BASE DE DATOS
 ================================================================================
-Fecha/Hora de ejecución: 2026-02-09 18:17:58
+Fecha/Hora de ejecución: 2026-02-12 20:52:47
 
 RESUMEN GENERAL
 --------------------------------------------------------------------------------
-Total de scripts ejecutados: 50
-  - FASE 1 (Descargas): 17
-  - FASE 2 (Actualizaciones): 33
+Total de scripts ejecutados: 55
+  - FASE 1 (Descargas): 19
+  - FASE 2 (Actualizaciones): 36
 
-Exitosos: 42
-  - FASE 1: 12
-  - FASE 2: 30
+Exitosos: 53
+  - FASE 1: 17
+  - FASE 2: 36
 
-Fallidos: 8
-  - FASE 1: 5
-  - FASE 2: 3
+Fallidos: 2
+  - FASE 1: 2
+  - FASE 2: 0
 
-Tiempo total: 5504.11 segundos (91.74 minutos)
+Tiempo total: 3873.71 segundos (64.56 minutos)
 
 FASE 1 - SCRIPTS DE DESCARGA EJECUTADOS EXITOSAMENTE
 --------------------------------------------------------------------------------
-  [OK] download/anexo_estadistico_paraguay.py (123.38s)
-  [OK] download/carne_exportacion.py (37.63s)
-  [OK] download/commodities_banco_mundial.py (5.62s)
-  [OK] download/curva_pesos_uyu_ui_temp.py (236.58s)
-  [OK] download/encuesta_expectativas_inflacion_bcu.py (4.43s)
-  [OK] download/expectativas_economicas_paraguay.py (227.70s)
-  [OK] download/expectativas_eme_analistas_banrep.py (112.70s)
-  [OK] download/expectativas_inflacion_mexico_banxico.py (9.80s)
-  [OK] download/expectativas_inflacion_peru_bcrp.py (10.12s)
-  [OK] download/instrumentos_emitidos_bcu_y_gobierno_central.py (134.50s)
-  [OK] download/leche_polvo_entera.py (41.16s)
-  [OK] download/novillo_hacienda.py (88.20s)
+  [OK] download/anexo_estadistico_paraguay.py (124.50s)
+  [OK] download/carne_exportacion.py (13.48s)
+  [OK] download/commodities_banco_mundial.py (1.88s)
+  [OK] download/curva_pesos_uyu_temp.py (169.96s)
+  [OK] download/curva_pesos_uyu_ui_temp.py (162.75s)
+  [OK] download/dolar_bevsa_uyu.py (40.44s)
+  [OK] download/encuesta_expectativas_inflacion_bcu.py (1.37s)
+  [OK] download/expectativas_economicas_paraguay.py (121.05s)
+  [OK] download/expectativas_eme_analistas_banrep.py (37.57s)
+  [OK] download/expectativas_inflacion_mexico_banxico.py (4.89s)
+  [OK] download/expectativas_inflacion_peru_bcrp.py (2.95s)
+  [OK] download/ipc_colombia.py (24.52s)
+  [OK] download/ipc_paraguay.py (122.54s)
+  [OK] download/leche_polvo_entera.py (16.95s)
+  [OK] download/novillo_hacienda.py (15.66s)
+  [OK] download/precio_leche_productor.py (16.22s)
+  [OK] download/tpm_uyu.py (15.47s)
 
 FASE 2 - SCRIPTS DE ACTUALIZACIÓN EJECUTADOS EXITOSAMENTE
 --------------------------------------------------------------------------------
-  [OK] direct/001_carne_exportacion.py (26.24s)
-  [OK] direct/002_celulosa_pulp.py (25.71s)
-  [OK] direct/003_leche_polvo_entera.py (34.21s)
-  [OK] direct/004_novillo_hacienda.py (43.05s)
-  [OK] direct/005_precio_arroz_wb.py (26.13s)
-  [OK] direct/007_precio_soja_wb.py (23.67s)
-  [OK] direct/008_precio_trigo_wb.py (26.12s)
-  [OK] direct/009_queso_export.py (25.03s)
-  [OK] direct/010_arquitectura.py (25.68s)
-  [OK] direct/011_bookkeeping.py (26.30s)
-  [OK] direct/012_contabilidad.py (23.53s)
-  [OK] direct/013_ingenieria.py (22.43s)
-  [OK] direct/014_software.py (25.39s)
-  [OK] direct/015_combustibles_miem.py (30.65s)
-  [OK] direct/016_ipc.py (25.15s)
-  [OK] direct/017_ipc_multipais.py (137.17s)
-  [OK] direct/020_licitaciones_lrm_bcu.py (225.40s)
-  [OK] direct/021_nxr_bcch_multipais.py (245.91s)
-  [OK] direct/022_nxr_bra.py (26.83s)
-  [OK] direct/023_nxr_chile.py (94.81s)
-  [OK] direct/024_nxr_peru.py (25.13s)
-  [OK] direct/025_salario_real.py (20.58s)
-  [OK] direct/026_tipo_cambio_eur.py (29.33s)
-  [OK] direct/027_tipo_cambio_usd.py (22.60s)
-  [OK] direct/028_indice_precios_exportacion_uruguay.py (49.56s)
-  [OK] direct/029_curva_pesos_uyu_bevsa_nominal.py (31.76s)
-  [OK] direct/030_curva_pesos_uyu_bevsa_real.py (46.22s)
-  [OK] direct/031_tasa_pm_multipais_incremental.py (2256.23s)
-  [OK] direct/032_ipc_colombia.py (24.56s)
-  [OK] calculate/001_servicios_no_tradicionales.py (28.44s)
+  [OK] direct/001_carne_exportacion.py (15.89s)
+  [OK] direct/002_celulosa_pulp.py (16.78s)
+  [OK] direct/003_leche_polvo_entera.py (15.46s)
+  [OK] direct/004_novillo_hacienda.py (15.09s)
+  [OK] direct/005_precio_arroz_wb.py (14.79s)
+  [OK] direct/006_precio_leche_productor.py (14.19s)
+  [OK] direct/007_precio_soja_wb.py (15.53s)
+  [OK] direct/008_precio_trigo_wb.py (14.57s)
+  [OK] direct/009_queso_export.py (19.40s)
+  [OK] direct/010_arquitectura.py (14.89s)
+  [OK] direct/011_bookkeeping.py (14.88s)
+  [OK] direct/012_contabilidad.py (14.92s)
+  [OK] direct/013_ingenieria.py (15.22s)
+  [OK] direct/014_software.py (14.83s)
+  [OK] direct/015_combustibles_miem.py (14.42s)
+  [OK] direct/016_ipc.py (15.04s)
+  [OK] direct/017_ipc_multipais.py (55.08s)
+  [OK] direct/018_ipc_paraguay.py (14.41s)
+  [OK] direct/019_nxr_argy.py (42.64s)
+  [OK] direct/020_licitaciones_lrm_bcu.py (1.47s)
+  [OK] direct/021_nxr_bcch_multipais.py (175.66s)
+  [OK] direct/022_nxr_bra.py (16.05s)
+  [OK] direct/023_nxr_chile.py (148.56s)
+  [OK] direct/024_nxr_peru.py (16.24s)
+  [OK] direct/025_salario_real.py (15.25s)
+  [OK] direct/026_tipo_cambio_eur.py (19.55s)
+  [OK] direct/027_tipo_cambio_usd.py (16.34s)
+  [OK] direct/028_indice_precios_exportacion_uruguay.py (33.65s)
+  [OK] direct/029_curva_pesos_uyu_bevsa_nominal.py (16.39s)
+  [OK] direct/030_curva_pesos_uyu_bevsa_real.py (25.09s)
+  [OK] direct/031_tasa_pm_multipais_incremental.py (1834.34s)
+  [OK] direct/032_ipc_colombia.py (12.80s)
+  [OK] direct/033_expectativas_inflacion_multipais.py (98.28s)
+  [OK] direct/034_tpm_uyu.py (13.65s)
+  [OK] direct/035_embi_bancentral_do.py (140.14s)
+  [OK] calculate/001_servicios_no_tradicionales.py (19.40s)
 
 ================================================================================
 ERRORES EN FASE 1 (DESCARGAS)
 ================================================================================
 
-ERROR #1: download/curva_pesos_uyu_temp.py
+ERROR #1: download/embi_bancentral_do.py
 --------------------------------------------------------------------------------
-Tiempo de ejecución: 242.22s
+Tiempo de ejecución: 1.95s
 
 Detalle del error:
 Error: El script terminó con código 1
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 232, in check_response
+    destino = descargar()
+              ^^^^^^^^^^^
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\embi_bancentral_do.py", line 50, in descargar
+    with open(destino, "wb") as f:
+         ^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update\\historicos\\embi.xlsx'
+
+[2026-02-12 19:56:48] [INFO] ================================================================================
+[2026-02-12 19:56:48] [INFO] FIN DE EJECUCIÓN: embi_bancentral_do
+[2026-02-12 19:56:48] [INFO] ================================================================================
+[2026-02-12 19:56:48] [INFO] FIN DE EJECUCIÓN: embi_bancentral_do
+[2026-02-12 19:56:48] [INFO] ================================================================================
+Traceback (most recent call last):
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\embi_bancentral_do.py", line 81, in <module>
+    main()
+  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\embi_bancentral_do.py", line 69, in main
+    destino = descargar()
+    with open(destino, "wb") as f:
+         ^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update\\historicos\\embi.xlsx'
+
+================================================================================
+
+ERROR #2: download/instrumentos_emitidos_bcu_y_gobierno_central.py
+--------------------------------------------------------------------------------
+Tiempo de ejecución: 18.56s
+
+Detalle del error:
+Error: El script terminó con código 1
+    self.error_handler.check_response(response)
+  File "C:\Users\jforrisi\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 229, in check_response
     raise exception_class(message, screen, stacktrace)
-selenium.common.exceptions.InvalidSessionIdException: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+selenium.common.exceptions.ElementClickInterceptedException: Message: element click intercepted: Element <td data-order="..." class="gtm">Operaciones BCU y MEF local.xlsx</td> is not clickable at point (624, 59). Other element would receive the click: <a data="mainlevel" href="/Comunicaciones/Paginas/Sala-de-prensa.aspx">...</a>
+  (Session info: chrome=144.0.7559.133)
+Stacktrace:
+    self.error_handler.check_response(response)
+  File "C:\Users\jforrisi\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.ElementClickInterceptedException: Message: element click intercepted: Element <td data-order="..." class="gtm">Operaciones BCU y MEF local.xlsx</td> is not clickable at point (624, 59). Other element would receive the click: <a data="mainlevel" href="/Comunicaciones/Paginas/Sala-de-prensa.aspx">...</a>
+  (Session info: chrome=144.0.7559.133)
 Stacktrace:
 Symbols not available. Dumping unresolved backtrace:
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 232, in check_response
+  File "C:\Users\jforrisi\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 229, in check_response
     raise exception_class(message, screen, stacktrace)
-selenium.common.exceptions.InvalidSessionIdException: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+selenium.common.exceptions.ElementClickInterceptedException: Message: element click intercepted: Element <td data-order="..." class="gtm">Operaciones BCU y MEF local.xlsx</td> is not clickable at point (624, 59). Other element would receive the click: <a data="mainlevel" href="/Comunicaciones/Paginas/Sala-de-prensa.aspx">...</a>
+  (Session info: chrome=144.0.7559.133)
 Stacktrace:
 Symbols not available. Dumping unresolved backtrace:
-	0x7ff74155f3d5
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 232, in check_response
-    raise exception_class(message, screen, stacktrace)
-selenium.common.exceptions.InvalidSessionIdException: Message: invalid session id; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
-Stacktrace:
-Symbols not available. Dumping unresolved backtrace:
-	0x7ff74155f3d5
-	0x7ff74155f430
-
-================================================================================
-
-ERROR #2: download/dolar_bevsa_uyu.py
---------------------------------------------------------------------------------
-Tiempo de ejecución: 84.60s
-
-Detalle del error:
-Error: El script terminó con código 1
-    descargar_excel_bevsa(driver, download_path)
-    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\dolar_bevsa_uyu.py", line 248, in descargar_excel_bevsa
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\pandas\io\common.py", line 882, in get_handle
-    handle = open(handle, ioargs.mode)
-PermissionError: [Errno 13] Permission denied: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update\\historicos\\dolar_bevsa_uyu_temp.xlsx'
-
-[2026-02-09 16:58:23] [INFO] ================================================================================
-[2026-02-09 16:58:23] [INFO] FIN DE EJECUCIÓN: dolar_bevsa_uyu
-[2026-02-09 16:58:23] [INFO] ================================================================================
-[2026-02-09 16:58:23] [INFO] FIN DE EJECUCIÓN: dolar_bevsa_uyu
-[2026-02-09 16:58:23] [INFO] ================================================================================
-Traceback (most recent call last):
-  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\dolar_bevsa_uyu.py", line 384, in <module>
-    main()
-    ~~~~^^
-  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\download\dolar_bevsa_uyu.py", line 363, in main
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\pandas\io\common.py", line 882, in get_handle
-    handle = open(handle, ioargs.mode)
-PermissionError: [Errno 13] Permission denied: 'C:\\Users\\jforrisi\\Desktop\\desarrollos\\gita\\update\\historicos\\dolar_bevsa_uyu_temp.xlsx'
-
-================================================================================
-
-ERROR #3: download/ipc_colombia.py
---------------------------------------------------------------------------------
-Tiempo de ejecución: 129.96s
-
-Detalle del error:
-Error: El script terminó con código 1
-    )
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\util\retry.py", line 474, in increment
-    raise reraise(type(error), error, _stacktrace)
-          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\util\retry.py", line 474, in increment
-    raise reraise(type(error), error, _stacktrace)
-          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\util\util.py", line 39, in reraise
-    raise value
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
-    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 367, in _raise_timeout
-    raise ReadTimeoutError(
-        self, url, f"Read timed out. (read timeout={timeout_value})"
-    ) from err
-urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='localhost', port=53109): Read timed out. (read timeout=120)
-        self, url, f"Read timed out. (read timeout={timeout_value})"
-    ) from err
-urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='localhost', port=53109): Read timed out. (read timeout=120)
-
-================================================================================
-
-ERROR #4: download/ipc_paraguay.py
---------------------------------------------------------------------------------
-Tiempo de ejecución: 204.65s
-
-Detalle del error:
-Error: El script terminó con código 1
-    )
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\util\retry.py", line 474, in increment
-    raise reraise(type(error), error, _stacktrace)
-          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\util\retry.py", line 474, in increment
-    raise reraise(type(error), error, _stacktrace)
-          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\util\util.py", line 39, in reraise
-    raise value
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
-    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 367, in _raise_timeout
-    raise ReadTimeoutError(
-        self, url, f"Read timed out. (read timeout={timeout_value})"
-    ) from err
-urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='localhost', port=65054): Read timed out. (read timeout=120)
-        self, url, f"Read timed out. (read timeout={timeout_value})"
-    ) from err
-urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='localhost', port=65054): Read timed out. (read timeout=120)
-
-================================================================================
-
-ERROR #5: download/precio_leche_productor.py
---------------------------------------------------------------------------------
-Tiempo de ejecución: 129.57s
-
-Detalle del error:
-Error: El script terminó con código 1
-    )
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\util\retry.py", line 474, in increment
-    raise reraise(type(error), error, _stacktrace)
-          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    )
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\util\retry.py", line 474, in increment
-    raise reraise(type(error), error, _stacktrace)
-          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\util\util.py", line 39, in reraise
-    raise value
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
-    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\jforrisi\AppData\Local\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 367, in _raise_timeout
-    raise ReadTimeoutError(
-        self, url, f"Read timed out. (read timeout={timeout_value})"
-    ) from err
-urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='localhost', port=63070): Read timed out. (read timeout=120)
-        self, url, f"Read timed out. (read timeout={timeout_value})"
-    ) from err
-urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='localhost', port=63070): Read timed out. (read timeout=120)
+	0x7ff7a141f3d5
 
 ================================================================================
 
 ================================================================================
-ERRORES EN FASE 2 (ACTUALIZACIONES)
-================================================================================
-
-ERROR #1: direct/006_precio_leche_productor.py
---------------------------------------------------------------------------------
-Tiempo de ejecución: 3.56s
-
-Detalle del error:
-Error: El script terminó con código 1
-ACTUALIZACION DE DATOS: PRECIO LECHE PRODUCTOR (INALE)
-============================================================
-Traceback (most recent call last):
-  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\006_precio_leche_productor.py", line 124, in <module>
-    main()
-    ~~~~^^
-  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\006_precio_leche_productor.py", line 102, in main
-    return leer_excel_desde_data_raw()
-  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\006_precio_leche_productor.py", line 65, in leer_excel_desde_data_raw
-    raise FileNotFoundError(
-    ...<2 lines>...
-    )
-FileNotFoundError: No se encontró el archivo local esperado: C:\Users\jforrisi\Desktop\desarrollos\gita\data_raw\precio_leche_productor.xlsx. Ejecutá primero el script de descarga (precio_leche_productor en precios/download/productos/).
-    ...<2 lines>...
-    )
-FileNotFoundError: No se encontró el archivo local esperado: C:\Users\jforrisi\Desktop\desarrollos\gita\data_raw\precio_leche_productor.xlsx. Ejecutá primero el script de descarga (precio_leche_productor en precios/download/productos/).
-
-================================================================================
-
-ERROR #2: direct/018_ipc_paraguay.py
---------------------------------------------------------------------------------
-Tiempo de ejecución: 3.41s
-
-Detalle del error:
-Error: El script terminó con código 1
-
-[INFO] Extrayendo IPC de Paraguay desde Excel del BCP...
-Traceback (most recent call last):
-  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\018_ipc_paraguay.py", line 260, in <module>
-    main()
-    ~~~~^^
-  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\018_ipc_paraguay.py", line 219, in main
-    ruta_excel = leer_excel_desde_data_raw()
-  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\018_ipc_paraguay.py", line 105, in leer_excel_desde_data_raw
-    raise FileNotFoundError(
-    ...<2 lines>...
-    )
-FileNotFoundError: No se encontró el archivo local esperado: C:\Users\jforrisi\Desktop\desarrollos\gita\data_raw\ipc_paraguay.xlsx. Ejecutá primero el script de descarga (ipc_paraguay en update/download/).
-    ...<2 lines>...
-    )
-FileNotFoundError: No se encontró el archivo local esperado: C:\Users\jforrisi\Desktop\desarrollos\gita\data_raw\ipc_paraguay.xlsx. Ejecutá primero el script de descarga (ipc_paraguay en update/download/).
-
-================================================================================
-
-ERROR #3: direct/019_nxr_argy.py
---------------------------------------------------------------------------------
-Tiempo de ejecución: 0.41s
-
-Detalle del error:
-Error: El script terminó con código 1
-Traceback (most recent call last):
-  File "C:\Users\jforrisi\Desktop\desarrollos\gita\update\direct\019_nxr_argy.py", line 1, in <module>
-    en # -*- coding: utf-8 -*-
-    ^^
-NameError: name 'en' is not defined. Did you mean: 'len'?
-    en # -*- coding: utf-8 -*-
-    ^^
-NameError: name 'en' is not defined. Did you mean: 'len'?
-
-================================================================================
-
-================================================================================
-Fin del reporte - 2026-02-09 18:17:58
+Fin del reporte - 2026-02-12 20:52:47
 ================================================================================

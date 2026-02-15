@@ -10,9 +10,10 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 from db.connection import execute_query, execute_update, insert_dataframe
 
-# Configuración
+# Configuración (rutas respecto a la raíz del proyecto)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 ID_PAIS_URUGUAY = 858
-ARCHIVO_EXCEL_NOMINAL = "update/historicos/curva_pesos_uyu.xlsx"
+ARCHIVO_EXCEL_NOMINAL = BASE_DIR / "update" / "historicos" / "curva_pesos_uyu.xlsx"
 
 # Mapeo de nombres de columnas a nombres de variables NOMINALES (para buscar en maestro)
 # Nota: Las columnas en el Excel están en mayúsculas ("1 MES", "2 MESES", etc.)
@@ -103,10 +104,14 @@ def obtener_mapeo_variables():
     return mapeo
 
 def leer_excel(ruta_archivo):
-    """Lee el archivo Excel y retorna el DataFrame."""
-    ruta_excel = os.path.join(os.getcwd(), ruta_archivo)
+    """Lee el archivo Excel y retorna el DataFrame (ruta absoluta o respecto a BASE_DIR)."""
+    if isinstance(ruta_archivo, Path) and ruta_archivo.is_absolute():
+        ruta_excel = ruta_archivo
+    else:
+        path_str = str(ruta_archivo).replace("\\", "/")
+        ruta_excel = BASE_DIR.joinpath(*path_str.split("/"))
     
-    if not os.path.exists(ruta_excel):
+    if not ruta_excel.exists():
         print(f"[ERROR] No se encontró el archivo: {ruta_excel}")
         return None
     
@@ -166,11 +171,14 @@ def transformar_a_formato_largo(df, mapeo_variables, mapeo_columnas):
         print(f"[WARN] {filas_sin_id} filas sin id_variable, serán omitidas")
         df_melted = df_melted.dropna(subset=['id_variable'])
     
+    # Parsear fechas como dd-mm-yyyy (ej. 3/2/2026 = 3 feb 2026, 1-12-24 = 1 dic 2024)
+    fechas = pd.to_datetime(df_melted[columna_fecha], dayfirst=True, errors='coerce')
+    
     # Preparar DataFrame final
     df_final = pd.DataFrame({
         'id_variable': df_melted['id_variable'].astype(int),
         'id_pais': ID_PAIS_URUGUAY,
-        'fecha': pd.to_datetime(df_melted[columna_fecha]),
+        'fecha': fechas,
         'valor': pd.to_numeric(df_melted['valor'], errors='coerce')
     })
     

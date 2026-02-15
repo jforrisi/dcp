@@ -9,7 +9,7 @@ function YieldCurvePage() {
     const [tableData, setTableData] = React.useState(null);
     
     // Estados para vista temporal
-    const [viewMode, setViewMode] = React.useState('curva'); // 'curva' o 'temporal'
+    const [viewMode, setViewMode] = React.useState('curva'); // 'curva' | 'temporal' | 'inflacion-implicita'
     const [selectedPlazos, setSelectedPlazos] = React.useState([]);
     const [fechaDesde, setFechaDesde] = React.useState(() => {
         const date = new Date();
@@ -609,11 +609,41 @@ function YieldCurvePage() {
                             >
                                 Análisis temporal
                             </button>
+                            <button
+                                onClick={() => {
+                                    setViewMode('inflacion-implicita-curva');
+                                    setFullscreen(false);
+                                }}
+                                className={`py-3 px-4 font-medium text-sm transition-all border-b-2 whitespace-nowrap ${
+                                    viewMode === 'inflacion-implicita-curva'
+                                        ? 'bg-gray-100 border-indigo-500 text-indigo-600'
+                                        : 'bg-white text-gray-400 border-transparent hover:bg-gray-50 hover:text-gray-600'
+                                }`}
+                            >
+                                Inflación implícita (curva)
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setViewMode('inflacion-implicita-temporal');
+                                    setFullscreen(false);
+                                }}
+                                className={`py-3 px-4 font-medium text-sm transition-all border-b-2 whitespace-nowrap ${
+                                    viewMode === 'inflacion-implicita-temporal'
+                                        ? 'bg-gray-100 border-indigo-500 text-indigo-600'
+                                        : 'bg-white text-gray-400 border-transparent hover:bg-gray-50 hover:text-gray-600'
+                                }`}
+                            >
+                                Inflación implícita (evolución)
+                            </button>
                         </nav>
                     </div>
                 </div>
 
-                {viewMode === 'curva' ? (
+                {viewMode === 'inflacion-implicita-curva' ? (
+                <InflacionImplicitaPage embeddedView="curva" />
+                ) : viewMode === 'inflacion-implicita-temporal' ? (
+                <InflacionImplicitaPage embeddedView="evolucion" />
+                ) : viewMode === 'curva' ? (
                 <div className={`grid grid-cols-1 gap-6 ${fullscreen ? '' : 'lg:grid-cols-4'}`}>
                     {/* Panel de controles a la izquierda */}
                     {!fullscreen && (

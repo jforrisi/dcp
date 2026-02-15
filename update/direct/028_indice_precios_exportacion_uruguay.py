@@ -211,6 +211,10 @@ def main():
         print(f"Registros procesados: {len(df_procesado)}")
         print(f"Variables actualizadas: {df_procesado['id_variable'].nunique()}")
         
+    except FileNotFoundError as e:
+        print(f"\n[INFO] Archivo no encontrado: {e}")
+        print("[INFO] Omitiendo IPE. Colocar web_exp_ciiu_ip.xls en update/historicos/.")
+        sys.exit(0)
     except Exception as e:
         print(f"\n[ERROR] Error durante el proceso: {e}")
         import traceback

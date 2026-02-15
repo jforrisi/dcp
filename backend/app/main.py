@@ -11,7 +11,7 @@ if str(_project_root) not in sys.path:
 from flask import Flask, send_from_directory, send_file, request, jsonify, session
 from flask_cors import CORS
 from pathlib import Path
-from .routers import ticker, prices, dcp, cotizaciones, inflacion_dolares, yield_curve, data_export, licitaciones_lrm, update, politica_monetaria
+from .routers import ticker, prices, dcp, cotizaciones, inflacion_dolares, yield_curve, data_export, licitaciones_lrm, update, politica_monetaria, inflacion_implicita
 
 # Create Flask app
 static_folder = Path(__file__).parent / 'static'
@@ -102,6 +102,7 @@ app.register_blueprint(inflacion_dolares.bp, url_prefix='/api')
 app.register_blueprint(yield_curve.bp, url_prefix='/api')
 app.register_blueprint(licitaciones_lrm.bp, url_prefix='/api')
 app.register_blueprint(politica_monetaria.bp, url_prefix='/api')
+app.register_blueprint(inflacion_implicita.bp, url_prefix='/api')
 app.register_blueprint(update.bp, url_prefix='/api')
 
 # Register admin blueprint only if not in production (Azure/Railway)

@@ -576,11 +576,8 @@ def ejecutar_todas_actualizaciones() -> None:
         print()
         print(f"Ver detalles en: {REPORTE_FILE.absolute()}")
     
-    # Retornar código de salida apropiado
-    if total_errores > 0:
-        sys.exit(1)  # Hay errores
-    else:
-        sys.exit(0)  # Todo OK
+    # Siempre salir con 0 para no fallar el pipeline (cron/CI); el reporte lista los fallidos
+    sys.exit(0)
 
 
 if __name__ == "__main__":

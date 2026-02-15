@@ -3,7 +3,7 @@ Script de Actualización: Tipo de Cambio (TC)
 ============================================
 Ejecuta solo los scripts relacionados con tipo de cambio:
 - Download: dolar_bevsa_uyu (dólar Uruguay)
-- Direct: 027_tipo_cambio_usd, 019_nxr_argy, 021_nxr_bcch_multipais, 022_nxr_bra, 023_nxr_chile, 024_nxr_peru
+- Direct: 027_tipo_cambio_usd, 019_nxr_argy, 021_nxr_bcch_multipais, 022_nxr_bra, 023_nxr_chile (Perú va en 021)
 - Calculate: 002_uyu_nxr_sintetico (NXR sintético Uruguay, al final)
 
 Pensado para ejecutarse a las 16:15 Uruguay (después del cierre BEVSA).
@@ -13,6 +13,12 @@ import sys
 import time
 from pathlib import Path
 from datetime import datetime
+
+# Asegurar que la raíz del proyecto esté en el path (funciona desde repo root o desde update/)
+_script_dir = Path(__file__).resolve().parent
+_repo_root = _script_dir.parent
+if str(_repo_root) not in sys.path:
+    sys.path.insert(0, str(_repo_root))
 
 # Reutilizar lógica de update_database
 from update.update_database import ejecutar_script, PROJECT_ROOT, TIMEOUT_SCRIPT
@@ -29,7 +35,6 @@ TC_DIRECT_SCRIPTS = [
     PROJECT_ROOT / "update" / "direct" / "021_nxr_bcch_multipais.py",
     PROJECT_ROOT / "update" / "direct" / "022_nxr_bra.py",
     PROJECT_ROOT / "update" / "direct" / "023_nxr_chile.py",
-    PROJECT_ROOT / "update" / "direct" / "024_nxr_peru.py",
 ]
 TC_CALCULATE_SCRIPTS = [
     PROJECT_ROOT / "update" / "calculate" / "002_uyu_nxr_sintetico.py",

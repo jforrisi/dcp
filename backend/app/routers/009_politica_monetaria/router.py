@@ -9,11 +9,12 @@ from ...database import execute_query, execute_query_single
 
 bp = Blueprint('politica_monetaria', __name__)
 
-# id_variable: 9 IPC, 23 expectativa 12m, 24 expectativa 24m, 52 TPM
+# id_variable: 9 IPC, 23 expectativa 12m, 24 expectativa 24m, 52 TPM, 22 EMBI
 ID_IPC = 9
 ID_EXP_12 = 23
 ID_EXP_24 = 24
 ID_TPM = 52
+ID_EMBI = 22
 
 # Chile, Colombia, Perú, Uruguay, México (sin Brasil)
 PAISES = [
@@ -156,6 +157,19 @@ def en_rango(valor: Optional[float], centro: float, banda: float) -> bool:
     return (centro - banda) <= valor <= (centro + banda)
 
 
+def get_embi_ultimo(id_pais: int) -> Optional[float]:
+    """Último valor de EMBI en puntos básicos. En BD está en decimal (ej. 0.71607); se devuelve × 100 (71.607)."""
+    query = """
+        SELECT valor FROM maestro_precios
+        WHERE id_variable = ? AND id_pais = ?
+        ORDER BY fecha DESC LIMIT 1
+    """
+    r = execute_query_single(query, (ID_EMBI, id_pais))
+    if r and r.get("valor") is not None:
+        return float(r["valor"]) * 100
+    return None
+
+
 @bp.route("/politica-monetaria", methods=["GET"])
 def get_politica_monetaria():
     """Devuelve tabla de política monetaria para Chile, Colombia, Perú, Uruguay, México."""
@@ -184,6 +198,7 @@ def get_politica_monetaria():
 
         inflacion_en_rango = en_rango(inflacion, centro, banda)
         expectativa_en_rango = en_rango(expectativa, centro, banda)
+        embi = get_embi_ultimo(id_pais)
 
         resultados.append({
             "id_pais": id_pais,
@@ -198,6 +213,7 @@ def get_politica_monetaria():
             "variacion_tpm_pp": variacion_pp,
             "fecha_cambio_tpm": fecha_cambio,
             "tasa_real": round(tasa_real, 2) if tasa_real is not None else None,
+            "embi": round(embi, 2) if embi is not None else None,
             "inflacion_en_rango": inflacion_en_rango,
             "expectativa_en_rango": expectativa_en_rango,
         })
@@ -281,5 +297,49 @@ def get_series_expectativas():
             # Siempre guardar el más reciente del mes (las filas vienen ordenadas por fecha)
             por_mes[key] = {"fecha": date(f.year, f.month, 1), "valor": round(float(r["valor"]), 2)}
         datos = [{"fecha": v["fecha"].isoformat(), "valor": v["valor"]} for _, v in sorted(por_mes.items())]
+        resultados.append({"pais": p["nombre"], "codigo": p["codigo"], "data": datos})
+    return jsonify(resultados)
+
+
+@bp.route("/politica-monetaria/series/embi", methods=["GET"])
+def get_series_embi():
+    """Series de EMBI (spread en pb) por país en rango de fechas. Diario, mismo filtro que TPM."""
+    desde, hasta = _parse_desde_hasta()
+    resultados = []
+    for p in PAISES:
+        query = """
+            SELECT fecha, valor
+            FROM maestro_precios
+            WHERE id_variable = ? AND id_pais = ? AND fecha >= ? AND fecha <= ?
+            ORDER BY fecha
+        """
+        rows = execute_query(query, (ID_EMBI, p["id_pais"], desde.isoformat(), hasta.isoformat()))
+        # Excel/BD tiene valor en decimal (ej. 0.71607); gráfico en puntos básicos (× 100)
+        datos = [{"fecha": str(r["fecha"]).split(" ")[0], "valor": round(float(r["valor"]) * 100, 2)} for r in rows]
+        resultados.append({"pais": p["nombre"], "codigo": p["codigo"], "data": datos})
+    return jsonify(resultados)
+
+
+# id_variable 20 = tipo de cambio USD/LC (cotización oficial)
+ID_TC_USD = 20
+
+
+@bp.route("/politica-monetaria/series/monedas", methods=["GET"])
+def get_series_monedas():
+    """
+    Series de tipo de cambio USD/LC por país en rango de fechas.
+    Para graficar en base 100 (primer dato = 100) en el frontend.
+    """
+    desde, hasta = _parse_desde_hasta()
+    resultados = []
+    for p in PAISES:
+        query = """
+            SELECT fecha, valor
+            FROM maestro_precios
+            WHERE id_variable = ? AND id_pais = ? AND fecha >= ? AND fecha <= ?
+            ORDER BY fecha
+        """
+        rows = execute_query(query, (ID_TC_USD, p["id_pais"], desde.isoformat(), hasta.isoformat()))
+        datos = [{"fecha": str(r["fecha"]).split(" ")[0], "valor": round(float(r["valor"]), 4)} for r in rows]
         resultados.append({"pais": p["nombre"], "codigo": p["codigo"], "data": datos})
     return jsonify(resultados)

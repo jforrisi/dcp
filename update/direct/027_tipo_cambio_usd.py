@@ -47,16 +47,28 @@ def leer_excel_bevsa():
         )
 
     print(f"\n[INFO] Leyendo Excel BEVSA desde: {ruta}")
-    print("   Columnas: A (FECHA), B (CIERRE BCU BILLETE)")
-    tc_df = pd.read_excel(
-        ruta,
-        sheet_name=0,
-        usecols=[0, 1],  # Columna A (fecha), B (CIERRE BCU BILLETE)
-        header=0,  # primera fila es encabezado
-    )
+    # Leer todo el sheet para elegir columnas por nombre (el orden de columnas puede variar)
+    tc_df = pd.read_excel(ruta, sheet_name=0, header=0)
 
-    # Normalizar nombres por si vienen con encabezados distintos
-    tc_df.columns = ["FECHA", "VALOR"]
+    # Buscar columna de fecha (A) y columna CIERRE BCU BILLETE (valor a usar; NO CANTIDAD)
+    col_fecha = None
+    col_valor = None
+    for c in tc_df.columns:
+        cstr = str(c).strip().upper()
+        if "FECHA" in cstr or cstr == "FECHA":
+            col_fecha = c
+        if "CIERRE" in cstr and "BILLETE" in cstr:
+            col_valor = c
+    if col_fecha is None:
+        col_fecha = tc_df.columns[0]
+    if col_valor is None:
+        raise ValueError(
+            "No se encontró la columna 'CIERRE BCU BILLETE' en el Excel. "
+            f"Columnas presentes: {list(tc_df.columns)}"
+        )
+    print(f"   Usando columna de valor: '{col_valor}' (CIERRE BCU BILLETE)")
+    tc_df = tc_df[[col_fecha, col_valor]].copy()
+    tc_df = tc_df.rename(columns={col_fecha: "FECHA", col_valor: "VALOR"})
     tc_df = tc_df.dropna(how="all")
     tc_df = tc_df.dropna(subset=["FECHA"])
     tc_df["FECHA"] = pd.to_datetime(tc_df["FECHA"], errors="coerce")

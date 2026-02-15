@@ -172,23 +172,29 @@ def get_cotizaciones():
                 fecha_inicial = None
                 fecha_final = None
             
-            # Variaciones 1d, 5d (1 sem), 22d (1 mes), 250d (1 año) respecto a la fecha máxima de los datos
+            # Variaciones 1d, 5d (1 sem), 22d (1 mes), 250d (1 año): N observaciones atrás (días con dato), no N días naturales
             fecha_max = fecha_final  # última fecha en el rango
             variacion_1d = variacion_5d = variacion_22d = variacion_250d = None
             if data_all and fecha_max:
-                fmax = date.fromisoformat(fecha_max)
-                by_date = {parse_fecha(d['fecha']): d['valor'] for d in data_all}
-                v0 = by_date.get(fmax)
+                # Lista ordenada por fecha para tomar "N observaciones atrás"
+                sorted_all = sorted(data_all, key=lambda d: d['fecha'])
+                fechas_ordenadas = [d['fecha'] for d in sorted_all]
+                try:
+                    idx_max = fechas_ordenadas.index(fecha_max)
+                except ValueError:
+                    idx_max = len(fechas_ordenadas) - 1
+                v0 = sorted_all[idx_max]['valor'] if idx_max >= 0 else None
                 if v0 is not None and v0 > 0:
-                    for delta_d, key in [(1, 'variacion_1d'), (5, 'variacion_5d'), (22, 'variacion_22d'), (250, 'variacion_250d')]:
-                        f_ant = fmax - timedelta(days=delta_d)
-                        v_ant = by_date.get(f_ant)
-                        if v_ant is not None:
-                            val = ((v0 - v_ant) / v_ant) * 100
-                            if key == 'variacion_1d': variacion_1d = round(val, 2)
-                            elif key == 'variacion_5d': variacion_5d = round(val, 2)
-                            elif key == 'variacion_22d': variacion_22d = round(val, 2)
-                            else: variacion_250d = round(val, 2)
+                    for n_obs, key in [(1, 'variacion_1d'), (5, 'variacion_5d'), (22, 'variacion_22d'), (250, 'variacion_250d')]:
+                        idx_ant = idx_max - n_obs
+                        if idx_ant >= 0:
+                            v_ant = sorted_all[idx_ant]['valor']
+                            if v_ant is not None and v_ant > 0:
+                                val = ((v0 - v_ant) / v_ant) * 100
+                                if key == 'variacion_1d': variacion_1d = round(val, 2)
+                                elif key == 'variacion_5d': variacion_5d = round(val, 2)
+                                elif key == 'variacion_22d': variacion_22d = round(val, 2)
+                                else: variacion_250d = round(val, 2)
             
             # Obtener id_variable del producto
             product_id_variable = product.get('id_variable')
@@ -228,7 +234,7 @@ def get_cotizaciones_products():
     """
     Obtiene la lista de cotizaciones disponibles.
     Filtra por países configurados en filtros_graph_pais para id_graph=2 (Cotizaciones).
-    Solo incluye id_variable 20 (oficial) y 21 (no oficial).
+    Solo incluye id_variable 20 (oficial), 21 (no oficial) y 85 (sintético).
     """
     try:
         # Obtener países permitidos desde filtros_graph_pais para graph id=2 (Cotizaciones)
@@ -248,7 +254,7 @@ def get_cotizaciones_products():
                     LEFT JOIN pais_grupo pg ON m.id_pais = pg.id_pais
                     LEFT JOIN variables v ON m.id_variable = v.id_variable
                     WHERE m.periodicidad = 'D'
-                    AND m.id_variable IN (20, 21)
+                    AND m.id_variable IN (20, 21, 85)
                     AND (m.activo = 1 OR CAST(m.activo AS INTEGER) = 1)
                     AND m.id_pais IN (
                         SELECT DISTINCT f.id_pais
@@ -272,7 +278,7 @@ def get_cotizaciones_products():
                         FROM maestro m
                         LEFT JOIN variables v ON m.id_variable = v.id_variable
                         WHERE m.periodicidad = 'D'
-                        AND m.id_variable IN (20, 21)
+                        AND m.id_variable IN (20, 21, 85)
                         AND (m.activo = 1 OR CAST(m.activo AS INTEGER) = 1)
                         AND m.id_pais IN (
                             SELECT DISTINCT f.id_pais
@@ -297,7 +303,7 @@ def get_cotizaciones_products():
                             LEFT JOIN pais_grupo pg ON m.id_pais = pg.id_pais
                             LEFT JOIN variables v ON m.id_variable = v.id_variable
                             WHERE m.periodicidad = 'D'
-                            AND m.id_variable IN (20, 21)
+                            AND m.id_variable IN (20, 21, 85)
                             AND (m.activo = 1 OR CAST(m.activo AS INTEGER) = 1)
                             ORDER BY pais, v.id_nombre_variable
                         """
@@ -313,7 +319,7 @@ def get_cotizaciones_products():
                                 id_variable
                             FROM maestro
                             WHERE periodicidad = 'D'
-                            AND id_variable IN (20, 21)
+                            AND id_variable IN (20, 21, 85)
                             AND (activo = 1 OR CAST(activo AS INTEGER) = 1)
                             ORDER BY id_variable
                         """
@@ -333,7 +339,7 @@ def get_cotizaciones_products():
                     LEFT JOIN pais_grupo pg ON m.id_pais = pg.id_pais
                     LEFT JOIN variables v ON m.id_variable = v.id_variable
                     WHERE m.periodicidad = 'D'
-                    AND m.id_variable IN (20, 21)
+                    AND m.id_variable IN (20, 21, 85)
                     AND (m.activo = 1 OR CAST(m.activo AS INTEGER) = 1)
                     ORDER BY pais, v.id_nombre_variable
                 """
@@ -349,7 +355,7 @@ def get_cotizaciones_products():
                         id_variable
                     FROM maestro
                     WHERE periodicidad = 'D'
-                    AND id_variable IN (20, 21)
+                    AND id_variable IN (20, 21, 85)
                     AND (activo = 1 OR CAST(activo AS INTEGER) = 1)
                     ORDER BY id_variable
                 """

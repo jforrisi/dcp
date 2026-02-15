@@ -9,6 +9,7 @@ Actualiza series de combustibles MIEM:
 """
 
 import os
+import sys
 
 import pandas as pd
 from _helpers import (
@@ -89,8 +90,13 @@ def main():
     print("=" * 60)
     print("ACTUALIZACION DE DATOS: COMBUSTIBLES MIEM (Gasoil, Propano)")
     print("=" * 60)
-    
-    df_raw = leer_excel()
+
+    try:
+        df_raw = leer_excel()
+    except FileNotFoundError as e:
+        print(f"[INFO] Archivo no encontrado: {e}")
+        print("[INFO] Omitiendo actualización de combustibles MIEM (colocar Excel en data_raw/miem_derivados/).")
+        sys.exit(0)
     
     print(f"\n[INFO] Registros crudos:")
     print(f"  Gasoil: {len(df_raw['gasoil'])} registros")

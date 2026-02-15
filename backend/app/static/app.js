@@ -19,6 +19,7 @@ function App() {
             {currentPage === 'cotizaciones' && <CotizacionesPage />}
             {currentPage === 'inflacion-dolares' && <InflacionDolaresPage />}
             {currentPage === 'yield-curve' && <YieldCurvePage />}
+            {currentPage === 'inflacion-implicita' && <InflacionImplicitaPage />}
             {currentPage === 'data-export' && <DataExportPage />}
             {currentPage === 'licitaciones-lrm' && <LicitacionesLRMPage />}
             {currentPage === 'politica-monetaria' && <PoliticaMonetariaPage />}

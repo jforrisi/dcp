@@ -27,18 +27,32 @@ from update.utils.logger import ScriptLogger
 # URL de la página BEVSA (ITLUP = nominales)
 BEVSA_URL = "https://web.bevsa.com.uy/CurvasVectorPrecios/CurvasIndices/Historico.aspx?I=ITLUP"
 
-# Carpeta y nombre de archivo destino
-DOWNLOAD_DIR = "update/historicos"
+# Carpeta destino: siempre update/historicos del proyecto (de ahí lee la base de datos)
+DOWNLOAD_DIR = os.path.join(root_dir, "update", "historicos")
 DEST_FILENAME = "curva_pesos_uyu_temp.xlsx"
 HISTORICO_FILENAME = "curva_pesos_uyu.xlsx"
 
 
+def normalizar_tasa_a_porcentaje(val, divisor_grande=10000):
+    """
+    Lleva tasas a porcentaje (rango 1-20%). Si ya está en [1, 20] no modifica.
+    Evita que 7.45 pase a 0.0734 cuando la fuente mezcla escalas.
+    """
+    if pd.isna(val) or val == 0:
+        return val
+    if 1 <= val <= 20:
+        return val
+    if 0 < val < 1:
+        return val * 100  # ya estaba sobre-dividido (ej. 0.0734 -> 7.34)
+    if 20 < val <= 10000:
+        return val / 100
+    return val / divisor_grande
+
+
 def asegurar_directorio():
     """Crea el directorio de descarga si no existe y devuelve su ruta absoluta."""
-    base_dir = os.getcwd()
-    download_path = os.path.join(base_dir, DOWNLOAD_DIR)
-    os.makedirs(download_path, exist_ok=True)
-    return download_path
+    os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+    return DOWNLOAD_DIR
 
 
 def configurar_driver():
@@ -606,8 +620,8 @@ def extraer_tabla(driver):
             print(f"[INFO] Columnas encontradas: {columnas_finales_normalizadas}")
             raise ValueError(f"Faltan columnas requeridas: {faltantes_final}")
         
-        # Dividir todos los valores numéricos entre 10000 (excepto la columna de fecha)
-        print("[INFO] Dividiendo valores numéricos entre 10000...")
+        # Normalizar tasas a porcentaje (rango 1-20): detectar escala en lugar de dividir siempre por 10000
+        print("[INFO] Normalizando valores numéricos a porcentaje (rango 1-20)...")
         fecha_col = None
         for col in df.columns:
             if col.strip().upper() == 'FECHA':
@@ -617,13 +631,13 @@ def extraer_tabla(driver):
         if not fecha_col:
             fecha_col = df.columns[0]  # Usar primera columna si no encontramos FECHA
         
-        # Aplicar división a todas las columnas excepto la fecha
         for col in df.columns:
             if col != fecha_col:
-                # Convertir a numérico y dividir entre 10000
-                df[col] = pd.to_numeric(df[col], errors='coerce') / 10000
+                df[col] = pd.to_numeric(df[col], errors='coerce').apply(
+                    lambda x: normalizar_tasa_a_porcentaje(x, divisor_grande=10000)
+                )
         
-        print("[OK] Valores divididos entre 10000")
+        print("[OK] Valores normalizados a porcentaje")
         return df
         
     except Exception as e:

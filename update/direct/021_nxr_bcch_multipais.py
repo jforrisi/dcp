@@ -12,6 +12,7 @@ Países incluidos:
 - Nueva Zelanda (F072.NZD.USD.N.O.D)
 - Sudáfrica (F072.ZAR.USD.N.O.D)
 - Paraguay (F072.PYG.USD.N.O.D)
+- Perú (F072.PEN.USD.N.O.D)
 - Argentina oficial (F072.ARS.USD.N.O.D)
 
 1) Extraer datos desde API del BCCH usando bcchapi (desde 2010-01-01).
@@ -86,6 +87,12 @@ PAISES_CONFIG = [
         "id_variable": 20,  # Tipo de cambio USD (verificar en maestro_database.xlsx)
         "id_pais": 600,  # Paraguay
         "nombre": "Tipo de cambio USD/PYG (Paraguay)",
+    },
+    {
+        "codigo_serie": "F072.PEN.USD.N.O.D",
+        "id_variable": 20,
+        "id_pais": 604,  # Perú
+        "nombre": "Tipo de cambio USD/PEN (Perú)",
     },
     {
         "codigo_serie": "F072.ARS.USD.N.O.D",

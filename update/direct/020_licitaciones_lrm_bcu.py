@@ -26,7 +26,7 @@ from _helpers import (
 )
 
 # Configuración
-DATA_RAW_DIR = "data_raw"
+DATA_RAW_DIR = "update/historicos"
 EXCEL_NAME = "instrumentos_emitidos_bcu_y_gobierno_central.xlsx"
 ID_PAIS = 858  # Uruguay
 

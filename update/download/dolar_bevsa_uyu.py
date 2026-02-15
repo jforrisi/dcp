@@ -28,8 +28,8 @@ from update.utils.logger import ScriptLogger
 # URL de la página BEVSA - Histórico diario del dólar
 BEVSA_URL = "https://web.bevsa.com.uy/Mercado/MercadoCambios/HistoricoDiario.aspx"
 
-# Carpeta y nombres de archivo
-DOWNLOAD_DIR = "update/historicos"
+# Carpeta destino: siempre update/historicos del proyecto (de ahí lee la base de datos)
+DOWNLOAD_DIR = os.path.join(root_dir, "update", "historicos")
 DEST_FILENAME = "dolar_bevsa_uyu_temp.xlsx"
 HISTORICO_FILENAME = "dolar_bevsa_uyu.xlsx"
 HISTORICO_FALLBACK = "dolar_bevsa_uy.xlsx"  # Si dolar_bevsa_uyu no existe
@@ -41,10 +41,8 @@ EXPORTAR_BUTTON_ID = "ContentPlaceHolder1_LinkButton2"
 
 def asegurar_directorio():
     """Crea el directorio de descarga si no existe y devuelve su ruta absoluta."""
-    base_dir = os.getcwd()
-    download_path = os.path.join(base_dir, DOWNLOAD_DIR)
-    os.makedirs(download_path, exist_ok=True)
-    return os.path.abspath(download_path)
+    os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+    return os.path.abspath(DOWNLOAD_DIR)
 
 
 def configurar_driver(download_dir):
@@ -263,15 +261,14 @@ def actualizar_historico(download_path):
 
     print("\n[INFO] Actualizando archivo histórico con merge...")
 
-    # Leer histórico
+    # Se asume que el histórico siempre existe (dolar_bevsa_uyu.xlsx o dolar_bevsa_uy.xlsx)
     path_historico = historico_path if os.path.exists(historico_path) else historico_fallback
-    if os.path.exists(path_historico):
-        df_historico = pd.read_excel(path_historico, engine='openpyxl')
-        print(f"[OK] Histórico leído: {path_historico} ({len(df_historico)} registros)")
-    else:
-        df_historico = pd.DataFrame()
-        print("[INFO] No existe histórico, se creará desde temp")
-        path_historico = historico_path
+    if not os.path.exists(path_historico):
+        print(f"[ERROR] No existe el archivo histórico. Debe existir {HISTORICO_FILENAME} o {HISTORICO_FALLBACK} en {download_path}")
+        return
+
+    df_historico = pd.read_excel(path_historico, engine='openpyxl')
+    print(f"[OK] Histórico leído: {path_historico} ({len(df_historico)} registros)")
 
     if not os.path.exists(temp_path):
         print(f"[ERROR] No existe el archivo temporal: {temp_path}")
@@ -290,10 +287,10 @@ def actualizar_historico(download_path):
                 return col
         return df_in.columns[0]
 
-    fecha_col_hist = _norm_fecha_col(df_historico) if not df_historico.empty else 'FECHA'
+    fecha_col_hist = _norm_fecha_col(df_historico)
     fecha_col_temp = _norm_fecha_col(df_temp)
 
-    if not df_historico.empty and fecha_col_hist not in df_historico.columns:
+    if fecha_col_hist not in df_historico.columns:
         fecha_col_hist = df_historico.columns[0]
     if fecha_col_temp not in df_temp.columns:
         fecha_col_temp = df_temp.columns[0]
@@ -302,14 +299,14 @@ def actualizar_historico(download_path):
     if str(fecha_col_temp).strip().upper() != 'FECHA':
         df_temp = df_temp.rename(columns={fecha_col_temp: 'FECHA'})
         fecha_col_temp = 'FECHA'
-    if not df_historico.empty and str(fecha_col_hist).strip().upper() != 'FECHA':
+    if str(fecha_col_hist).strip().upper() != 'FECHA':
         df_historico = df_historico.rename(columns={fecha_col_hist: 'FECHA'})
         fecha_col_hist = 'FECHA'
     fecha_col = 'FECHA'
 
     df_historico[fecha_col] = pd.to_datetime(df_historico[fecha_col], errors='coerce')
-    df_temp[fecha_col] = pd.to_datetime(df_temp[fecha_col], errors='coerce')
     df_historico = df_historico.dropna(subset=[fecha_col])
+    df_temp[fecha_col] = pd.to_datetime(df_temp[fecha_col], errors='coerce')
     df_temp = df_temp.dropna(subset=[fecha_col])
 
     if df_historico.empty:

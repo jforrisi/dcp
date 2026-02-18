@@ -1,0 +1,41 @@
+================================================================================
+REPORTE: SCRIPTS QUE DAN PROBLEMA (excl. update_tc)
+================================================================================
+Fecha/Hora: 2026-02-11 20:51:52
+Tiempo total: 495.84s (8.26 min)
+
+Scripts ejecutados (solo los que fallaron en update_database, sin los de update_tc):
+  FASE 1 (download): anexo_estadistico_paraguay.py, expectativas_economicas_paraguay.py, expectativas_eme_analistas_banrep.py, ipc_paraguay.py
+  FASE 2 (direct):   015_combustibles_miem.py, 016_ipc.py, 018_ipc_paraguay.py, 025_salario_real.py, 026_tipo_cambio_eur.py, 028_indice_precios_exportacion_uruguay.py
+
+================================================================================
+RESUMEN POR SCRIPT
+================================================================================
+
+[OK] download/anexo_estadistico_paraguay.py (130.79s)
+
+[OK] download/expectativas_economicas_paraguay.py (91.62s)
+
+[OK] download/expectativas_eme_analistas_banrep.py (39.17s)
+
+[OK] download/ipc_paraguay.py (116.47s)
+
+[OK] direct/015_combustibles_miem.py (17.23s)
+
+[OK] direct/016_ipc.py (16.59s)
+
+[OK] direct/018_ipc_paraguay.py (15.53s)
+
+[OK] direct/025_salario_real.py (15.26s)
+
+[OK] direct/026_tipo_cambio_eur.py (16.52s)
+
+[OK] direct/028_indice_precios_exportacion_uruguay.py (36.62s)
+
+================================================================================
+DETALLE COMPLETO DE ERRORES (salida completa del script)
+================================================================================
+
+================================================================================
+FIN DEL REPORTE - Exitosos: 10 | Fallidos: 0
+================================================================================

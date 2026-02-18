@@ -1,0 +1,16 @@
+================================================================================
+REPORTE: ACTUALIZACIÓN TIPO DE CAMBIO (TC)
+================================================================================
+Fecha/Hora: 2026-02-13 18:08:39
+
+FASE 1 (Download): 1 OK, 0 fallidos
+FASE 2 (Direct) + FASE 3 (Calculate): 5 OK, 1 fallidos
+Tiempo total: 464.69s
+
+ERROR 002_uyu_nxr_sintetico.py: Error: El script terminó con código 1
+C:\Users\jforrisi\Desktop\desarrollos\gita\update\calculate\002_uyu_nxr_sintetico.py:130: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '39.862000' has dtype incompatible with float64, please explicitly cast to a compatible dtype first.
+  df_all.loc[fecha_base, "nxr_sintetico"] = valor_inicial
+============================================================
+NXR SINTÉTICO URUGUAY (id_variable=
+
+================================================================================

@@ -24,8 +24,10 @@ import requests
 from bs4 import BeautifulSoup
 from _helpers import (
     validar_fechas_solo_nulas,
+    filtrar_solo_lunes_a_viernes,
     insertar_en_bd_unificado
 )
+from db.connection import execute_update
 
 
 # Configuración de base de datos
@@ -41,6 +43,26 @@ ID_PAIS = 32  # Argentina
 DATA_RAW_DIR = "data_raw"
 HISTORICOS_DIR = "update/historicos"
 CSV_HISTORICO_NAME = "historical_nxr_argy.csv"
+
+def eliminar_fines_de_semana_en_bd(id_variable: int, id_pais: int) -> None:
+    """
+    Elimina registros de sábados y domingos ya existentes en maestro_precios
+    para una variable/país.
+
+    PostgreSQL: EXTRACT(DOW) retorna 0=domingo ... 6=sábado
+    """
+    print("\n[INFO] Eliminando fines de semana existentes en BD (si hubiera)...")
+    success, error, _ = execute_update(
+        """
+        DELETE FROM maestro_precios
+        WHERE id_variable = ? AND id_pais = ?
+          AND EXTRACT(DOW FROM fecha) IN (0, 6)
+        """,
+        (id_variable, id_pais),
+    )
+    if not success:
+        raise RuntimeError(error or "Error al eliminar fines de semana en maestro_precios")
+    print("[OK] Limpieza de fines de semana completada")
 
 
 def extraer_rava(url):
@@ -351,6 +373,9 @@ def main():
     
     # Validar fechas
     df = validar_fechas_solo_nulas(df)
+
+    # Mantener solo lunes a viernes (evitar fines de semana en la serie)
+    df = filtrar_solo_lunes_a_viernes(df, columna_fecha="FECHA")
     
     # Verificar que ID_VARIABLE e ID_PAIS están configurados
     if ID_VARIABLE is None or ID_PAIS is None:
@@ -359,6 +384,8 @@ def main():
         return
     
     print("\n[INFO] Actualizando base de datos...")
+    # Asegurar que en BD no queden sábados/domingos históricos
+    eliminar_fines_de_semana_en_bd(ID_VARIABLE, ID_PAIS)
     # El helper ya elimina registros existentes antes de insertar, así que prioriza datos nuevos
     insertar_en_bd_unificado(ID_VARIABLE, ID_PAIS, df)
     
@@ -370,6 +397,8 @@ def main():
     df_completo = leer_desde_bd(ID_VARIABLE, ID_PAIS)
     
     if not df_completo.empty:
+        # Asegurar que el CSV histórico no contenga fines de semana
+        df_completo = filtrar_solo_lunes_a_viernes(df_completo, columna_fecha="Fecha")
         reescribir_csv_historico(df_completo)
     else:
         print("[WARN] No se pudo actualizar el CSV histórico porque no hay datos en la BD")

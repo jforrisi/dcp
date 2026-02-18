@@ -42,7 +42,7 @@ def normalizar_tasa_a_porcentaje(val, divisor_grande=100000):
     if 1 <= val <= 20:
         return val
     if 0 < val < 1:
-        return val * 100
+        return val * 1000
     if 20 < val <= 10000:
         return val / 100
     return val / divisor_grande
@@ -434,7 +434,7 @@ def procesar_fechas_y_valores(df):
         if col != fecha_col:
             df[col] = df[col].astype(str).str.replace(',', '.', regex=False)
             df[col] = pd.to_numeric(df[col], errors='coerce').apply(
-                lambda x: normalizar_tasa_a_porcentaje(x, divisor_grande=100000)
+                lambda x: normalizar_tasa_a_porcentaje(x, divisor_grande=10000)
             )
     
     print("[OK] Fechas convertidas y valores normalizados a porcentaje")

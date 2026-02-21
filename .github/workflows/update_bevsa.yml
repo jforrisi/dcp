@@ -42,7 +42,7 @@ jobs:
           AZURE_ENVIRONMENT: production
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
           CHROMEDRIVER_PATH: ${{ steps.chrome.outputs.chromedriver-path }}
-          2CAPTCHA_API_KEY: ${{ secrets.2CAPTCHA_API_KEY }}
+          CAPTCHA_API_KEY: ${{ secrets.CAPTCHA_API_KEY }}
         run: |
           python update/update_bevsa.py
 

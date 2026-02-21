@@ -224,7 +224,7 @@ def descargar_excel_bevsa(driver, download_path):
         if not resuelto_auto:
             if en_ci():
                 raise RuntimeError(
-                    "CI: Cloudflare no resuelto (sin 2CAPTCHA_API_KEY o falló). "
+                    "CI: Cloudflare no resuelto (sin CAPTCHA_API_KEY o falló). "
                     "Omitiendo descarga BEVSA dólar."
                 )
             esperar_resolucion_anti_bot(driver)

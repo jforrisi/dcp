@@ -647,7 +647,7 @@ def main():
                 if not resuelto_auto:
                     if en_ci():
                         logger.warn(
-                            "CI: Cloudflare no resuelto (sin 2CAPTCHA_API_KEY o falló). "
+                            "CI: Cloudflare no resuelto (sin CAPTCHA_API_KEY o falló). "
                             "Omitiendo actualización de curva BEVSA CUI (se mantiene archivo existente)."
                         )
                         return

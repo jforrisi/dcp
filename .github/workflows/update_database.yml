@@ -43,8 +43,8 @@ jobs:
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
           CHROMEDRIVER_PATH: ${{ steps.chrome.outputs.chromedriver-path }}
           # Opcional: para resolver Cloudflare Turnstile (BEVSA) automáticamente en CI
-          # Crear secret 2CAPTCHA_API_KEY en el repo (cuenta en 2captcha.com)
-          2CAPTCHA_API_KEY: ${{ secrets.2CAPTCHA_API_KEY }}
+          # Crear secret CAPTCHA_API_KEY en el repo (API key de 2captcha.com)
+          CAPTCHA_API_KEY: ${{ secrets.CAPTCHA_API_KEY }}
         run: |
           python update/update_database.py
 

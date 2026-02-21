@@ -1,6 +1,6 @@
 """
 Resolución automática de Cloudflare Turnstile (BEVSA) vía 2captcha.
-Uso: definir env 2CAPTCHA_API_KEY; los scripts de BEVSA intentarán resolver el CAPTCHA solos.
+Uso: definir env CAPTCHA_API_KEY (o secret en GitHub); los scripts de BEVSA intentarán resolver el CAPTCHA solos.
 """
 
 import os
@@ -11,7 +11,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 
 def _get_api_key():
-    return (os.getenv("2CAPTCHA_API_KEY") or os.getenv("CAPTCHA_2CAPTCHA_API_KEY") or "").strip()
+    return (os.getenv("CAPTCHA_API_KEY") or "").strip()
 
 
 def get_turnstile_sitekey(driver, timeout=15):

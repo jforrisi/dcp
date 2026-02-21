@@ -6,7 +6,7 @@ Ejecuta en orden:
   FASE 2 - Direct:   027_tipo_cambio_usd, 029_curva_pesos_uyu_bevsa_nominal, 030_curva_pesos_uyu_bevsa_real
 
 Pensado para correr localmente o desde GitHub Actions (workflow update_bevsa).
-Requiere 2CAPTCHA_API_KEY para resolver Turnstile en CI; DATABASE_URL para los direct.
+Requiere CAPTCHA_API_KEY para resolver Turnstile en CI; DATABASE_URL para los direct.
 """
 
 import sys

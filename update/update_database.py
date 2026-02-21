@@ -27,9 +27,23 @@ REPORTE_FILE = PROJECT_ROOT / "update_database.txt"
 TIMEOUT_SCRIPT = 3600  # 1 hora máximo por script
 
 
+# Scripts BEVSA: se ejecutan solo con update/update_bevsa.py y update_tc.py (dolar), no en update_database
+DOWNLOAD_EXCLUIDOS_BEVSA = {
+    "dolar_bevsa_uyu.py",
+    "curva_pesos_uyu_temp.py",
+    "curva_pesos_uyu_ui_temp.py",
+}
+DIRECT_EXCLUIDOS_BEVSA = {
+    "027_tipo_cambio_usd.py",
+    "029_curva_pesos_uyu_bevsa_nominal.py",
+    "030_curva_pesos_uyu_bevsa_real.py",
+}
+
+
 def descubrir_scripts_download() -> Dict[str, List[Path]]:
     """
     Descubre automáticamente todos los scripts de descarga.
+    Excluye los de BEVSA (corren con update_bevsa.py / update_tc.py).
     
     Returns:
         Dict con categorías como keys, cada una con lista de Paths
@@ -43,7 +57,8 @@ def descubrir_scripts_download() -> Dict[str, List[Path]]:
     if download_dir.exists():
         for script_file in download_dir.glob("*.py"):
             if script_file.name != "__init__.py" and not script_file.name.startswith("_"):
-                scripts['download'].append(script_file)
+                if script_file.name not in DOWNLOAD_EXCLUIDOS_BEVSA:
+                    scripts['download'].append(script_file)
     
     # Ordenar por nombre para ejecución consistente
     scripts['download'].sort(key=lambda x: x.name)
@@ -65,12 +80,13 @@ def descubrir_scripts_update() -> Dict[str, List[Path]]:
     }
     
     # Scripts de update/direct/ (relativo a raíz del proyecto)
+    # Excluir BEVSA (027, 029, 030) que corren con update_bevsa.py
     direct_dir = PROJECT_ROOT / "update" / "direct"
     if direct_dir.exists():
         for script_file in sorted(direct_dir.glob("*.py")):
             if script_file.name != "__init__.py" and not script_file.name.startswith("_"):
-                # Incluir todos los scripts (incluyendo 019_nxr_argy_cargar_historico.py que ahora hace todo)
-                scripts['direct'].append(script_file)
+                if script_file.name not in DIRECT_EXCLUIDOS_BEVSA:
+                    scripts['direct'].append(script_file)
     
     # Scripts de update/calculate/ (scripts que se alimentan de otros)
     calculate_dir = PROJECT_ROOT / "update" / "calculate"

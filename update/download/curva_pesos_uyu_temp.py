@@ -10,6 +10,7 @@ import sys
 import time
 import pandas as pd
 from datetime import datetime, timedelta
+from urllib.parse import quote
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -26,11 +27,29 @@ from update.utils.logger import ScriptLogger
 
 # URL de la página BEVSA (ITLUP = nominales)
 BEVSA_URL = "https://web.bevsa.com.uy/CurvasVectorPrecios/CurvasIndices/Historico.aspx?I=ITLUP"
+# Checkpoint Cloudflare/Turnstile: si llevamos returnUrl, al resolver el CAPTCHA redirige a la curva
+CHECKPOINT_BASE = "https://web.bevsa.com.uy/Checkpoint.aspx"
 
 # Carpeta destino: siempre update/historicos del proyecto (de ahí lee la base de datos)
 DOWNLOAD_DIR = os.path.join(root_dir, "update", "historicos")
 DEST_FILENAME = "curva_pesos_uyu_temp.xlsx"
 HISTORICO_FILENAME = "curva_pesos_uyu.xlsx"
+
+# Modo "Chrome existente": conectar a un Chrome que vos abras (sin automatización).
+# Así resolvés el CAPTCHA en un navegador normal y el script usa esa sesión.
+# Uso: BEVSA_USE_EXISTING_CHROME=1 python curva_pesos_uyu_temp.py
+DEBUGGER_PORT = 9222
+
+
+def en_ci():
+    """True si corre en GitHub Actions u otro CI (headless); ahí no se puede resolver CAPTCHA."""
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        return True
+    if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("RAILWAY"):
+        return True
+    if os.getenv("AZURE_ENVIRONMENT") or os.getenv("AZURE") or os.getenv("WEBSITE_INSTANCE_ID"):
+        return True
+    return False
 
 
 def normalizar_tasa_a_porcentaje(val, divisor_grande=10000):
@@ -55,19 +74,71 @@ def asegurar_directorio():
     return DOWNLOAD_DIR
 
 
+def esta_en_checkpoint(driver):
+    """Indica si la página actual es el Checkpoint de Cloudflare/Turnstile."""
+    try:
+        return "Checkpoint.aspx" in (driver.current_url or "")
+    except Exception:
+        return False
+
+
+def checkpoint_con_return_url():
+    """URL del Checkpoint con returnUrl apuntando a la página de la curva (para que al resolver CAPTCHA redirija ahí)."""
+    return f"{CHECKPOINT_BASE}?returnUrl={quote(BEVSA_URL, safe='')}"
+
+
+def asegurar_checkpoint_con_return_url(driver):
+    """
+    Si estamos en Checkpoint sin returnUrl, navega a Checkpoint?returnUrl=BEVSA_URL.
+    Así, cuando el usuario resuelva el CAPTCHA, irá a la curva en lugar de a Default.aspx.
+    """
+    if not esta_en_checkpoint(driver):
+        return
+    try:
+        url_actual = driver.current_url
+        if "returnUrl=" in url_actual:
+            return
+        destino = checkpoint_con_return_url()
+        print(f"[INFO] Ajustando Checkpoint con returnUrl para que al resolver CAPTCHA vaya a la curva...")
+        driver.get(destino)
+        time.sleep(2)
+    except Exception as e:
+        print(f"[WARN] No se pudo ajustar returnUrl en Checkpoint: {e}")
+
+
 def configurar_driver():
     """
     Configura Chrome para scraping.
-    Usa un perfil persistente para guardar cookies y evitar disclaimer en futuras ejecuciones.
+    - Si BEVSA_USE_EXISTING_CHROME=1: se conecta a un Chrome ya abierto (recomendado si Turnstile falla).
+    - En local usa undetected_chromedriver para reducir detección.
+    - Perfil persistente para guardar cookies.
     """
-    chrome_options = Options()
-    
-    # Usar perfil persistente para guardar cookies (evita disclaimer repetido)
     base_dir = os.getcwd()
     user_data_dir = os.path.join(base_dir, ".chrome_profile_bevsa")
     os.makedirs(user_data_dir, exist_ok=True)
+
+    # Modo "Chrome existente": conectar a un Chrome que abriste vos (sin bandera de automatización).
+    # En ese Chrome podés pasar el CAPTCHA sin que diga "La verificación falló".
+    use_existing = os.getenv("BEVSA_USE_EXISTING_CHROME", "").strip().lower() in ("1", "true", "yes")
+    if use_existing:
+        try:
+            opts = Options()
+            opts.add_experimental_option("debuggerAddress", f"127.0.0.1:{DEBUGGER_PORT}")
+            driver = webdriver.Chrome(options=opts)
+            print("[INFO] Conectado a Chrome existente (modo sesión manual).")
+            return driver
+        except Exception as e:
+            print(f"[ERROR] No se pudo conectar a Chrome en 127.0.0.1:{DEBUGGER_PORT}: {e}")
+            print("[INFO] Abrí Chrome con: chrome.exe --remote-debugging-port=9222 --user-data-dir=<ruta_a_.chrome_profile_bevsa>")
+            raise
+
+    chrome_options = Options()
     chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
-    
+    # Reducir señales de automatización (Turnstile suele rechazar si las detecta)
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    chrome_options.add_experimental_option("useAutomationExtension", False)
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+
     # Detectar entornos cloud (Railway, Azure, etc.)
     is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY')
     is_azure = os.getenv('AZURE_ENVIRONMENT') or os.getenv('AZURE') or os.getenv('WEBSITE_INSTANCE_ID') or os.getenv('AZURE_FUNCTIONS_ENVIRONMENT') or os.getenv('CONTAINER_NAME')
@@ -175,8 +246,14 @@ def configurar_driver():
                 driver = webdriver.Chrome(options=chrome_options)
             time.sleep(2)
     else:
-        # Desarrollo local: Chrome visible
-        driver = webdriver.Chrome(options=chrome_options)
+        # Desarrollo local: intentar undetected_chromedriver para evitar Cloudflare/Turnstile
+        try:
+            import undetected_chromedriver as uc  # type: ignore
+            driver = uc.Chrome(user_data_dir=user_data_dir)
+            print("[INFO] Usando undetected_chromedriver (mejor para Cloudflare/Turnstile)")
+        except Exception as e:
+            print(f"[WARN] undetected_chromedriver no disponible ({e}), usando Selenium estándar")
+            driver = webdriver.Chrome(options=chrome_options)
     
     return driver
 
@@ -263,10 +340,13 @@ def esperar_resolucion_anti_bot(driver):
     Verifica periódicamente que Chrome sigue abierto.
     """
     print("\n" + "=" * 60)
-    print("ANTI-BOT DETECTADO")
+    print("ANTI-BOT DETECTADO (Cloudflare/Turnstile)")
     print("=" * 60)
-    print("[INFO] Esperando automáticamente hasta 60 segundos para que se resuelva...")
-    print("[INFO] Si el anti-bot persiste, el script continuará de todas formas.")
+    print("[INFO] Resuelva el CAPTCHA en la ventana del navegador.")
+    print("[INFO] Si al hacer clic sale 'La verificación falló', usá el MODO CHROME EXISTENTE:")
+    print("       1. Cerrá este Chrome y ejecutá:  bevsa_abrir_chrome_para_script.bat")
+    print("       2. En ese Chrome (normal) entrá a BEVSA y pasá el CAPTCHA.")
+    print("       3. Ejecutá:  set BEVSA_USE_EXISTING_CHROME=1 && python curva_pesos_uyu_temp.py")
     print("=" * 60 + "\n")
     
     # Esperar en intervalos de 5 segundos, verificando que Chrome sigue abierto
@@ -367,11 +447,15 @@ def extraer_tabla(driver):
     2. Si aparece disclaimer, lo acepta y luego navega a la tabla
     3. Extrae los datos celda por celda usando Selenium
     """
-    print(f"[INFO] Accediendo a: {BEVSA_URL}")
-    driver.get(BEVSA_URL)
-    
-    # Esperar un momento para que la página cargue
-    time.sleep(3)
+    # Si ya estamos en Checkpoint (p. ej. desde main), no hacer get(BEVSA_URL) para no re-disparar sin returnUrl
+    if not esta_en_checkpoint(driver):
+        print(f"[INFO] Accediendo a: {BEVSA_URL}")
+        driver.get(BEVSA_URL)
+        time.sleep(3)
+    # Si nos redirigieron al Checkpoint Cloudflare, llevar returnUrl para que al resolver vaya a la curva
+    if esta_en_checkpoint(driver):
+        asegurar_checkpoint_con_return_url(driver)
+        time.sleep(2)
     
     # Verificar si estamos en la página de disclaimer
     if "Disclaimer.aspx" in driver.current_url:
@@ -404,16 +488,32 @@ def extraer_tabla(driver):
         except RuntimeError as e:
             print(f"[ERROR] Error durante la espera de Cloudflare: {e}")
             raise
-    
-    # Verificar que estamos en la página correcta
+
+    # Si seguimos en Checkpoint, no hacer get(BEVSA_URL) (re-dispararía el CAPTCHA sin returnUrl).
+    # Esperar a que el usuario haya resuelto y la URL cambie a Historico, o ir a la curva si estamos en otra página.
     from selenium.common.exceptions import NoSuchWindowException, WebDriverException
     try:
         current_url = driver.current_url
-        if "Historico.aspx" not in current_url and "ITLUP" not in current_url:
+        if esta_en_checkpoint(driver):
+            # Asegurar returnUrl y esperar hasta 120 s a que redirija tras resolver el CAPTCHA
+            asegurar_checkpoint_con_return_url(driver)
+            print("[INFO] En Checkpoint: resuelva el CAPTCHA en el navegador; se esperará hasta 120 s la redirección a la curva...")
+            wait_redirect = WebDriverWait(driver, 120)
+            wait_redirect.until(lambda d: "Historico.aspx" in (d.current_url or ""))
+            print("[INFO] Redirección a la página de la curva detectada")
+            time.sleep(3)
+        elif "Historico.aspx" not in current_url and "ITLUP" not in current_url:
             print(f"[WARN] No estamos en la página correcta. URL actual: {current_url}")
-        print(f"[INFO] Navegando explícitamente a: {BEVSA_URL}")
-        driver.get(BEVSA_URL)
-        time.sleep(3)
+            print(f"[INFO] Navegando a: {BEVSA_URL}")
+            driver.get(BEVSA_URL)
+            time.sleep(3)
+    except Exception as e:
+        if "Message:" in str(e) and "timeout" in str(e).lower():
+            print("[WARN] Timeout esperando redirección desde Checkpoint. Intentando navegar a la curva...")
+            driver.get(BEVSA_URL)
+            time.sleep(3)
+        else:
+            raise
     except (NoSuchWindowException, WebDriverException) as e:
         print(f"[ERROR] Chrome se cerró inesperadamente: {e}")
         raise RuntimeError(f"Chrome se cerró inesperadamente: {e}")
@@ -901,17 +1001,39 @@ def main():
                 raise
             
             logger.log_selenium_state(driver, "Después de navegar")
+
+            # Si estamos en Checkpoint Cloudflare, asegurar returnUrl para que al resolver vaya a la curva
+            if esta_en_checkpoint(driver):
+                asegurar_checkpoint_con_return_url(driver)
             
             # Aceptar términos si es necesario
             logger.info("Verificando términos y condiciones...")
             aceptar_terminos(driver)
             logger.log_selenium_state(driver, "Después de aceptar términos")
             
-            # Esperar anti-bot si es necesario
+            # Resolución de Cloudflare Turnstile: automática (2captcha) o manual / skip en CI
             logger.info("Verificando anti-bot/CAPTCHA...")
             if detectar_anti_bot(driver):
-                logger.warn("Anti-bot detectado, esperando resolución...")
-                esperar_resolucion_anti_bot(driver)
+                asegurar_checkpoint_con_return_url(driver)
+                resuelto_auto = False
+                try:
+                    from update.download.bevsa_turnstile import solve_and_submit_turnstile, wait_after_turnstile_submit
+                    if solve_and_submit_turnstile(driver, return_url_after_success=BEVSA_URL):
+                        time.sleep(3)
+                        if wait_after_turnstile_submit(driver, timeout=35, url_contains="Historico"):
+                            resuelto_auto = True
+                            logger.info("Turnstile resuelto automáticamente (2captcha).")
+                except Exception as e:
+                    logger.debug("Resolución automática no usada: %s" % e)
+                if not resuelto_auto:
+                    if en_ci():
+                        logger.warn(
+                            "CI: Cloudflare no resuelto (sin 2CAPTCHA_API_KEY o falló). "
+                            "Omitiendo actualización (se mantiene archivo existente)."
+                        )
+                        return
+                    logger.warn("Anti-bot detectado, esperando resolución manual...")
+                    esperar_resolucion_anti_bot(driver)
                 logger.log_selenium_state(driver, "Después de anti-bot")
             
             # Extraer tabla

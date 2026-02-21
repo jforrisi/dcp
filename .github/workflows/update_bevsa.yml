@@ -1,18 +1,18 @@
-# Actualización completa de base de datos en producción
-# Ejecuta update/update_database.py 2 veces al día (todo: download + direct + calculate)
-name: Update Database (Producción)
+# Actualización BEVSA: descargas (dólar + curvas) + carga en BD (027, 029, 030)
+# Ejecuta update/update_bevsa.py en cron o manual
+name: Update BEVSA
 
 on:
   schedule:
-    # 2 veces al día: 12:00 y 18:00 Uruguay (UTC-3) = 15:00 y 21:00 UTC
-    - cron: '0 15 * * *'
-    - cron: '0 21 * * *'
-  workflow_dispatch:  # Ejecución manual desde GitHub Actions
+    # 2 veces al día: 12:30 y 18:30 Uruguay (UTC-3) = 15:30 y 21:30 UTC
+    - cron: '30 15 * * *'
+    - cron: '30 21 * * *'
+  workflow_dispatch:
 
 jobs:
-  update:
+  update-bevsa:
     runs-on: ubuntu-latest
-    timeout-minutes: 120  # Máximo 2 horas
+    timeout-minutes: 90
 
     steps:
       - name: Checkout
@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Set up Chrome (para scripts Selenium)
+      - name: Set up Chrome (BEVSA usa Selenium)
         id: chrome
         uses: browser-actions/setup-chrome@v2
         with:
@@ -36,22 +36,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run update database
+      - name: Run BEVSA update
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          AZURE_ENVIRONMENT: production  # Activa headless en scripts de descarga (Azure / GitHub Actions)
+          AZURE_ENVIRONMENT: production
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
           CHROMEDRIVER_PATH: ${{ steps.chrome.outputs.chromedriver-path }}
-          # Opcional: para resolver Cloudflare Turnstile (BEVSA) automáticamente en CI
-          # Crear secret 2CAPTCHA_API_KEY en el repo (cuenta en 2captcha.com)
           2CAPTCHA_API_KEY: ${{ secrets.2CAPTCHA_API_KEY }}
         run: |
-          python update/update_database.py
+          python update/update_bevsa.py
 
       - name: Upload report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: update-report-${{ github.run_id }}
-          path: update_database.txt
+          name: update-bevsa-report-${{ github.run_id }}
+          path: update_bevsa.txt
           retention-days: 7

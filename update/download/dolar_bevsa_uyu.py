@@ -39,6 +39,17 @@ ULTIMOS_N = 60
 EXPORTAR_BUTTON_ID = "ContentPlaceHolder1_LinkButton2"
 
 
+def en_ci():
+    """True si corre en GitHub Actions u otro CI; ahí no se puede resolver CAPTCHA manual."""
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        return True
+    if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("RAILWAY"):
+        return True
+    if os.getenv("AZURE_ENVIRONMENT") or os.getenv("AZURE") or os.getenv("WEBSITE_INSTANCE_ID"):
+        return True
+    return False
+
+
 def asegurar_directorio():
     """Crea el directorio de descarga si no existe y devuelve su ruta absoluta."""
     os.makedirs(DOWNLOAD_DIR, exist_ok=True)
@@ -200,7 +211,23 @@ def descargar_excel_bevsa(driver, download_path):
             pass
 
     if detectar_anti_bot(driver):
-        esperar_resolucion_anti_bot(driver)
+        resuelto_auto = False
+        try:
+            from update.download.bevsa_turnstile import solve_and_submit_turnstile, wait_after_turnstile_submit
+            if solve_and_submit_turnstile(driver, return_url_after_success=BEVSA_URL):
+                time.sleep(3)
+                if wait_after_turnstile_submit(driver, timeout=35, url_contains="HistoricoDiario"):
+                    resuelto_auto = True
+                    print("[INFO] Turnstile resuelto automáticamente (2captcha).")
+        except Exception as e:
+            print(f"[DEBUG] Resolución automática no usada: {e}")
+        if not resuelto_auto:
+            if en_ci():
+                raise RuntimeError(
+                    "CI: Cloudflare no resuelto (sin 2CAPTCHA_API_KEY o falló). "
+                    "Omitiendo descarga BEVSA dólar."
+                )
+            esperar_resolucion_anti_bot(driver)
 
     # Buscar y hacer clic en el botón Exportar (LinkButton2)
     print("[INFO] Buscando botón Exportar Excel...")
@@ -366,6 +393,12 @@ def main():
             logger.info("PROCESO COMPLETADO EXITOSAMENTE")
             logger.info("=" * 80)
 
+        except RuntimeError as e:
+            if "CI: Cloudflare no resuelto" in str(e):
+                logger.warn(str(e))
+                return
+            logger.log_exception(e, "main()")
+            raise
         except Exception as e:
             logger.log_exception(e, "main()")
             raise

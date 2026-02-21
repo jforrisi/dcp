@@ -32,6 +32,34 @@ DEST_FILENAME = "curva_pesos_uyu_ui_temp.xlsx"
 HISTORICO_FILENAME = "curva_pesos_uyu_ui.xlsx"
 
 
+def en_ci():
+    """True si corre en GitHub Actions u otro CI (headless); ahí no se puede resolver CAPTCHA."""
+    if os.getenv("GITHUB_ACTIONS") == "true":
+        return True
+    if os.getenv("RAILWAY_ENVIRONMENT") or os.getenv("RAILWAY"):
+        return True
+    if os.getenv("AZURE_ENVIRONMENT") or os.getenv("AZURE") or os.getenv("WEBSITE_INSTANCE_ID"):
+        return True
+    return False
+
+
+def valor_5_digitos_div_10000(val):
+    """
+    Normaliza un valor de tasa: siempre 5 dígitos (relleno a la derecha con ceros),
+    luego se divide por 10000. Ej: 314 -> 31400 -> 3.14; 25102 -> 2.5102.
+    """
+    if pd.isna(val):
+        return float("nan")
+    s = str(val).replace(",", "").replace(".", "").strip()
+    if not s or not s.lstrip("-").isdigit():
+        return float("nan")
+    s = s.lstrip("-")
+    if len(s) > 5:
+        s = s[:5]
+    s = s.ljust(5, "0")
+    return int(s) / 10000
+
+
 def normalizar_tasa_a_porcentaje(val, divisor_grande=100000):
     """
     Lleva tasas a porcentaje (rango 1-20%). Si ya está en [1, 20] no modifica.
@@ -48,9 +76,17 @@ def normalizar_tasa_a_porcentaje(val, divisor_grande=100000):
     return val / divisor_grande
 
 
+def _get_proyecto_root():
+    """Raíz del proyecto: subir desde update/download hasta la raíz."""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # script_dir = .../update/download -> subir 2 niveles = proyecto
+    return os.path.dirname(os.path.dirname(script_dir))
+
+
 def asegurar_directorio():
-    """Crea el directorio de descarga si no existe y devuelve su ruta absoluta."""
-    base_dir = os.getcwd()
+    """Crea el directorio de descarga si no existe y devuelve su ruta absoluta.
+    Usa la ruta del script para que los archivos vayan siempre al proyecto (update/historicos)."""
+    base_dir = _get_proyecto_root()
     download_path = os.path.join(base_dir, DOWNLOAD_DIR)
     os.makedirs(download_path, exist_ok=True)
     return download_path
@@ -71,7 +107,7 @@ def configurar_driver():
     # Usar perfil persistente para guardar cookies (evita disclaimer repetido)
     # PERO NO en cloud (causa problemas de desconexión)
     if not is_cloud:
-        base_dir = os.getcwd()
+        base_dir = _get_proyecto_root()
         user_data_dir = os.path.join(base_dir, ".chrome_profile_bevsa")
         os.makedirs(user_data_dir, exist_ok=True)
         chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
@@ -427,28 +463,33 @@ def procesar_fechas_y_valores(df):
     print(f"[OK] Primeros valores de fecha (después):")
     print(df[fecha_col].head())
     
-    # Procesar valores numéricos: coma a punto y normalizar a porcentaje (rango 1-20)
-    print(f"[INFO] Procesando valores numéricos (coma a punto, normalizar a porcentaje 1-20)...")
-    
-    for col in df.columns:
-        if col != fecha_col:
-            df[col] = df[col].astype(str).str.replace(',', '.', regex=False)
-            df[col] = pd.to_numeric(df[col], errors='coerce').apply(
-                lambda x: normalizar_tasa_a_porcentaje(x, divisor_grande=10000)
-            )
-    
-    print("[OK] Fechas convertidas y valores normalizados a porcentaje")
+    # Procesar valores numéricos: siempre 5 dígitos (relleno a la derecha con ceros), luego / 10000
+    print(f"[INFO] Procesando valores numéricos (5 dígitos, relleno a la derecha con ceros, dividir por 10000)...")
+    columnas_valor = [c for c in df.columns if c != fecha_col]
+    for col in columnas_valor:
+        df[col] = df[col].apply(valor_5_digitos_div_10000)
+
+    print("[OK] Fechas convertidas y valores normalizados (5 dígitos / 10000)")
     print(f"[INFO] Primeros valores después de procesar:")
     print(df.head())
     
     return df
 
 
-def guardar_excel(df, download_path):
-    """Guarda el DataFrame como Excel temporal."""
+def guardar_excel(df, download_path, df_crudo=None):
+    """
+    Guarda el DataFrame como Excel temporal.
+    Si df_crudo está definido, Hoja 1 = datos procesados, Hoja 2 = datos tal cual del scrape.
+    """
     destino = os.path.join(download_path, DEST_FILENAME)
-    df.to_excel(destino, index=False, engine='openpyxl')
-    print(f"[OK] Excel guardado como: {destino}")
+    if df_crudo is not None:
+        with pd.ExcelWriter(destino, engine='openpyxl') as writer:
+            df.to_excel(writer, sheet_name='Procesado', index=False)
+            df_crudo.to_excel(writer, sheet_name='Scrap crudo', index=False)
+        print(f"[OK] Excel guardado como: {destino} (Hoja 1: Procesado, Hoja 2: Scrap crudo)")
+    else:
+        df.to_excel(destino, index=False, engine='openpyxl')
+        print(f"[OK] Excel guardado como: {destino}")
     return destino
 
 
@@ -481,8 +522,9 @@ def actualizar_historico(download_path):
         return
     
     try:
-        df_nuevos = pd.read_excel(temp_path, engine='openpyxl')
-        print(f"[OK] Archivo temporal leído: {len(df_nuevos)} registros")
+        # Leer explícitamente la hoja "Procesado" para que coincida con lo que se guardó (evitar diferencias con el histórico)
+        df_nuevos = pd.read_excel(temp_path, sheet_name='Procesado', engine='openpyxl')
+        print(f"[OK] Archivo temporal leído (hoja Procesado): {len(df_nuevos)} registros")
     except Exception as e:
         print(f"[ERROR] Error al leer archivo temporal: {e}")
         return
@@ -508,11 +550,11 @@ def actualizar_historico(download_path):
         except:
             pass
         
-        # Combinar ambos DataFrames
-        df_combinado = pd.concat([df_historico, df_nuevos_normalizado], ignore_index=True)
+        # Combinar: NUEVOS primero para que al eliminar duplicados (keep='first') queden los del scrape
+        df_combinado = pd.concat([df_nuevos_normalizado, df_historico], ignore_index=True)
         print(f"[INFO] Datos combinados: {len(df_combinado)} registros totales")
         
-        # Eliminar duplicados basados en la columna FECHA (mantener datos nuevos)
+        # Eliminar duplicados por FECHA (mantener datos nuevos = primera aparición tras ordenar desc)
         registros_antes = len(df_combinado)
         df_combinado = df_combinado.sort_values(fecha_col, ascending=False)
         df_combinado = df_combinado.drop_duplicates(subset=[fecha_col], keep='first')
@@ -589,17 +631,35 @@ def main():
             aceptar_terminos(driver)
             logger.log_selenium_state(driver, "Después de aceptar términos")
             
-            # Esperar anti-bot si es necesario
+            # Resolución de Cloudflare Turnstile: automática (2captcha) o manual / skip en CI
             logger.info("Verificando anti-bot/CAPTCHA...")
             if detectar_anti_bot(driver):
-                logger.warn("Anti-bot detectado, esperando resolución...")
-                esperar_resolucion_anti_bot(driver)
+                resuelto_auto = False
+                try:
+                    from update.download.bevsa_turnstile import solve_and_submit_turnstile, wait_after_turnstile_submit
+                    if solve_and_submit_turnstile(driver, return_url_after_success=BEVSA_URL):
+                        time.sleep(3)
+                        if wait_after_turnstile_submit(driver, timeout=35, url_contains="Historico"):
+                            resuelto_auto = True
+                            logger.info("Turnstile resuelto automáticamente (2captcha).")
+                except Exception as e:
+                    logger.debug("Resolución automática no usada: %s" % e)
+                if not resuelto_auto:
+                    if en_ci():
+                        logger.warn(
+                            "CI: Cloudflare no resuelto (sin 2CAPTCHA_API_KEY o falló). "
+                            "Omitiendo actualización de curva BEVSA CUI (se mantiene archivo existente)."
+                        )
+                        return
+                    logger.warn("Anti-bot detectado, esperando resolución manual...")
+                    esperar_resolucion_anti_bot(driver)
                 logger.log_selenium_state(driver, "Después de anti-bot")
             
             # Extraer tabla
             logger.info("Extrayendo tabla de datos...")
             df = extraer_tabla(driver)
             logger.info(f"Tabla extraída: {len(df)} filas, {len(df.columns)} columnas")
+            df_crudo = df.copy()
 
             # Procesar fechas y valores
             logger.info("Procesando fechas y valores...")
@@ -611,9 +671,9 @@ def main():
             logger.info("Últimos datos:")
             logger.debug(f"\n{df.tail()}")
 
-            # Guardar como Excel temporal
+            # Guardar como Excel temporal (Hoja 1: procesado, Hoja 2: scrap crudo)
             logger.info("Guardando Excel...")
-            destino = guardar_excel(df, download_path)
+            destino = guardar_excel(df, download_path, df_crudo=df_crudo)
             logger.info(f"Excel guardado: {destino}")
 
             # Actualizar archivo histórico
@@ -641,4 +701,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) > 1 and sys.argv[1] == "--solo-actualizar":
+        download_path = asegurar_directorio()
+        print(f"[INFO] Ejecutando solo actualizar_historico en: {download_path}")
+        actualizar_historico(download_path)
+        print("[OK] Listo.")
+    else:
+        main()

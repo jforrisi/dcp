@@ -93,10 +93,10 @@ function InflacionImplicitaPage({ embeddedView }) {
             .finally(() => setLoading(false));
     };
 
-    const COLORS = ['rgb(99, 102, 241)', 'rgb(139, 92, 246)', 'rgb(236, 72, 153)', 'rgb(34, 197, 94)', 'rgb(234, 179, 8)', 'rgb(239, 68, 68)', 'rgb(20, 184, 166)', 'rgb(251, 146, 60)'];
-    const COLORS_RGBA = ['rgba(99, 102, 241, 0.6)', 'rgba(139, 92, 246, 0.6)', 'rgba(236, 72, 153, 0.6)', 'rgba(34, 197, 94, 0.6)', 'rgba(234, 179, 8, 0.6)', 'rgba(239, 68, 68, 0.6)', 'rgba(20, 184, 166, 0.6)', 'rgba(251, 146, 60, 0.6)'];
+    const COLORS = ['rgb(99, 102, 241)', 'rgb(139, 92, 246)', 'rgb(236, 72, 153)', 'rgb(34, 197, 94)', 'rgb(234, 179, 8)', 'rgb(239, 68, 68)', 'rgb(20, 184, 166)', 'rgb(251, 146, 60)', 'rgb(59, 130, 246)', 'rgb(168, 85, 247)'];
+    const COLORS_RGBA = COLORS.map(c => c.replace('rgb(', 'rgba(').replace(')', ', 0.6)'));
 
-    // Gráfico curva (plazos en X, una serie por fecha)
+    // Gráfico curva (mismo tipo que Curva soberana: línea por fecha, plazos en X)
     React.useEffect(() => {
         if (!Array.isArray(curvaData) || curvaData.length === 0) return;
         const first = curvaData[0];
@@ -108,30 +108,46 @@ function InflacionImplicitaPage({ embeddedView }) {
         const labels = first.plazos;
         const datasets = curvaData.map((d, i) => ({
             label: formatFecha(d.fecha),
-            data: (d.valores || []).map(v => v == null ? 0 : Number(v)),
-            backgroundColor: COLORS_RGBA[i % COLORS_RGBA.length],
+            data: (d.valores || []).map(v => v == null ? null : Number(v)),
             borderColor: COLORS[i % COLORS.length],
-            borderWidth: 1
+            backgroundColor: 'transparent',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: COLORS[i % COLORS.length],
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2
         }));
         const id = setTimeout(() => {
             if (!chartCurvaRef.current) return;
             const ctx = chartCurvaRef.current.getContext('2d');
             chartCurvaInstance.current = new Chart(ctx, {
-            type: 'bar',
-            data: { labels, datasets },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    title: { display: true, text: 'Inflación implícita por plazo' },
-                    tooltip: { callbacks: { label: (ctx) => ctx.parsed.y != null ? ctx.parsed.y.toFixed(2) + '%' : 'N/A' } }
-                },
-                scales: {
-                    y: { title: { display: true, text: 'Inflación implícita (%)' }, ticks: { callback: v => v + '%' } },
-                    x: { title: { display: true, text: 'Plazo' } }
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top' },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: { label: (ctx) => ctx.parsed.y != null ? ctx.dataset.label + ': ' + ctx.parsed.y.toFixed(2) + '%' : 'N/A' }
+                        },
+                        title: { display: true, text: 'Inflación implícita por plazo', font: { size: 16, weight: 'bold' } }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Inflación implícita (%)' },
+                            ticks: { callback: (v) => v.toFixed(2) + '%' }
+                        },
+                        x: { title: { display: true, text: 'Plazo' } }
+                    }
                 }
-            }
-        });
+            });
         }, 50);
         return () => {
             clearTimeout(id);

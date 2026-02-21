@@ -39,7 +39,8 @@ URL_RAVA_DEFAULT = "https://www.rava.com/perfil/DOLAR%20CCL"
 ID_VARIABLE = 21  # Configurar cuando esté en maestro_database.xlsx
 ID_PAIS = 32  # Argentina
 
-# Configuración de archivos históricos
+# Configuración de archivos históricos (rutas relativas a la raíz del proyecto)
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 DATA_RAW_DIR = "data_raw"
 HISTORICOS_DIR = "update/historicos"
 CSV_HISTORICO_NAME = "historical_nxr_argy.csv"
@@ -317,13 +318,12 @@ def reescribir_csv_historico(df_completo: pd.DataFrame):
     """
     print("\n[INFO] Reescribiendo CSV histórico...")
     
-    # Asegurar que existen las carpetas
-    base_dir = Path.cwd()
-    data_raw_path = base_dir / DATA_RAW_DIR
-    historicos_path = base_dir / HISTORICOS_DIR
+    # Rutas desde la raíz del proyecto (independiente del CWD)
+    data_raw_path = ROOT_DIR / DATA_RAW_DIR
+    historicos_path = ROOT_DIR / HISTORICOS_DIR
     
-    data_raw_path.mkdir(exist_ok=True)
-    historicos_path.mkdir(exist_ok=True)
+    data_raw_path.mkdir(parents=True, exist_ok=True)
+    historicos_path.mkdir(parents=True, exist_ok=True)
     
     csv_actual = data_raw_path / CSV_HISTORICO_NAME
     

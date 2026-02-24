@@ -48,13 +48,61 @@ jobs:
         run: |
           python update/update_bevsa.py
 
+      - name: Diagnostics (update/historicos)
+        if: always()
+        run: |
+          echo "== git status (porcelain) =="
+          git status --porcelain || true
+          echo "== historicos listing =="
+          python - <<'PY'
+          import os
+          import pathlib
+          p = pathlib.Path("update/historicos")
+          if not p.exists():
+            print("update/historicos: (no existe)")
+          else:
+            for f in sorted(p.glob("*.xls*")):
+              st = f.stat()
+              print(f"{f.name}\t{st.st_size} bytes")
+          PY
+          echo "== dolar_bevsa_uyu.xlsx max date (si existe) =="
+          python - <<'PY'
+          import pathlib
+          import pandas as pd
+          p = pathlib.Path("update/historicos/dolar_bevsa_uyu.xlsx")
+          if not p.exists():
+            print("No existe:", p)
+          else:
+            df = pd.read_excel(p, sheet_name=0, header=0)
+            if df.shape[1] == 0 or df.shape[0] == 0:
+              print("Excel vacío")
+            else:
+              col0 = df.columns[0]
+              s = pd.to_datetime(df[col0], errors="coerce")
+              s = s.dropna()
+              print("max:", s.max() if len(s) else None)
+          PY
+
       - name: Commit and push update/historicos
         if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add update/historicos/
-          git diff --staged --quiet || (git commit -m "chore(historicos): update Excels from BEVSA run [skip ci]" && git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }})
+          if git diff --staged --quiet; then
+            echo "No hay cambios en update/historicos/ para commitear."
+          else
+            git commit -m "chore(historicos): update Excels from BEVSA run [skip ci]"
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
+          fi
+
+      - name: Upload historicos (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: historicos-${{ github.run_id }}
+          path: update/historicos/*.xls*
+          retention-days: 7
 
       - name: Upload report
         if: always()

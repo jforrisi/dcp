@@ -13,6 +13,8 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 120  # Máximo 2 horas
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -47,6 +49,14 @@ jobs:
           CAPTCHA_API_KEY: ${{ secrets.CAPTCHA_API_KEY }}
         run: |
           python update/update_database.py
+
+      - name: Commit and push update/historicos and data_raw
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add update/historicos/ data_raw/
+          git diff --staged --quiet || (git commit -m "chore(data): update Excels from update_database run [skip ci]" && git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }})
 
       - name: Upload report
         if: always()

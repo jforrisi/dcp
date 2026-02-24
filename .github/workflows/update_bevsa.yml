@@ -13,6 +13,8 @@ jobs:
   update-bevsa:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -45,6 +47,14 @@ jobs:
           CAPTCHA_API_KEY: ${{ secrets.CAPTCHA_API_KEY }}
         run: |
           python update/update_bevsa.py
+
+      - name: Commit and push update/historicos
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add update/historicos/
+          git diff --staged --quiet || (git commit -m "chore(historicos): update Excels from BEVSA run [skip ci]" && git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }})
 
       - name: Upload report
         if: always()

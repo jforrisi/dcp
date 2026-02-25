@@ -67,73 +67,84 @@ def asegurar_directorio():
 
 
 def configurar_driver(download_dir):
-    """Configura Chrome con carpeta de descargas y perfil BEVSA."""
-    chrome_options = Options()
+    """Configura Chrome con undetected_chromedriver (local y CI) para evitar Cloudflare."""
     base_dir = os.getcwd()
     user_data_dir = os.path.join(base_dir, ".chrome_profile_bevsa")
     os.makedirs(user_data_dir, exist_ok=True)
-    chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
 
-    prefs = {
+    is_cloud = bool(
+        os.getenv('GITHUB_ACTIONS') or os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY')
+        or os.getenv('AZURE_ENVIRONMENT') or os.getenv('AZURE') or os.getenv('WEBSITE_INSTANCE_ID')
+    )
+    chrome_bin = os.getenv('CHROME_BIN') or ""
+    if not chrome_bin:
+        for p in ['/usr/bin/google-chrome', '/usr/bin/chromium-browser', '/usr/bin/chromium',
+                   '/root/.nix-profile/bin/chromium']:
+            if os.path.exists(p):
+                chrome_bin = p
+                break
+
+    # -- Intentar undetected_chromedriver (local y CI) --
+    try:
+        import undetected_chromedriver as uc
+        uc_options = uc.ChromeOptions()
+        uc_options.add_experimental_option("prefs", {
+            "download.default_directory": download_dir,
+            "download.prompt_for_download": False,
+            "download.directory_upgrade": True,
+            "safebrowsing.enabled": True,
+        })
+        if is_cloud:
+            uc_options.add_argument("--no-sandbox")
+            uc_options.add_argument("--disable-dev-shm-usage")
+            uc_options.add_argument("--disable-gpu")
+            uc_options.add_argument("--window-size=1920,1080")
+
+        uc_kwargs = {"options": uc_options, "headless": is_cloud}
+        if not is_cloud:
+            uc_kwargs["user_data_dir"] = user_data_dir
+        if chrome_bin and os.path.exists(chrome_bin):
+            uc_kwargs["browser_executable_path"] = chrome_bin
+
+        driver = uc.Chrome(**uc_kwargs)
+        for cdp in ["Browser.setDownloadBehavior", "Page.setDownloadBehavior"]:
+            try:
+                driver.execute_cdp_cmd(cdp, {"behavior": "allow", "downloadPath": download_dir})
+                break
+            except Exception:
+                pass
+        print(f"[INFO] undetected_chromedriver OK (headless={is_cloud})")
+        return driver
+    except Exception as e:
+        print(f"[WARN] undetected_chromedriver falló: {e}")
+
+    # -- Fallback: Selenium estándar --
+    print("[INFO] Usando Selenium estándar como fallback")
+    fb = Options()
+    fb.add_experimental_option("prefs", {
         "download.default_directory": download_dir,
         "download.prompt_for_download": False,
         "download.directory_upgrade": True,
         "safebrowsing.enabled": True,
-    }
-    chrome_options.add_experimental_option("prefs", prefs)
-
-    is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY')
-    is_azure = os.getenv('AZURE_ENVIRONMENT') or os.getenv('AZURE') or os.getenv('WEBSITE_INSTANCE_ID') or os.getenv('AZURE_FUNCTIONS_ENVIRONMENT') or os.getenv('CONTAINER_NAME')
-    is_cloud = is_railway or is_azure
-
+    })
+    fb.add_experimental_option("excludeSwitches", ["enable-automation"])
+    fb.add_experimental_option("useAutomationExtension", False)
+    fb.add_argument("--disable-blink-features=AutomationControlled")
+    fb.add_argument(f"--user-data-dir={user_data_dir}")
     if is_cloud:
-        chrome_options.add_argument("--headless=new")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-setuid-sandbox")
-        chrome_options.add_argument("--disable-web-security")
-        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
-        chrome_options.add_argument("--remote-debugging-port=9222")
-        chrome_options.add_argument("--remote-debugging-address=0.0.0.0")
-        chrome_options.add_argument("--no-first-run")
-        chrome_options.add_argument("--no-default-browser-check")
-        chrome_options.add_argument("--disable-background-networking")
-        chrome_options.add_argument("--disable-popup-blocking")
-        chrome_options.add_argument("--disable-sync")
-        chrome_options.add_argument("--disable-translate")
-        chrome_options.add_argument("--metrics-recording-only")
-        chrome_options.add_argument("--no-crash-upload")
-        chrome_options.add_argument("--mute-audio")
-        chrome_options.add_argument("--hide-scrollbars")
-
-        chrome_bin = os.getenv('CHROME_BIN')
-        if not chrome_bin:
-            for path in ['/root/.nix-profile/bin/chromium', '/usr/bin/google-chrome', '/usr/bin/chromium-browser', '/usr/bin/chromium']:
-                if os.path.exists(path):
-                    chrome_bin = path
-                    break
-        if chrome_bin and os.path.exists(chrome_bin):
-            chrome_options.binary_location = chrome_bin
-
-        chromedriver_path = os.getenv('CHROMEDRIVER_PATH')
-        if not chromedriver_path:
-            for path in ['/root/.nix-profile/bin/chromedriver', '/usr/bin/chromedriver', '/usr/local/bin/chromedriver']:
-                if os.path.exists(path):
-                    chromedriver_path = path
-                    break
-
-        if chromedriver_path and os.path.exists(chromedriver_path):
-            service = Service(chromedriver_path)
-            driver = webdriver.Chrome(service=service, options=chrome_options)
-        else:
-            driver = webdriver.Chrome(options=chrome_options)
-        time.sleep(2)
+        fb.add_argument("--headless=new")
+        fb.add_argument("--no-sandbox")
+        fb.add_argument("--disable-dev-shm-usage")
+        fb.add_argument("--disable-gpu")
+        fb.add_argument("--window-size=1920,1080")
+    if chrome_bin and os.path.exists(chrome_bin):
+        fb.binary_location = chrome_bin
+    chromedriver_path = os.getenv('CHROMEDRIVER_PATH', '')
+    if chromedriver_path and os.path.exists(chromedriver_path):
+        driver = webdriver.Chrome(service=Service(chromedriver_path), options=fb)
     else:
-        driver = webdriver.Chrome(options=chrome_options)
-
+        driver = webdriver.Chrome(options=fb)
+    time.sleep(2)
     return driver
 
 
@@ -195,16 +206,58 @@ def detectar_anti_bot(driver):
     return False
 
 
-def esperar_resolucion_anti_bot(driver):
-    """Espera hasta 20 segundos si hay anti-bot (antes 60s, demasiado lento)."""
-    print("[INFO] Anti-bot detectado, esperando 20 segundos...")
-    for _ in range(4):
-        try:
-            _ = driver.current_url
-            time.sleep(5)
-        except Exception:
-            raise RuntimeError("Chrome se cerró durante la espera")
-    print("[INFO] Continuando...")
+def intentar_click_turnstile(driver):
+    """Intenta encontrar y clicar el checkbox del Turnstile dentro de iframes."""
+    try:
+        iframes = driver.find_elements(By.CSS_SELECTOR,
+            "iframe[src*='turnstile'], iframe[src*='challenges.cloudflare.com']")
+        for iframe in iframes:
+            try:
+                driver.switch_to.frame(iframe)
+                for sel in ["input[type='checkbox']", ".cb-lb", "#challenge-stage"]:
+                    try:
+                        el = driver.find_element(By.CSS_SELECTOR, sel)
+                        el.click()
+                        print(f"[INFO] Turnstile element clicked: {sel}")
+                        driver.switch_to.default_content()
+                        return True
+                    except Exception:
+                        pass
+                driver.switch_to.default_content()
+            except Exception:
+                driver.switch_to.default_content()
+    except Exception:
+        pass
+    return False
+
+
+def esperar_resolucion_anti_bot(driver, target_url=None, max_wait=45):
+    """Espera resolución de Turnstile: auto-resolución con uc, click en iframe, o espera manual."""
+    print(f"[INFO] Anti-bot detectado. URL actual: {driver.current_url}")
+    print(f"[INFO] Esperando resolución automática (hasta {max_wait}s)...")
+
+    for i in range(max_wait // 3):
+        time.sleep(3)
+        cur = driver.current_url or ""
+        if target_url and target_url.split("?")[0] in cur:
+            print("[INFO] Redirigido a la página objetivo, anti-bot resuelto.")
+            return True
+        if not detectar_anti_bot(driver):
+            print("[INFO] Anti-bot ya no detectado en la página.")
+            return True
+        if i % 3 == 1:
+            intentar_click_turnstile(driver)
+
+    if target_url:
+        print(f"[INFO] Reintentando navegación a: {target_url}")
+        driver.get(target_url)
+        time.sleep(5)
+        if not detectar_anti_bot(driver):
+            print("[INFO] Anti-bot resuelto tras re-navegar.")
+            return True
+
+    print("[WARN] Anti-bot no se resolvió automáticamente.")
+    return False
 
 
 def descargar_excel_bevsa(driver, download_path):
@@ -232,25 +285,47 @@ def descargar_excel_bevsa(driver, download_path):
             pass
 
     if detectar_anti_bot(driver):
-        resuelto_auto = False
-        try:
-            from update.download.bevsa_turnstile import solve_and_submit_turnstile, wait_after_turnstile_submit
-            if solve_and_submit_turnstile(driver, return_url_after_success=BEVSA_URL):
-                time.sleep(3)
-                if wait_after_turnstile_submit(driver, timeout=35, url_contains="HistoricoDiario"):
-                    resuelto_auto = True
-                    print("[INFO] Turnstile resuelto automáticamente (2captcha).")
-        except Exception as e:
-            print(f"[DEBUG] Resolución automática no usada: {e}")
-        if not resuelto_auto:
+        resuelto = esperar_resolucion_anti_bot(driver, target_url=BEVSA_URL, max_wait=45)
+
+        if not resuelto and detectar_anti_bot(driver):
+            try:
+                from update.download.bevsa_turnstile import solve_and_submit_turnstile, wait_after_turnstile_submit
+                if solve_and_submit_turnstile(driver, return_url_after_success=BEVSA_URL):
+                    time.sleep(3)
+                    if wait_after_turnstile_submit(driver, timeout=35, url_contains="HistoricoDiario"):
+                        resuelto = True
+                        print("[INFO] Turnstile resuelto con 2captcha.")
+            except Exception as e:
+                print(f"[DEBUG] 2captcha no usada: {e}")
+
+        if not resuelto and detectar_anti_bot(driver):
             if en_ci():
                 raise RuntimeError(
                     "CI: BEVSA bloqueado por Cloudflare/Turnstile y no se pudo resolver automáticamente. "
                     "Resultado: NO se descargó el Excel (se mantiene el archivo anterior). "
                     "Revisar secret CAPTCHA_API_KEY / 2captcha y reintentar."
                 )
-            esperar_resolucion_anti_bot(driver)
-            time.sleep(8)
+            print("[WARN] Anti-bot persistente. Esperando 30s adicionales...")
+            time.sleep(30)
+            driver.get(BEVSA_URL)
+            time.sleep(5)
+
+    # Asegurar que estamos en la página correcta con datos cargados
+    cur = driver.current_url or ""
+    if "HistoricoDiario" not in cur:
+        print(f"[INFO] URL actual no es HistoricoDiario ({cur}). Navegando...")
+        driver.get(BEVSA_URL)
+        time.sleep(5)
+    print(f"[INFO] URL antes de exportar: {driver.current_url}")
+
+    # Esperar a que la tabla de datos exista (señal de que la página cargó completa)
+    try:
+        WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "table, .GridView, [id*='Grid']"))
+        )
+        print("[INFO] Tabla/datos detectados en la página.")
+    except Exception:
+        print("[WARN] No se detectó tabla de datos, intentando Exportar de todas formas...")
 
     # Buscar y hacer clic en el botón Exportar (probar varios selectores; BEVSA puede cambiar el ID)
     print("[INFO] Buscando botón Exportar Excel...")
@@ -278,28 +353,113 @@ def descargar_excel_bevsa(driver, download_path):
         driver.execute_script("arguments[0].scrollIntoView(true);", btn_exportar)
         time.sleep(0.5)
         archivos_antes = set(f for f in os.listdir(download_path) if f.endswith(('.xlsx', '.xls')))
-        btn_exportar.click()
-        print("[INFO] Clic en Exportar, esperando descarga...")
+        # Intentar click normal y JS click; BEVSA usa __doPostBack para exportar
+        try:
+            driver.execute_script("arguments[0].click();", btn_exportar)
+            print("[INFO] Clic en Exportar (JS click), esperando descarga...")
+        except Exception:
+            btn_exportar.click()
+            print("[INFO] Clic en Exportar (click directo), esperando descarga...")
     except Exception as e:
         raise RuntimeError(f"Error al hacer clic en Exportar: {e}")
 
-    # Esperar a que aparezca el archivo Excel
-    tiempo_max = 30
+    # Esperar a que aparezca el archivo Excel (buscar en download_path y en ~/Downloads)
+    user_downloads = os.path.join(os.path.expanduser("~"), "Downloads")
+    search_dirs = [download_path]
+    if os.path.isdir(user_downloads) and os.path.abspath(user_downloads) != os.path.abspath(download_path):
+        search_dirs.append(user_downloads)
+
+    archivos_antes_extra = {}
+    for d in search_dirs:
+        archivos_antes_extra[d] = set(f for f in os.listdir(d) if f.endswith(('.xlsx', '.xls')))
+    archivos_antes_extra[download_path] = archivos_antes
+
+    tiempo_max = 45
     inicio = time.time()
     archivo_descargado = None
+    archivo_dir = download_path
     while time.time() - inicio < tiempo_max:
         time.sleep(1)
-        archivos_ahora = set(f for f in os.listdir(download_path) if f.endswith(('.xlsx', '.xls')))
-        nuevos = archivos_ahora - archivos_antes
-        # Excluir .crdownload y archivos temporales
-        completos = [f for f in nuevos if not f.endswith('.crdownload') and not f.endswith('.tmp')]
-        if completos:
-            archivo_descargado = completos[0]
+        for d in search_dirs:
+            try:
+                ahora = set(f for f in os.listdir(d) if f.endswith(('.xlsx', '.xls')))
+                nuevos = ahora - archivos_antes_extra[d]
+                completos = [f for f in nuevos if not f.endswith('.crdownload') and not f.endswith('.tmp')]
+                if completos:
+                    archivo_descargado = completos[0]
+                    archivo_dir = d
+                    print(f"[INFO] Archivo detectado en: {d}/{archivo_descargado}")
+                    break
+            except Exception:
+                pass
+        if archivo_descargado:
             break
     if not archivo_descargado:
-        raise RuntimeError(f"Timeout: no se detectó archivo Excel descargado en {tiempo_max}s")
+        # Fallback: intentar __doPostBack directo para el botón Exportar
+        print("[WARN] No se detectó descarga. Intentando __doPostBack directo...")
+        try:
+            driver.execute_script("__doPostBack('ctl00$ContentPlaceHolder1$LinkButton2','');")
+            print("[INFO] __doPostBack ejecutado, esperando 30s...")
+            inicio2 = time.time()
+            while time.time() - inicio2 < 30:
+                time.sleep(1)
+                for d in search_dirs:
+                    try:
+                        ahora = set(f for f in os.listdir(d) if f.endswith(('.xlsx', '.xls')))
+                        nuevos = ahora - archivos_antes_extra[d]
+                        completos = [f for f in nuevos if not f.endswith('.crdownload') and not f.endswith('.tmp')]
+                        if completos:
+                            archivo_descargado = completos[0]
+                            archivo_dir = d
+                            print(f"[INFO] Archivo detectado (postback) en: {d}/{archivo_descargado}")
+                            break
+                    except Exception:
+                        pass
+                if archivo_descargado:
+                    break
+        except Exception as e:
+            print(f"[WARN] __doPostBack falló: {e}")
 
-    origen = os.path.join(download_path, archivo_descargado)
+    if not archivo_descargado:
+        # Último fallback: descargar con requests usando las cookies de Selenium
+        print("[WARN] Descarga con Selenium falló. Intentando con requests...")
+        try:
+            import requests as req
+            session = req.Session()
+            for cookie in driver.get_cookies():
+                session.cookies.set(cookie['name'], cookie['value'], domain=cookie.get('domain', ''))
+            page_html = driver.page_source
+            import re
+            vs = re.search(r'id="__VIEWSTATE"\s+value="([^"]*)"', page_html)
+            evval = re.search(r'id="__EVENTVALIDATION"\s+value="([^"]*)"', page_html)
+            vsg = re.search(r'id="__VIEWSTATEGENERATOR"\s+value="([^"]*)"', page_html)
+            data = {
+                '__EVENTTARGET': 'ctl00$ContentPlaceHolder1$LinkButton2',
+                '__EVENTARGUMENT': '',
+            }
+            if vs: data['__VIEWSTATE'] = vs.group(1)
+            if evval: data['__EVENTVALIDATION'] = evval.group(1)
+            if vsg: data['__VIEWSTATEGENERATOR'] = vsg.group(1)
+            resp = session.post(BEVSA_URL, data=data, headers={
+                'User-Agent': driver.execute_script("return navigator.userAgent;"),
+                'Referer': BEVSA_URL,
+            }, timeout=30)
+            if resp.status_code == 200 and len(resp.content) > 500:
+                dest_direct = os.path.join(download_path, "bevsa_export_direct.xlsx")
+                with open(dest_direct, 'wb') as f:
+                    f.write(resp.content)
+                archivo_descargado = "bevsa_export_direct.xlsx"
+                archivo_dir = download_path
+                print(f"[INFO] Descargado con requests: {len(resp.content)} bytes")
+            else:
+                print(f"[WARN] Respuesta requests: status={resp.status_code}, size={len(resp.content)}")
+        except Exception as e:
+            print(f"[WARN] Descarga con requests falló: {e}")
+
+    if not archivo_descargado:
+        raise RuntimeError(f"Timeout: no se detectó archivo Excel descargado (probados 3 métodos)")
+
+    origen = os.path.join(archivo_dir, archivo_descargado)
     destino = os.path.join(download_path, DEST_FILENAME)
 
     # El Excel descargado ya tiene formato correcto. Si tiene más de 60 filas, tomar últimas 60

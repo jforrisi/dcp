@@ -107,18 +107,11 @@ def asegurar_checkpoint_con_return_url(driver):
 
 
 def configurar_driver():
-    """
-    Configura Chrome para scraping.
-    - Si BEVSA_USE_EXISTING_CHROME=1: se conecta a un Chrome ya abierto (recomendado si Turnstile falla).
-    - En local usa undetected_chromedriver para reducir detección.
-    - Perfil persistente para guardar cookies.
-    """
+    """Configura Chrome con undetected_chromedriver (local y CI) para evitar Cloudflare."""
     base_dir = os.getcwd()
     user_data_dir = os.path.join(base_dir, ".chrome_profile_bevsa")
     os.makedirs(user_data_dir, exist_ok=True)
 
-    # Modo "Chrome existente": conectar a un Chrome que abriste vos (sin bandera de automatización).
-    # En ese Chrome podés pasar el CAPTCHA sin que diga "La verificación falló".
     use_existing = os.getenv("BEVSA_USE_EXISTING_CHROME", "").strip().lower() in ("1", "true", "yes")
     if use_existing:
         try:
@@ -129,132 +122,63 @@ def configurar_driver():
             return driver
         except Exception as e:
             print(f"[ERROR] No se pudo conectar a Chrome en 127.0.0.1:{DEBUGGER_PORT}: {e}")
-            print("[INFO] Abrí Chrome con: chrome.exe --remote-debugging-port=9222 --user-data-dir=<ruta_a_.chrome_profile_bevsa>")
             raise
 
-    chrome_options = Options()
-    chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
-    # Reducir señales de automatización (Turnstile suele rechazar si las detecta)
-    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
-    chrome_options.add_experimental_option("useAutomationExtension", False)
-    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+    is_cloud = bool(
+        os.getenv('GITHUB_ACTIONS') or os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY')
+        or os.getenv('AZURE_ENVIRONMENT') or os.getenv('AZURE') or os.getenv('WEBSITE_INSTANCE_ID')
+    )
+    chrome_bin = os.getenv('CHROME_BIN') or ""
+    if not chrome_bin:
+        for p in ['/usr/bin/google-chrome', '/usr/bin/chromium-browser', '/usr/bin/chromium',
+                   '/root/.nix-profile/bin/chromium']:
+            if os.path.exists(p):
+                chrome_bin = p
+                break
 
-    # Detectar entornos cloud (Railway, Azure, etc.)
-    is_railway = os.getenv('RAILWAY_ENVIRONMENT') or os.getenv('RAILWAY')
-    is_azure = os.getenv('AZURE_ENVIRONMENT') or os.getenv('AZURE') or os.getenv('WEBSITE_INSTANCE_ID') or os.getenv('AZURE_FUNCTIONS_ENVIRONMENT') or os.getenv('CONTAINER_NAME')
-    is_cloud = is_railway or is_azure
-    
-    if is_cloud:
-        # Configuración para entornos cloud (Railway, Azure, etc.)
-        chrome_options.add_argument("--headless=new")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--disable-software-rasterizer")
-        chrome_options.add_argument("--disable-extensions")
-        chrome_options.add_argument("--disable-setuid-sandbox")
-        chrome_options.add_argument("--disable-web-security")
-        chrome_options.add_argument("--disable-features=VizDisplayCompositor")
-        chrome_options.add_argument("--remote-debugging-port=9222")
-        chrome_options.add_argument("--remote-debugging-address=0.0.0.0")
-        # En Railway, no usar perfil persistente (puede causar problemas)
-        chrome_options.add_argument("--no-first-run")
-        chrome_options.add_argument("--no-default-browser-check")
-        chrome_options.add_argument("--disable-background-networking")
-        chrome_options.add_argument("--disable-background-timer-throttling")
-        chrome_options.add_argument("--disable-backgrounding-occluded-windows")
-        chrome_options.add_argument("--disable-breakpad")
-        chrome_options.add_argument("--disable-client-side-phishing-detection")
-        chrome_options.add_argument("--disable-default-apps")
-        chrome_options.add_argument("--disable-hang-monitor")
-        chrome_options.add_argument("--disable-popup-blocking")
-        chrome_options.add_argument("--disable-prompt-on-repost")
-        chrome_options.add_argument("--disable-sync")
-        chrome_options.add_argument("--disable-translate")
-        chrome_options.add_argument("--metrics-recording-only")
-        chrome_options.add_argument("--no-crash-upload")
-        chrome_options.add_argument("--enable-features=NetworkService,NetworkServiceInProcess")
-        chrome_options.add_argument("--force-color-profile=srgb")
-        chrome_options.add_argument("--hide-scrollbars")
-        chrome_options.add_argument("--mute-audio")
-        chrome_options.add_argument("--use-mock-keychain")
-        # NO usar user-data-dir en Railway (causa problemas)
-        # chrome_options.add_argument(f"--user-data-dir={user_data_dir}")
-        
-        # Azure App Service suele tener Chrome en /usr/bin/google-chrome
-        # Railway/Nixpacks suele tener Chromium en /root/.nix-profile/bin/chromium
-        chrome_bin = os.getenv('CHROME_BIN')
-        if not chrome_bin:
-            # Intentar detectar automáticamente
-            possible_paths = [
-                '/root/.nix-profile/bin/chromium',  # Railway/Nixpacks (prioridad)
-                '/usr/bin/google-chrome',  # Azure App Service
-                '/usr/bin/chromium-browser',  # Railway (legacy)
-                '/usr/bin/chromium',  # Otra ubicación común
-            ]
-            for path in possible_paths:
-                if os.path.exists(path):
-                    chrome_bin = path
-                    break
-        
+    # -- Intentar undetected_chromedriver (local y CI) --
+    try:
+        import undetected_chromedriver as uc
+        uc_options = uc.ChromeOptions()
+        if is_cloud:
+            uc_options.add_argument("--no-sandbox")
+            uc_options.add_argument("--disable-dev-shm-usage")
+            uc_options.add_argument("--disable-gpu")
+            uc_options.add_argument("--window-size=1920,1080")
+
+        uc_kwargs = {"options": uc_options, "headless": is_cloud}
+        if not is_cloud:
+            uc_kwargs["user_data_dir"] = user_data_dir
         if chrome_bin and os.path.exists(chrome_bin):
-            chrome_options.binary_location = chrome_bin
-            print(f"[INFO] Usando Chrome/Chromium en: {chrome_bin}")
-        else:
-            print(f"[WARNING] Chrome/Chromium no encontrado. CHROME_BIN={os.getenv('CHROME_BIN')}")
-        
-        # Configurar ChromeDriver
-        chromedriver_path = os.getenv('CHROMEDRIVER_PATH')
-        if not chromedriver_path:
-            # Intentar detectar automáticamente
-            possible_paths = [
-                '/root/.nix-profile/bin/chromedriver',  # Railway/Nixpacks (prioridad)
-                '/usr/bin/chromedriver',
-                '/usr/local/bin/chromedriver',
-            ]
-            for path in possible_paths:
-                if os.path.exists(path):
-                    chromedriver_path = path
-                    break
-        
-        if chromedriver_path and os.path.exists(chromedriver_path):
-            print(f"[INFO] Usando ChromeDriver en: {chromedriver_path}")
-        else:
-            print(f"[WARNING] ChromeDriver no encontrado. CHROMEDRIVER_PATH={os.getenv('CHROMEDRIVER_PATH')}")
-        
-        if chromedriver_path and os.path.exists(chromedriver_path):
-            service = Service(chromedriver_path)
-            driver = webdriver.Chrome(service=service, options=chrome_options)
-        else:
-            driver = webdriver.Chrome(options=chrome_options)
-        
-        # Esperar a que Chrome esté completamente inicializado
-        time.sleep(2)
-        
-        # Verificar que el driver esté conectado
-        try:
-            driver.current_url
-        except Exception as e:
-            print(f"[WARN] Error al verificar conexión inicial: {e}")
-            print("[INFO] Reintentando crear driver...")
-            time.sleep(3)
-            if chromedriver_path and os.path.exists(chromedriver_path):
-                service = Service(chromedriver_path)
-                driver = webdriver.Chrome(service=service, options=chrome_options)
-            else:
-                driver = webdriver.Chrome(options=chrome_options)
-            time.sleep(2)
+            uc_kwargs["browser_executable_path"] = chrome_bin
+
+        driver = uc.Chrome(**uc_kwargs)
+        print(f"[INFO] undetected_chromedriver OK (headless={is_cloud})")
+        return driver
+    except Exception as e:
+        print(f"[WARN] undetected_chromedriver falló: {e}")
+
+    # -- Fallback: Selenium estándar --
+    print("[INFO] Usando Selenium estándar como fallback")
+    fb = Options()
+    fb.add_argument(f"--user-data-dir={user_data_dir}")
+    fb.add_experimental_option("excludeSwitches", ["enable-automation"])
+    fb.add_experimental_option("useAutomationExtension", False)
+    fb.add_argument("--disable-blink-features=AutomationControlled")
+    if is_cloud:
+        fb.add_argument("--headless=new")
+        fb.add_argument("--no-sandbox")
+        fb.add_argument("--disable-dev-shm-usage")
+        fb.add_argument("--disable-gpu")
+        fb.add_argument("--window-size=1920,1080")
+    if chrome_bin and os.path.exists(chrome_bin):
+        fb.binary_location = chrome_bin
+    chromedriver_path = os.getenv('CHROMEDRIVER_PATH', '')
+    if chromedriver_path and os.path.exists(chromedriver_path):
+        driver = webdriver.Chrome(service=Service(chromedriver_path), options=fb)
     else:
-        # Desarrollo local: intentar undetected_chromedriver para evitar Cloudflare/Turnstile
-        try:
-            import undetected_chromedriver as uc  # type: ignore
-            driver = uc.Chrome(user_data_dir=user_data_dir)
-            print("[INFO] Usando undetected_chromedriver (mejor para Cloudflare/Turnstile)")
-        except Exception as e:
-            print(f"[WARN] undetected_chromedriver no disponible ({e}), usando Selenium estándar")
-            driver = webdriver.Chrome(options=chrome_options)
-    
+        driver = webdriver.Chrome(options=fb)
+    time.sleep(2)
     return driver
 
 

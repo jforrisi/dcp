@@ -173,7 +173,12 @@ def ejecutar_script(ruta_script: Path, modo_automatico: bool = True) -> Tuple[bo
             while proceso.poll() is None or not output_queue.empty():
                 try:
                     linea = output_queue.get(timeout=0.1)
-                    
+                    # Mostrar salida del script en el log (CI / consola)
+                    try:
+                        sys.stdout.write(linea if linea.endswith('\n') else linea + '\n')
+                        sys.stdout.flush()
+                    except Exception:
+                        pass
                     # Si detectamos un prompt de confirmación y estamos en modo automático
                     if modo_automatico:
                         linea_lower = linea.lower()

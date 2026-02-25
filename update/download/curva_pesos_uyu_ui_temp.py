@@ -225,37 +225,44 @@ def esperar_resolucion_anti_bot(driver):
 
 def detectar_anti_bot(driver):
     """
-    Detecta si hay un anti-bot/CAPTCHA en la página.
+    Detecta si hay un anti-bot/CAPTCHA en la página (excluye Disclaimer.aspx).
     Retorna True si detecta anti-bot, False si no.
     """
     try:
+        url = (driver.current_url or "").lower()
+        if "disclaimer.aspx" in url:
+            return False
+
+        page_source_lower = driver.page_source.lower()
+        page_title_lower = driver.title.lower()
+
+        if "checkpoint" not in url and "verificación de seguridad" not in page_title_lower:
+            return False
+
         anti_bot_indicators = [
             "captcha", "cloudflare", "challenge", "verification",
             "bot detection", "security check", "hcaptcha", "recaptcha", "turnstile"
         ]
-        
-        page_source_lower = driver.page_source.lower()
-        page_title_lower = driver.title.lower()
-        
+
         for indicator in anti_bot_indicators:
             if indicator in page_source_lower or indicator in page_title_lower:
                 print(f"[INFO] Posible anti-bot detectado: {indicator}")
                 return True
-        
+
         try:
             driver.find_element(By.ID, "challenge-form")
             print("[INFO] Cloudflare challenge detectado")
             return True
         except:
             pass
-        
+
         try:
             driver.find_element(By.CLASS_NAME, "cf-browser-verification")
             print("[INFO] Cloudflare verification detectado")
             return True
         except:
             pass
-        
+
         return False
     except Exception as e:
         print(f"[WARN] Error al detectar anti-bot: {e}")
@@ -582,12 +589,29 @@ def main():
                 try:
                     from update.download.bevsa_turnstile import solve_and_submit_turnstile, wait_after_turnstile_submit
                     if solve_and_submit_turnstile(driver, return_url_after_success=BEVSA_URL):
-                        time.sleep(3)
-                        if wait_after_turnstile_submit(driver, timeout=35, url_contains="Historico"):
+                        time.sleep(5)
+                        cur = driver.current_url or ""
+                        if "Disclaimer" in cur:
+                            logger.info("2captcha resolvió Turnstile → Disclaimer. Aceptando términos...")
+                            aceptar_terminos(driver)
+                            driver.get(BEVSA_URL)
+                            time.sleep(5)
                             resuelto_auto = True
+                        elif wait_after_turnstile_submit(driver, timeout=35, url_contains="Historico"):
+                            resuelto_auto = True
+                        if resuelto_auto:
                             logger.info("Turnstile resuelto automáticamente (2captcha).")
                 except Exception as e:
                     logger.debug("Resolución automática no usada: %s" % e)
+
+                cur_after = driver.current_url or ""
+                if not resuelto_auto and "Disclaimer" in cur_after:
+                    logger.info("Post-2captcha: en Disclaimer. Aceptando términos...")
+                    aceptar_terminos(driver)
+                    driver.get(BEVSA_URL)
+                    time.sleep(5)
+                    resuelto_auto = True
+
                 if not resuelto_auto:
                     if en_ci():
                         raise RuntimeError(

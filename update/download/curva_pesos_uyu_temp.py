@@ -304,11 +304,30 @@ def esperar_resolucion_anti_bot(driver):
 
 def detectar_anti_bot(driver):
     """
-    Detecta si hay un anti-bot/CAPTCHA en la página.
+    Detecta si hay un anti-bot/CAPTCHA en la página (excluye Disclaimer.aspx).
     Retorna True si detecta anti-bot, False si no.
     """
     try:
-        # Buscar elementos comunes de anti-bot/CAPTCHA
+        from selenium.common.exceptions import NoSuchWindowException, WebDriverException
+        try:
+            url = (driver.current_url or "").lower()
+        except (NoSuchWindowException, WebDriverException) as e:
+            print(f"[WARN] Chrome se cerró durante detección de anti-bot: {e}")
+            return False
+        
+        if "disclaimer.aspx" in url:
+            return False
+
+        try:
+            page_source_lower = driver.page_source.lower()
+            page_title_lower = driver.title.lower()
+        except (NoSuchWindowException, WebDriverException) as e:
+            print(f"[WARN] No se pudo obtener page_source/title: {e}")
+            return False
+
+        if "checkpoint" not in url and "verificación de seguridad" not in page_title_lower:
+            return False
+
         anti_bot_indicators = [
             "captcha",
             "cloudflare",
@@ -320,20 +339,6 @@ def detectar_anti_bot(driver):
             "recaptcha",
             "turnstile"
         ]
-        
-        from selenium.common.exceptions import NoSuchWindowException, WebDriverException
-        try:
-            _ = driver.current_url
-        except (NoSuchWindowException, WebDriverException) as e:
-            print(f"[WARN] Chrome se cerró durante detección de anti-bot: {e}")
-            return False
-        
-        try:
-            page_source_lower = driver.page_source.lower()
-            page_title_lower = driver.title.lower()
-        except (NoSuchWindowException, WebDriverException) as e:
-            print(f"[WARN] No se pudo obtener page_source/title: {e}")
-            return False
         
         for indicator in anti_bot_indicators:
             if indicator in page_source_lower or indicator in page_title_lower:
@@ -943,12 +948,29 @@ def main():
                 try:
                     from update.download.bevsa_turnstile import solve_and_submit_turnstile, wait_after_turnstile_submit
                     if solve_and_submit_turnstile(driver, return_url_after_success=BEVSA_URL):
-                        time.sleep(3)
-                        if wait_after_turnstile_submit(driver, timeout=35, url_contains="Historico"):
+                        time.sleep(5)
+                        cur = driver.current_url or ""
+                        if "Disclaimer" in cur:
+                            logger.info("2captcha resolvió Turnstile → Disclaimer. Aceptando términos...")
+                            aceptar_terminos(driver)
+                            driver.get(BEVSA_URL)
+                            time.sleep(5)
                             resuelto_auto = True
+                        elif wait_after_turnstile_submit(driver, timeout=35, url_contains="Historico"):
+                            resuelto_auto = True
+                        if resuelto_auto:
                             logger.info("Turnstile resuelto automáticamente (2captcha).")
                 except Exception as e:
                     logger.debug("Resolución automática no usada: %s" % e)
+
+                cur_after = driver.current_url or ""
+                if not resuelto_auto and "Disclaimer" in cur_after:
+                    logger.info("Post-2captcha: en Disclaimer. Aceptando términos...")
+                    aceptar_terminos(driver)
+                    driver.get(BEVSA_URL)
+                    time.sleep(5)
+                    resuelto_auto = True
+
                 if not resuelto_auto:
                     if en_ci():
                         raise RuntimeError(

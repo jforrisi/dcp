@@ -34,9 +34,19 @@ DEST_FILENAME = "dolar_bevsa_uyu_temp.xlsx"
 HISTORICO_FILENAME = "dolar_bevsa_uyu.xlsx"
 HISTORICO_FALLBACK = "dolar_bevsa_uy.xlsx"  # Si dolar_bevsa_uyu no existe
 ULTIMOS_N = 60
+MAX_STALENESS_DAYS = int(os.getenv("BEVSA_MAX_STALENESS_DAYS", "5"))
 
-# ID del botón Exportar Excel en BEVSA
+# ID del botón Exportar Excel en BEVSA (puede cambiar con actualizaciones del sitio)
 EXPORTAR_BUTTON_ID = "ContentPlaceHolder1_LinkButton2"
+# Selectores alternativos por si BEVSA cambia el ID
+EXPORTAR_SELECTORS = [
+    (By.ID, EXPORTAR_BUTTON_ID),
+    (By.CSS_SELECTOR, "a[id*='LinkButton2']"),
+    (By.PARTIAL_LINK_TEXT, "Exportar"),
+    (By.LINK_TEXT, "Exportar"),
+    (By.XPATH, "//a[contains(., 'Exportar')]"),
+    (By.XPATH, "//input[@type='submit' or @type='button'][contains(@value, 'Exportar')]"),
+]
 
 
 def en_ci():
@@ -153,7 +163,18 @@ def aceptar_terminos(driver):
 def detectar_anti_bot(driver):
     """Detecta si hay anti-bot/CAPTCHA."""
     try:
-        indicators = ["captcha", "cloudflare", "challenge", "verification", "hcaptcha", "recaptcha", "turnstile"]
+        indicators = [
+            "captcha",
+            "cloudflare",
+            "challenge",
+            "verification",
+            "verificación",  # ES
+            "security check",
+            "seguridad",     # ES
+            "hcaptcha",
+            "recaptcha",
+            "turnstile",
+        ]
         source = driver.page_source.lower()
         title = driver.title.lower()
         for ind in indicators:
@@ -224,25 +245,43 @@ def descargar_excel_bevsa(driver, download_path):
         if not resuelto_auto:
             if en_ci():
                 raise RuntimeError(
-                    "CI: Cloudflare no resuelto (sin CAPTCHA_API_KEY o falló). "
-                    "Omitiendo descarga BEVSA dólar."
+                    "CI: BEVSA bloqueado por Cloudflare/Turnstile y no se pudo resolver automáticamente. "
+                    "Resultado: NO se descargó el Excel (se mantiene el archivo anterior). "
+                    "Revisar secret CAPTCHA_API_KEY / 2captcha y reintentar."
                 )
             esperar_resolucion_anti_bot(driver)
+            time.sleep(8)
 
-    # Buscar y hacer clic en el botón Exportar (LinkButton2)
+    # Buscar y hacer clic en el botón Exportar (probar varios selectores; BEVSA puede cambiar el ID)
     print("[INFO] Buscando botón Exportar Excel...")
-    wait = WebDriverWait(driver, 15)
-    try:
-        btn_exportar = wait.until(
-            EC.element_to_be_clickable((By.ID, EXPORTAR_BUTTON_ID))
+    btn_exportar = None
+    last_error = None
+    for by, selector in EXPORTAR_SELECTORS:
+        try:
+            wait_one = WebDriverWait(driver, 6)
+            btn_exportar = wait_one.until(
+                EC.element_to_be_clickable((by, selector))
+            )
+            if btn_exportar:
+                sel_str = selector if isinstance(selector, str) else str(selector)[:60]
+                print(f"[INFO] Botón Exportar encontrado: {by}=%s" % sel_str)
+                break
+        except Exception as e:
+            last_error = e
+            continue
+    if not btn_exportar:
+        raise RuntimeError(
+            "No se encontró el botón Exportar (probados ID y alternativas). "
+            "Último error: %s" % (last_error or "timeout")
         )
+    try:
         driver.execute_script("arguments[0].scrollIntoView(true);", btn_exportar)
         time.sleep(0.5)
         archivos_antes = set(f for f in os.listdir(download_path) if f.endswith(('.xlsx', '.xls')))
         btn_exportar.click()
         print("[INFO] Clic en Exportar, esperando descarga...")
     except Exception as e:
-        raise RuntimeError(f"No se encontró el botón Exportar ({EXPORTAR_BUTTON_ID}): {e}")
+        raise RuntimeError(f"Error al hacer clic en Exportar: {e}")
 
     # Esperar a que aparezca el archivo Excel
     tiempo_max = 30
@@ -271,6 +310,23 @@ def descargar_excel_bevsa(driver, download_path):
         df = df.dropna(subset=[fecha_col])
         df = df.sort_values(fecha_col, ascending=False).head(ULTIMOS_N).sort_values(fecha_col, ascending=True)
     df.to_excel(destino, index=False, engine='openpyxl')
+    try:
+        max_fecha = None
+        if fecha_col and not df.empty:
+            _s = pd.to_datetime(df[fecha_col], errors="coerce").dropna()
+            if len(_s):
+                max_fecha = _s.max().date()
+        hoy = datetime.now().date()
+        print(f"[INFO] Temp BEVSA guardado. max_fecha={max_fecha} hoy={hoy} filas={len(df)}")
+        if en_ci() and max_fecha and max_fecha < (hoy - timedelta(days=MAX_STALENESS_DAYS)):
+            raise RuntimeError(
+                f"CI: Descarga BEVSA produjo datos viejos (max_fecha={max_fecha}, hoy={hoy}). "
+                "Esto indica que NO se está obteniendo el export actualizado."
+            )
+    except Exception:
+        # Si esto falla, preferimos no frenar el flujo local; en CI el RuntimeError ya corta.
+        if en_ci():
+            raise
     if archivo_descargado != DEST_FILENAME and os.path.exists(origen):
         try:
             os.remove(origen)
@@ -394,9 +450,6 @@ def main():
             logger.info("=" * 80)
 
         except RuntimeError as e:
-            if "CI: Cloudflare no resuelto" in str(e):
-                logger.warn(str(e))
-                return
             logger.log_exception(e, "main()")
             raise
         except Exception as e:

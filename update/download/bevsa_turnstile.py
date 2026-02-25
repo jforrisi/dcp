@@ -79,8 +79,10 @@ def solve_and_submit_turnstile(driver, return_url_after_success=None):
         print("[WARN] 2captcha-python no instalado. pip install 2captcha-python para resolución automática.")
         return False
 
-    url = driver.current_url
-    if "Checkpoint.aspx" not in url:
+    url = driver.current_url or ""
+    # BEVSA/Cloudflare puede mostrar Turnstile en distintas rutas (no solo /Checkpoint.aspx).
+    # Si hay widget sitekey en la página, intentamos resolver igual.
+    if "web.bevsa.com.uy" not in url:
         return False
 
     sitekey = get_turnstile_sitekey(driver)

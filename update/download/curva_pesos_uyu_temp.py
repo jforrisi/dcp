@@ -1027,11 +1027,11 @@ def main():
                     logger.debug("Resolución automática no usada: %s" % e)
                 if not resuelto_auto:
                     if en_ci():
-                        logger.warn(
-                            "CI: Cloudflare no resuelto (sin CAPTCHA_API_KEY o falló). "
-                            "Omitiendo actualización (se mantiene archivo existente)."
+                        raise RuntimeError(
+                            "CI: BEVSA bloqueado por Cloudflare/Turnstile y no se pudo resolver automáticamente. "
+                            "Resultado: NO se actualizó la curva (se mantiene el archivo anterior). "
+                            "Revisar secret CAPTCHA_API_KEY / 2captcha y reintentar."
                         )
-                        return
                     logger.warn("Anti-bot detectado, esperando resolución manual...")
                     esperar_resolucion_anti_bot(driver)
                 logger.log_selenium_state(driver, "Después de anti-bot")

@@ -104,6 +104,15 @@ jobs:
           path: update/historicos/*.xls*
           retention-days: 7
 
+      - name: Upload update logs (artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: update-logs-${{ github.run_id }}
+          path: update/logs/*.log
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Upload report
         if: always()
         uses: actions/upload-artifact@v4

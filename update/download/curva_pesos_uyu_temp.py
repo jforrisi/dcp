@@ -304,7 +304,7 @@ def esperar_resolucion_anti_bot(driver):
 
 def detectar_anti_bot(driver):
     """
-    Detecta si hay un anti-bot/CAPTCHA en la página (excluye Disclaimer.aspx).
+    Detecta si hay un anti-bot/CAPTCHA en la página (excluye Disclaimer.aspx y páginas de datos).
     Retorna True si detecta anti-bot, False si no.
     """
     try:
@@ -317,6 +317,8 @@ def detectar_anti_bot(driver):
         
         if "disclaimer.aspx" in url:
             return False
+        if "historico.aspx" in url:
+            return False
 
         try:
             page_source_lower = driver.page_source.lower()
@@ -325,23 +327,18 @@ def detectar_anti_bot(driver):
             print(f"[WARN] No se pudo obtener page_source/title: {e}")
             return False
 
-        if "checkpoint" not in url and "verificación de seguridad" not in page_title_lower:
-            return False
+        if "checkpoint" in url:
+            print("[INFO] Posible anti-bot detectado: checkpoint URL")
+            return True
 
         anti_bot_indicators = [
             "captcha",
-            "cloudflare",
-            "challenge",
-            "verification",
-            "bot detection",
+            "verificación de seguridad",
             "security check",
-            "hcaptcha",
-            "recaptcha",
-            "turnstile"
         ]
         
         for indicator in anti_bot_indicators:
-            if indicator in page_source_lower or indicator in page_title_lower:
+            if indicator in page_title_lower:
                 print(f"[INFO] Posible anti-bot detectado: {indicator}")
                 return True
         
@@ -947,19 +944,28 @@ def main():
                 resuelto_auto = False
                 try:
                     from update.download.bevsa_turnstile import solve_and_submit_turnstile, wait_after_turnstile_submit
-                    if solve_and_submit_turnstile(driver, return_url_after_success=BEVSA_URL):
-                        time.sleep(5)
-                        cur = driver.current_url or ""
-                        if "Disclaimer" in cur:
-                            logger.info("2captcha resolvió Turnstile → Disclaimer. Aceptando términos...")
-                            aceptar_terminos(driver)
+                    max_captcha_attempts = 3
+                    for attempt in range(1, max_captcha_attempts + 1):
+                        logger.info("2captcha intento %d/%d..." % (attempt, max_captcha_attempts))
+                        if solve_and_submit_turnstile(driver, return_url_after_success=BEVSA_URL):
+                            time.sleep(5)
+                            cur = driver.current_url or ""
+                            if "Disclaimer" in cur:
+                                logger.info("2captcha resolvió Turnstile → Disclaimer. Aceptando términos...")
+                                aceptar_terminos(driver)
+                                driver.get(BEVSA_URL)
+                                time.sleep(5)
+                                resuelto_auto = True
+                            elif wait_after_turnstile_submit(driver, timeout=35, url_contains="Historico"):
+                                resuelto_auto = True
+                            if resuelto_auto:
+                                logger.info("Turnstile resuelto automáticamente (2captcha).")
+                                break
+                        if attempt < max_captcha_attempts:
+                            logger.warning("2captcha intento %d falló, reintentando en 10s..." % attempt)
+                            time.sleep(10)
                             driver.get(BEVSA_URL)
                             time.sleep(5)
-                            resuelto_auto = True
-                        elif wait_after_turnstile_submit(driver, timeout=35, url_contains="Historico"):
-                            resuelto_auto = True
-                        if resuelto_auto:
-                            logger.info("Turnstile resuelto automáticamente (2captcha).")
                 except Exception as e:
                     logger.debug("Resolución automática no usada: %s" % e)
 

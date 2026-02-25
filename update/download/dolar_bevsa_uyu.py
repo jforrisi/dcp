@@ -177,6 +177,8 @@ def detectar_anti_bot(driver):
         url = (driver.current_url or "").lower()
         if "disclaimer.aspx" in url:
             return False
+        if "historicodiario" in url or "historico.aspx" in url:
+            return False
         indicators = [
             "captcha",
             "cloudflare",
@@ -189,13 +191,12 @@ def detectar_anti_bot(driver):
             "recaptcha",
             "turnstile",
         ]
-        source = driver.page_source.lower()
         title = driver.title.lower()
-        if "checkpoint" not in url and "verificación de seguridad" not in title:
-            return False
         for ind in indicators:
-            if ind in source or ind in title:
+            if ind in title:
                 return True
+        if "checkpoint" in url:
+            return True
         try:
             driver.find_element(By.ID, "challenge-form")
             return True
@@ -295,19 +296,28 @@ def descargar_excel_bevsa(driver, download_path):
         if not resuelto and detectar_anti_bot(driver):
             try:
                 from update.download.bevsa_turnstile import solve_and_submit_turnstile, wait_after_turnstile_submit
-                if solve_and_submit_turnstile(driver, return_url_after_success=BEVSA_URL):
-                    time.sleep(5)
-                    cur = driver.current_url or ""
-                    if "Disclaimer" in cur:
-                        print("[INFO] 2captcha resolvió Turnstile → Disclaimer. Aceptando términos...")
-                        aceptar_terminos(driver)
+                max_captcha_attempts = 3
+                for attempt in range(1, max_captcha_attempts + 1):
+                    print(f"[INFO] 2captcha intento {attempt}/{max_captcha_attempts}...")
+                    if solve_and_submit_turnstile(driver, return_url_after_success=BEVSA_URL):
+                        time.sleep(5)
+                        cur = driver.current_url or ""
+                        if "Disclaimer" in cur:
+                            print("[INFO] 2captcha resolvió Turnstile → Disclaimer. Aceptando términos...")
+                            aceptar_terminos(driver)
+                            driver.get(BEVSA_URL)
+                            time.sleep(5)
+                            resuelto = True
+                        elif wait_after_turnstile_submit(driver, timeout=35, url_contains="HistoricoDiario"):
+                            resuelto = True
+                        if resuelto:
+                            print("[INFO] Turnstile resuelto con 2captcha.")
+                            break
+                    if attempt < max_captcha_attempts:
+                        print(f"[WARN] 2captcha intento {attempt} falló, reintentando en 10s...")
+                        time.sleep(10)
                         driver.get(BEVSA_URL)
                         time.sleep(5)
-                        resuelto = True
-                    elif wait_after_turnstile_submit(driver, timeout=35, url_contains="HistoricoDiario"):
-                        resuelto = True
-                    if resuelto:
-                        print("[INFO] Turnstile resuelto con 2captcha.")
             except Exception as e:
                 print(f"[DEBUG] 2captcha no usada: {e}")
 

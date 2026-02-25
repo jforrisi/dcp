@@ -43,11 +43,12 @@ jobs:
           AZURE_ENVIRONMENT: production
           CHROME_BIN: ${{ steps.chrome.outputs.chrome-path }}
           CHROMEDRIVER_PATH: ${{ steps.chrome.outputs.chromedriver-path }}
+          CAPTCHA_API_KEY: ${{ secrets.CAPTCHA_API_KEY }}
         run: |
           python -m update.update_tc
 
       - name: Commit and push update/historicos
-        if: success()
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

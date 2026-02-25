@@ -503,6 +503,106 @@ def obtener_timeseries_bevsa(plazo: int, fecha_hasta: date, dias: int = 90) -> L
     return timeseries
 
 
+def obtener_semanas_disponibles() -> List[str]:
+    """
+    Obtiene la lista de semanas (lunes) que tienen al menos una licitación.
+    Retorna fechas en formato YYYY-MM-DD (lunes de cada semana), ordenadas descendente.
+    """
+    combinaciones = obtener_fechas_disponibles_licitaciones()
+    if not combinaciones:
+        return []
+    # Semana = lunes; weekday() en Python: 0=lunes, 6=domingo
+    semanas = set()
+    for c in combinaciones:
+        d = c["fecha"]
+        # Lunes = d - timedelta(days=d.weekday())
+        lunes = d - timedelta(days=d.weekday())
+        semanas.add(lunes)
+    return sorted(semanas, reverse=True)
+
+
+def obtener_datos_semana(week_start: date) -> Dict:
+    """
+    Obtiene todas las licitaciones de la semana (lunes a domingo) que empieza en week_start.
+    Retorna: total_licitado, porcentaje_adjudicacion (ponderado), filas con día, plazo, monto_licitado,
+    adjudicado (%), tasa_corte, tasa_bevsa.
+    """
+    week_end = week_start + timedelta(days=6)
+    filas = []
+    total_licitado = 0
+    total_adjudicado = 0
+
+    for plazo, config in LRM_VARIABLES.items():
+        id_licitacion = config["licitacion"]
+        id_adjudicado = config["adjudicado"]
+        id_tasa_corte = config["tasa_corte"]
+        id_bevsa = PLAZO_TO_BEVSA.get(plazo, {}).get("id_variable") if PLAZO_TO_BEVSA.get(plazo) else None
+
+        query = """
+            SELECT
+                mp1.fecha,
+                mp1.valor as monto_licitado,
+                mp2.valor as adjudicado,
+                mp3.valor as tasa_corte
+            FROM maestro_precios mp1
+            LEFT JOIN maestro_precios mp2 ON mp1.fecha = mp2.fecha
+                AND mp2.id_variable = ? AND mp2.id_pais = ?
+            LEFT JOIN maestro_precios mp3 ON mp1.fecha = mp3.fecha
+                AND mp3.id_variable = ? AND mp3.id_pais = ?
+            WHERE mp1.id_variable = ? AND mp1.id_pais = ?
+                AND mp1.fecha >= ? AND mp1.fecha <= ?
+            ORDER BY mp1.fecha ASC, mp1.id_variable
+        """
+        results = execute_query(
+            query,
+            (id_adjudicado, ID_PAIS, id_tasa_corte, ID_PAIS, id_licitacion, ID_PAIS, week_start, week_end)
+        )
+
+        for row in results:
+            fecha_lic = parse_fecha(row['fecha'])
+            monto_licitado = row.get('monto_licitado') or 0
+            adjudicado = row.get('adjudicado') or 0
+            tasa_corte = row.get('tasa_corte')
+            monto_adjudicado = monto_licitado * adjudicado
+
+            tasa_bevsa = None
+            if id_bevsa:
+                r = execute_query_single(
+                    """
+                    SELECT valor FROM maestro_precios
+                    WHERE id_variable = ? AND id_pais = ? AND fecha <= ?
+                    ORDER BY fecha DESC LIMIT 1
+                    """,
+                    (id_bevsa, ID_PAIS, fecha_lic)
+                )
+                if r:
+                    tasa_bevsa = r.get('valor')
+
+            total_licitado += monto_licitado
+            total_adjudicado += monto_adjudicado
+            adjudicado_pct = adjudicado * 100 if adjudicado is not None else None
+            filas.append({
+                "fecha": fecha_lic.isoformat(),
+                "plazo": plazo,
+                "monto_licitado": monto_licitado,
+                "adjudicado": adjudicado_pct,
+                "tasa_corte": tasa_corte,
+                "tasa_bevsa": tasa_bevsa
+            })
+
+    # Ordenar por fecha de menor a mayor (lunes a domingo), luego por plazo
+    filas.sort(key=lambda r: (r["fecha"], r["plazo"]))
+
+    porcentaje_adjudicacion = (total_adjudicado / total_licitado * 100) if total_licitado > 0 else 0
+    return {
+        "week_start": week_start.isoformat(),
+        "week_end": week_end.isoformat(),
+        "total_licitado": total_licitado,
+        "porcentaje_adjudicacion": porcentaje_adjudicacion,
+        "filas": filas
+    }
+
+
 # ==================== ENDPOINTS ====================
 
 @bp.route('/licitaciones-lrm/dates', methods=['GET'])
@@ -567,6 +667,42 @@ def get_licitacion_data():
             "adjudicado": datos.get("adjudicado"),
             "tasa_corte": datos.get("tasa_corte")
         })
+    except ValueError as e:
+        return jsonify({"error": f"Fecha inválida: {str(e)}"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@bp.route('/licitaciones-lrm/weeks', methods=['GET'])
+def get_weeks():
+    """
+    Lista de semanas (lunes) con al menos una licitación.
+    Retorna array de strings YYYY-MM-DD.
+    """
+    try:
+        semanas = obtener_semanas_disponibles()
+        return jsonify({
+            "weeks": [d.isoformat() for d in semanas]
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@bp.route('/licitaciones-lrm/week', methods=['GET'])
+def get_week_data():
+    """
+    Datos de análisis semanal. Parámetro: week_start (lunes) YYYY-MM-DD.
+    Retorna total_licitado, porcentaje_adjudicacion, filas (fecha, plazo, monto_licitado, adjudicado, tasa_corte, tasa_bevsa).
+    """
+    try:
+        week_start_str = request.args.get('week_start')
+        if not week_start_str:
+            return jsonify({"error": "Parámetro 'week_start' (lunes YYYY-MM-DD) requerido"}), 400
+        week_start = date.fromisoformat(week_start_str)
+        if week_start.weekday() != 0:
+            return jsonify({"error": "week_start debe ser un lunes (YYYY-MM-DD)"}), 400
+        data = obtener_datos_semana(week_start)
+        return jsonify(data)
     except ValueError as e:
         return jsonify({"error": f"Fecha inválida: {str(e)}"}), 400
     except Exception as e:

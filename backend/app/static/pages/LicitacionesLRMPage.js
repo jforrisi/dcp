@@ -16,6 +16,12 @@ function LicitacionesLRMPage() {
     const [error, setError] = React.useState(null);
     const [updating, setUpdating] = React.useState(false);
     const [updateStatus, setUpdateStatus] = React.useState(null);
+    const [activeTab, setActiveTab] = React.useState('licitacion'); // 'licitacion' | 'semanal'
+    const [weeksAvailable, setWeeksAvailable] = React.useState([]);
+    const [selectedWeekStart, setSelectedWeekStart] = React.useState(null);
+    const [weekData, setWeekData] = React.useState(null);
+    const [weekLoading, setWeekLoading] = React.useState(false);
+    const [weekError, setWeekError] = React.useState(null);
     const chartRef = React.useRef(null);
     const chartInstanceRef = React.useRef(null);
     const timeseriesChartRef = React.useRef(null);
@@ -73,6 +79,14 @@ function LicitacionesLRMPage() {
         } else {
             return 'text-red-600'; // Rojo si diferencia > 1%
         }
+    };
+
+    // Domingo de la semana dado el lunes (YYYY-MM-DD)
+    const weekEndFromMonday = (mondayStr) => {
+        if (!mondayStr) return '';
+        const d = new Date(mondayStr + 'T12:00:00');
+        d.setDate(d.getDate() + 6);
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     };
 
     // Función para generar PDF
@@ -284,6 +298,47 @@ function LicitacionesLRMPage() {
             console.warn('[LicitacionesLRM] Combinación inválida:', selectedCombinacion);
         }
     }, [selectedCombinacion]);
+
+    // Cargar semanas disponibles al abrir pestaña Análisis semanal
+    React.useEffect(() => {
+        if (activeTab !== 'semanal') return;
+        fetch(`${API_BASE}/licitaciones-lrm/weeks`)
+            .then(res => res.ok ? res.json() : Promise.reject(new Error(res.statusText)))
+            .then(data => {
+                const weeks = data.weeks || [];
+                setWeeksAvailable(weeks);
+                if (weeks.length > 0 && !selectedWeekStart) {
+                    setSelectedWeekStart(weeks[0]);
+                }
+            })
+            .catch(err => {
+                console.error('[LicitacionesLRM] Error loading weeks:', err);
+                setWeekError('Error al cargar semanas disponibles');
+            });
+    }, [activeTab]);
+
+    // Cargar datos de la semana seleccionada
+    React.useEffect(() => {
+        if (activeTab !== 'semanal' || !selectedWeekStart) {
+            setWeekData(null);
+            return;
+        }
+        setWeekLoading(true);
+        setWeekError(null);
+        fetch(`${API_BASE}/licitaciones-lrm/week?week_start=${encodeURIComponent(selectedWeekStart)}`)
+            .then(res => {
+                if (!res.ok) return res.json().then(d => Promise.reject(new Error(d.error || res.statusText)));
+                return res.json();
+            })
+            .then(data => {
+                setWeekData(data);
+            })
+            .catch(err => {
+                setWeekError(err.message || 'Error al cargar datos de la semana');
+                setWeekData(null);
+            })
+            .finally(() => setWeekLoading(false));
+    }, [activeTab, selectedWeekStart]);
 
     const loadLicitacionData = async (fecha, plazo) => {
         setLoading(true);
@@ -639,6 +694,36 @@ function LicitacionesLRMPage() {
                     </div>
                 )}
 
+                {/* Pestañas */}
+                <div className="no-print mb-4 border-b border-gray-200">
+                    <nav className="flex gap-6" aria-label="Tabs">
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('licitacion')}
+                            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                                activeTab === 'licitacion'
+                                    ? 'border-indigo-500 text-indigo-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                        >
+                            Licitación
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('semanal')}
+                            className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                                activeTab === 'semanal'
+                                    ? 'border-indigo-500 text-indigo-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            }`}
+                        >
+                            Análisis semanal
+                        </button>
+                    </nav>
+                </div>
+
+                {activeTab === 'licitacion' && (
+                <>
                 {/* Selector de licitación (fecha - plazo) */}
                 <div className="no-print bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                     <div className="flex items-center gap-4">
@@ -904,6 +989,87 @@ function LicitacionesLRMPage() {
                         <div className="print-chart-container" style={{ height: '400px', position: 'relative' }}>
                             <canvas ref={chartRef}></canvas>
                         </div>
+                    </div>
+                )}
+                </>
+                )}
+
+                {activeTab === 'semanal' && (
+                    <div className="space-y-6">
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Semana (lunes a domingo)</label>
+                            <select
+                                value={selectedWeekStart || ''}
+                                onChange={(e) => setSelectedWeekStart(e.target.value || null)}
+                                className="block w-full max-w-xs rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            >
+                                <option value="">Seleccione una semana</option>
+                                {weeksAvailable.map(w => (
+                                    <option key={w} value={w}>
+                                        {formatFecha(w)} – {formatFecha(weekEndFromMonday(w))}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        {weekError && (
+                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                                {weekError}
+                            </div>
+                        )}
+                        {weekLoading && (
+                            <div className="text-center py-8">
+                                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                                <p className="mt-2 text-gray-600">Cargando datos de la semana...</p>
+                            </div>
+                        )}
+                        {!weekLoading && weekData && (
+                            <>
+                                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                                    <h2 className="text-lg font-bold text-gray-900 mb-4">Resumen de la semana</h2>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-sm text-gray-600">Total licitado</p>
+                                            <p className="text-xl font-semibold text-gray-900">{formatNumber(weekData.total_licitado)}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm text-gray-600">Adjudicado (%)</p>
+                                            <p className="text-xl font-semibold text-indigo-600">{formatPercent(weekData.porcentaje_adjudicacion)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 overflow-x-auto">
+                                    <h2 className="text-lg font-bold text-gray-900 mb-4">Detalle por día y plazo</h2>
+                                    {weekData.filas && weekData.filas.length > 0 ? (
+                                        <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Día</th>
+                                                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Plazo</th>
+                                                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Monto licitado</th>
+                                                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Adjudicado (%)</th>
+                                                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Tasa corte</th>
+                                                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Tasa BEVSA</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {weekData.filas.map((row, idx) => (
+                                                    <tr key={idx}>
+                                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{formatFecha(row.fecha)}</td>
+                                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-900">{row.plazo} días</td>
+                                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-900">{formatNumber(row.monto_licitado)}</td>
+                                                        <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-900">{formatPercent(row.adjudicado)}</td>
+                                                        <td className={`px-4 py-3 whitespace-nowrap text-sm text-right font-semibold ${getTasaColor(row.tasa_corte, row.tasa_bevsa)}`}>{formatPercent(row.tasa_corte)}</td>
+                                                        <td className={`px-4 py-3 whitespace-nowrap text-sm text-right font-semibold ${getTasaColor(row.tasa_corte, row.tasa_bevsa)}`}>{row.tasa_bevsa != null ? formatPercent(row.tasa_bevsa) : 'N/A'}</td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    ) : (
+                                        <p className="text-gray-500">No hay licitaciones en esta semana.</p>
+                                    )}
+                                </div>
+                            </>
+                        )}
                     </div>
                 )}
 

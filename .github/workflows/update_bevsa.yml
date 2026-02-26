@@ -93,6 +93,7 @@ jobs:
             echo "No hay cambios en update/historicos/ para commitear."
           else
             git commit -m "chore(historicos): update Excels from BEVSA run [skip ci]"
+            git pull --rebase https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git ${{ github.ref_name }} || true
             git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
           fi
 

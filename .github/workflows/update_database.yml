@@ -51,12 +51,18 @@ jobs:
           python update/update_database.py
 
       - name: Commit and push update/historicos and data_raw
-        if: success()
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add update/historicos/ data_raw/
-          git diff --staged --quiet || (git commit -m "chore(data): update Excels from update_database run [skip ci]" && git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }})
+          if git diff --staged --quiet; then
+            echo "No hay cambios en update/historicos/ o data_raw/ para commitear."
+          else
+            git commit -m "chore(data): update Excels from update_database run [skip ci]"
+            git pull --rebase https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git ${{ github.ref_name }} || true
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
+          fi
 
       - name: Upload report
         if: always()

@@ -174,10 +174,15 @@ def aceptar_terminos(driver):
 def detectar_anti_bot(driver):
     """Detecta si hay anti-bot/CAPTCHA (excluye Disclaimer.aspx que es la página de términos)."""
     try:
+        from urllib.parse import urlparse
         url = (driver.current_url or "").lower()
-        if "disclaimer.aspx" in url:
+        path = urlparse(url).path.lower()
+
+        if "checkpoint" in path:
+            return True
+        if "disclaimer.aspx" in path:
             return False
-        if "historicodiario" in url or "historico.aspx" in url:
+        if "historicodiario" in path or "historico.aspx" in path:
             return False
         indicators = [
             "captcha",
@@ -195,8 +200,6 @@ def detectar_anti_bot(driver):
         for ind in indicators:
             if ind in title:
                 return True
-        if "checkpoint" in url:
-            return True
         try:
             driver.find_element(By.ID, "challenge-form")
             return True

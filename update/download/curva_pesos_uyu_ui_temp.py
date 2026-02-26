@@ -229,17 +229,19 @@ def detectar_anti_bot(driver):
     Retorna True si detecta anti-bot, False si no.
     """
     try:
+        from urllib.parse import urlparse
         url = (driver.current_url or "").lower()
-        if "disclaimer.aspx" in url:
+        path = urlparse(url).path.lower()
+
+        if "checkpoint" in path:
+            print("[INFO] Posible anti-bot detectado: checkpoint URL")
+            return True
+        if "disclaimer.aspx" in path:
             return False
-        if "historico.aspx" in url:
+        if "historico.aspx" in path:
             return False
 
         page_title_lower = driver.title.lower()
-
-        if "checkpoint" in url:
-            print("[INFO] Posible anti-bot detectado: checkpoint URL")
-            return True
 
         anti_bot_indicators = [
             "captcha", "verificación de seguridad", "security check",

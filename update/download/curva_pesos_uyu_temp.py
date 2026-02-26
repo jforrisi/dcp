@@ -309,15 +309,21 @@ def detectar_anti_bot(driver):
     """
     try:
         from selenium.common.exceptions import NoSuchWindowException, WebDriverException
+        from urllib.parse import urlparse
         try:
             url = (driver.current_url or "").lower()
         except (NoSuchWindowException, WebDriverException) as e:
             print(f"[WARN] Chrome se cerró durante detección de anti-bot: {e}")
             return False
-        
-        if "disclaimer.aspx" in url:
+
+        path = urlparse(url).path.lower()
+
+        if "checkpoint" in path:
+            print("[INFO] Posible anti-bot detectado: checkpoint URL")
+            return True
+        if "disclaimer.aspx" in path:
             return False
-        if "historico.aspx" in url:
+        if "historico.aspx" in path:
             return False
 
         try:
@@ -326,10 +332,6 @@ def detectar_anti_bot(driver):
         except (NoSuchWindowException, WebDriverException) as e:
             print(f"[WARN] No se pudo obtener page_source/title: {e}")
             return False
-
-        if "checkpoint" in url:
-            print("[INFO] Posible anti-bot detectado: checkpoint URL")
-            return True
 
         anti_bot_indicators = [
             "captcha",

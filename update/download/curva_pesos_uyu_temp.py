@@ -964,7 +964,7 @@ def main():
                                 logger.info("Turnstile resuelto automáticamente (2captcha).")
                                 break
                         if attempt < max_captcha_attempts:
-                            logger.warning("2captcha intento %d falló, reintentando en 10s..." % attempt)
+                            logger.warn("2captcha intento %d falló, reintentando en 10s..." % attempt)
                             time.sleep(10)
                             driver.get(BEVSA_URL)
                             time.sleep(5)

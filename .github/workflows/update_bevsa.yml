@@ -1,12 +1,9 @@
-# Actualización BEVSA: descargas (dólar + curvas) + carga en BD (027, 029, 030)
-# Ejecuta update/update_bevsa.py en cron o manual
-name: Update BEVSA
+# DEPRECADO: Reemplazado por update_bevsa_dolar, update_bevsa_curva_nominal,
+# update_bevsa_curva_real (workflows separados para evitar anti-bot acumulativo).
+# Se mantiene solo para ejecución manual de los 3 juntos si es necesario.
+name: Update BEVSA (all-in-one)
 
 on:
-  schedule:
-    # 2 veces al día: 12:30 y 18:30 Uruguay (UTC-3) = 15:30 y 21:30 UTC
-    - cron: '30 15 * * *'
-    - cron: '30 21 * * *'
   workflow_dispatch:
 
 jobs:

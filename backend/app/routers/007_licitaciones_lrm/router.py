@@ -1,4 +1,5 @@
 """API routes for Licitaciones LRM Analysis."""
+from calendar import monthrange
 from datetime import date, datetime, timedelta
 from typing import List, Dict, Optional, Tuple
 from flask import Blueprint, request, jsonify, send_file
@@ -521,6 +522,105 @@ def obtener_semanas_disponibles() -> List[str]:
     return sorted(semanas, reverse=True)
 
 
+def obtener_meses_disponibles() -> List[Tuple[int, int]]:
+    """
+    Obtiene la lista de (año, mes) que tienen al menos una licitación.
+    Retorna lista de (year, month), ordenada descendente (más reciente primero).
+    """
+    combinaciones = obtener_fechas_disponibles_licitaciones()
+    if not combinaciones:
+        return []
+    meses = set()
+    for c in combinaciones:
+        d = c["fecha"]
+        meses.add((d.year, d.month))
+    return sorted(meses, reverse=True, key=lambda x: (x[0], x[1]))
+
+
+def obtener_datos_mes(year: int, month: int) -> Dict:
+    """
+    Obtiene todas las licitaciones del mes (día 1 al último del mes).
+    Retorna: total_licitado, porcentaje_adjudicacion (ponderado), filas con día, plazo, monto_licitado,
+    adjudicado (%), tasa_corte, tasa_bevsa.
+    """
+    month_start = date(year, month, 1)
+    last_day = monthrange(year, month)[1]
+    month_end = date(year, month, last_day)
+    filas = []
+    total_licitado = 0
+    total_adjudicado = 0
+
+    for plazo, config in LRM_VARIABLES.items():
+        id_licitacion = config["licitacion"]
+        id_adjudicado = config["adjudicado"]
+        id_tasa_corte = config["tasa_corte"]
+        id_bevsa = PLAZO_TO_BEVSA.get(plazo, {}).get("id_variable") if PLAZO_TO_BEVSA.get(plazo) else None
+
+        query = """
+            SELECT
+                mp1.fecha,
+                mp1.valor as monto_licitado,
+                mp2.valor as adjudicado,
+                mp3.valor as tasa_corte
+            FROM maestro_precios mp1
+            LEFT JOIN maestro_precios mp2 ON mp1.fecha = mp2.fecha
+                AND mp2.id_variable = ? AND mp2.id_pais = ?
+            LEFT JOIN maestro_precios mp3 ON mp1.fecha = mp3.fecha
+                AND mp3.id_variable = ? AND mp3.id_pais = ?
+            WHERE mp1.id_variable = ? AND mp1.id_pais = ?
+                AND mp1.fecha >= ? AND mp1.fecha <= ?
+            ORDER BY mp1.fecha ASC, mp1.id_variable
+        """
+        results = execute_query(
+            query,
+            (id_adjudicado, ID_PAIS, id_tasa_corte, ID_PAIS, id_licitacion, ID_PAIS, month_start, month_end)
+        )
+
+        for row in results:
+            fecha_lic = parse_fecha(row['fecha'])
+            monto_licitado = row.get('monto_licitado') or 0
+            adjudicado = row.get('adjudicado') or 0
+            tasa_corte = row.get('tasa_corte')
+            monto_adjudicado = monto_licitado * adjudicado
+
+            tasa_bevsa = None
+            if id_bevsa:
+                r = execute_query_single(
+                    """
+                    SELECT valor FROM maestro_precios
+                    WHERE id_variable = ? AND id_pais = ? AND fecha <= ?
+                    ORDER BY fecha DESC LIMIT 1
+                    """,
+                    (id_bevsa, ID_PAIS, fecha_lic)
+                )
+                if r:
+                    tasa_bevsa = r.get('valor')
+
+            total_licitado += monto_licitado
+            total_adjudicado += monto_adjudicado
+            adjudicado_pct = adjudicado * 100 if adjudicado is not None else None
+            filas.append({
+                "fecha": fecha_lic.isoformat(),
+                "plazo": plazo,
+                "monto_licitado": monto_licitado,
+                "adjudicado": adjudicado_pct,
+                "tasa_corte": tasa_corte,
+                "tasa_bevsa": tasa_bevsa
+            })
+
+    filas.sort(key=lambda r: (r["fecha"], r["plazo"]))
+    porcentaje_adjudicacion = (total_adjudicado / total_licitado * 100) if total_licitado > 0 else 0
+    return {
+        "year": year,
+        "month": month,
+        "month_start": month_start.isoformat(),
+        "month_end": month_end.isoformat(),
+        "total_licitado": total_licitado,
+        "porcentaje_adjudicacion": porcentaje_adjudicacion,
+        "filas": filas
+    }
+
+
 def obtener_datos_semana(week_start: date) -> Dict:
     """
     Obtiene todas las licitaciones de la semana (lunes a domingo) que empieza en week_start.
@@ -673,35 +773,35 @@ def get_licitacion_data():
         return jsonify({"error": str(e)}), 500
 
 
-@bp.route('/licitaciones-lrm/weeks', methods=['GET'])
-def get_weeks():
+@bp.route('/licitaciones-lrm/months', methods=['GET'])
+def get_months():
     """
-    Lista de semanas (lunes) con al menos una licitación.
-    Retorna array de strings YYYY-MM-DD.
+    Lista de meses (YYYY-MM) con al menos una licitación.
+    Retorna array de strings "YYYY-MM".
     """
     try:
-        semanas = obtener_semanas_disponibles()
+        meses = obtener_meses_disponibles()
         return jsonify({
-            "weeks": [d.isoformat() for d in semanas]
+            "months": [f"{y}-{m:02d}" for y, m in meses]
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-@bp.route('/licitaciones-lrm/week', methods=['GET'])
-def get_week_data():
+@bp.route('/licitaciones-lrm/month', methods=['GET'])
+def get_month_data():
     """
-    Datos de análisis semanal. Parámetro: week_start (lunes) YYYY-MM-DD.
+    Datos de análisis mensual. Parámetros: year (YYYY), month (1-12).
     Retorna total_licitado, porcentaje_adjudicacion, filas (fecha, plazo, monto_licitado, adjudicado, tasa_corte, tasa_bevsa).
     """
     try:
-        week_start_str = request.args.get('week_start')
-        if not week_start_str:
-            return jsonify({"error": "Parámetro 'week_start' (lunes YYYY-MM-DD) requerido"}), 400
-        week_start = date.fromisoformat(week_start_str)
-        if week_start.weekday() != 0:
-            return jsonify({"error": "week_start debe ser un lunes (YYYY-MM-DD)"}), 400
-        data = obtener_datos_semana(week_start)
+        year = request.args.get('year', type=int)
+        month = request.args.get('month', type=int)
+        if year is None or month is None:
+            return jsonify({"error": "Parámetros 'year' (YYYY) y 'month' (1-12) requeridos"}), 400
+        if month < 1 or month > 12:
+            return jsonify({"error": "month debe estar entre 1 y 12"}), 400
+        data = obtener_datos_mes(year, month)
         return jsonify(data)
     except ValueError as e:
         return jsonify({"error": f"Fecha inválida: {str(e)}"}), 400

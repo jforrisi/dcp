@@ -18,7 +18,6 @@ import sys
 import os
 from pathlib import Path
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
 import pandas as pd
 
@@ -51,21 +50,23 @@ ID_VARIABLE = 16  # Servicios no tradicionales - sin software (desde maestro_dat
 ID_PAIS = 999  # Economía internacional_database.xlsx Sheet1_old)
 
 
+# Inicio del cálculo: enero 2010
+FECHA_DESDE = "2010-01-01"
+
+
 def leer_series_fuente():
     """
     Lee las 4 series fuente desde maestro_precios.
-    Solo lee los últimos 24 meses para optimizar el rendimiento.
+    Desde enero 2010 hasta la fecha.
     Retorna un DataFrame con fecha y valores de cada serie.
     """
     print("\n[INFO] Leyendo series fuente desde la base de datos...")
     print(f"   Series: {SERIES_FUENTE}")
-    print("   [OPTIMIZACIÓN] Solo se leerán los últimos 24 meses")
+    print(f"   Desde: {FECHA_DESDE} (ene 2010)")
     
-    # Calcular fecha límite (últimos 24 meses)
-    fecha_limite = datetime.now() - relativedelta(months=24)
-    fecha_limite_str = fecha_limite.strftime('%Y-%m-%d')
+    fecha_limite_str = FECHA_DESDE
     
-    print(f"   Fecha límite: {fecha_limite_str} (últimos 24 meses)")
+    print(f"   Fecha límite: {fecha_limite_str}")
 
     dfs = []
     for id_variable, id_pais in SERIES_FUENTE:
@@ -79,17 +80,17 @@ def leer_series_fuente():
             (id_variable, id_pais, fecha_limite_str),
         )
         if not rows:
-            print(f"[WARN] Serie id_variable={id_variable}, id_pais={id_pais} no tiene datos en los últimos 24 meses")
+            print(f"[WARN] Serie id_variable={id_variable}, id_pais={id_pais} no tiene datos desde {fecha_limite_str}")
             continue
 
         df = pd.DataFrame(rows)
         df["fecha"] = pd.to_datetime(df["fecha"])
         df = df.rename(columns={"valor": f"valor_{id_variable}"})
         dfs.append(df)
-        print(f"[OK] Serie id_variable={id_variable}, id_pais={id_pais}: {len(df)} registros (últimos 24 meses)")
+        print(f"[OK] Serie id_variable={id_variable}, id_pais={id_pais}: {len(df)} registros desde {fecha_limite_str}")
     
     if not dfs:
-        raise ValueError("No se encontraron datos en ninguna serie fuente (últimos 24 meses)")
+        raise ValueError(f"No se encontraron datos en ninguna serie fuente desde {fecha_limite_str}")
     
     # Combinar todas las series por fecha
     df_combinado = dfs[0]
@@ -99,7 +100,7 @@ def leer_series_fuente():
     # Ordenar por fecha
     df_combinado = df_combinado.sort_values('fecha').reset_index(drop=True)
     
-    print(f"[OK] Series combinadas: {len(df_combinado)} fechas únicas (últimos 24 meses)")
+    print(f"[OK] Series combinadas: {len(df_combinado)} fechas únicas desde {fecha_limite_str}")
     return df_combinado
 
 

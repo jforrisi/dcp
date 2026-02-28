@@ -16,12 +16,12 @@ function LicitacionesLRMPage() {
     const [error, setError] = React.useState(null);
     const [updating, setUpdating] = React.useState(false);
     const [updateStatus, setUpdateStatus] = React.useState(null);
-    const [activeTab, setActiveTab] = React.useState('licitacion'); // 'licitacion' | 'semanal'
-    const [weeksAvailable, setWeeksAvailable] = React.useState([]);
-    const [selectedWeekStart, setSelectedWeekStart] = React.useState(null);
-    const [weekData, setWeekData] = React.useState(null);
-    const [weekLoading, setWeekLoading] = React.useState(false);
-    const [weekError, setWeekError] = React.useState(null);
+    const [activeTab, setActiveTab] = React.useState('licitacion'); // 'licitacion' | 'mensual'
+    const [monthsAvailable, setMonthsAvailable] = React.useState([]);
+    const [selectedMonth, setSelectedMonth] = React.useState(null); // "YYYY-MM"
+    const [monthData, setMonthData] = React.useState(null);
+    const [monthLoading, setMonthLoading] = React.useState(false);
+    const [monthError, setMonthError] = React.useState(null);
     const chartRef = React.useRef(null);
     const chartInstanceRef = React.useRef(null);
     const timeseriesChartRef = React.useRef(null);
@@ -63,6 +63,15 @@ function LicitacionesLRMPage() {
         return n.toFixed(2) + '%';
     };
 
+    // Formatear "YYYY-MM" como "Mes Año" (ej. "Febrero 2025")
+    const MESES_NOMBRES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const formatMonthLabel = (ym) => {
+        if (!ym || typeof ym !== 'string') return ym || '';
+        const [y, m] = ym.split('-').map(Number);
+        if (!m || m < 1 || m > 12) return ym;
+        return `${MESES_NOMBRES[m - 1]} ${y}`;
+    };
+
     // Función para obtener el color basado en la diferencia entre tasa_corte y tasa_bevsa
     const getTasaColor = (tasaCorte, tasaBevsa) => {
         if (tasaCorte === null || tasaCorte === undefined || 
@@ -79,14 +88,6 @@ function LicitacionesLRMPage() {
         } else {
             return 'text-red-600'; // Rojo si diferencia > 1%
         }
-    };
-
-    // Domingo de la semana dado el lunes (YYYY-MM-DD)
-    const weekEndFromMonday = (mondayStr) => {
-        if (!mondayStr) return '';
-        const d = new Date(mondayStr + 'T12:00:00');
-        d.setDate(d.getDate() + 6);
-        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     };
 
     // Función para generar PDF
@@ -299,46 +300,47 @@ function LicitacionesLRMPage() {
         }
     }, [selectedCombinacion]);
 
-    // Cargar semanas disponibles al abrir pestaña Análisis semanal
+    // Cargar meses disponibles al abrir pestaña Análisis mensual
     React.useEffect(() => {
-        if (activeTab !== 'semanal') return;
-        fetch(`${API_BASE}/licitaciones-lrm/weeks`)
+        if (activeTab !== 'mensual') return;
+        fetch(`${API_BASE}/licitaciones-lrm/months`)
             .then(res => res.ok ? res.json() : Promise.reject(new Error(res.statusText)))
             .then(data => {
-                const weeks = data.weeks || [];
-                setWeeksAvailable(weeks);
-                if (weeks.length > 0 && !selectedWeekStart) {
-                    setSelectedWeekStart(weeks[0]);
+                const months = data.months || [];
+                setMonthsAvailable(months);
+                if (months.length > 0 && !selectedMonth) {
+                    setSelectedMonth(months[0]);
                 }
             })
             .catch(err => {
-                console.error('[LicitacionesLRM] Error loading weeks:', err);
-                setWeekError('Error al cargar semanas disponibles');
+                console.error('[LicitacionesLRM] Error loading months:', err);
+                setMonthError('Error al cargar meses disponibles');
             });
     }, [activeTab]);
 
-    // Cargar datos de la semana seleccionada
+    // Cargar datos del mes seleccionado
     React.useEffect(() => {
-        if (activeTab !== 'semanal' || !selectedWeekStart) {
-            setWeekData(null);
+        if (activeTab !== 'mensual' || !selectedMonth) {
+            setMonthData(null);
             return;
         }
-        setWeekLoading(true);
-        setWeekError(null);
-        fetch(`${API_BASE}/licitaciones-lrm/week?week_start=${encodeURIComponent(selectedWeekStart)}`)
+        const [y, m] = selectedMonth.split('-').map(Number);
+        setMonthLoading(true);
+        setMonthError(null);
+        fetch(`${API_BASE}/licitaciones-lrm/month?year=${y}&month=${m}`)
             .then(res => {
                 if (!res.ok) return res.json().then(d => Promise.reject(new Error(d.error || res.statusText)));
                 return res.json();
             })
             .then(data => {
-                setWeekData(data);
+                setMonthData(data);
             })
             .catch(err => {
-                setWeekError(err.message || 'Error al cargar datos de la semana');
-                setWeekData(null);
+                setMonthError(err.message || 'Error al cargar datos del mes');
+                setMonthData(null);
             })
-            .finally(() => setWeekLoading(false));
-    }, [activeTab, selectedWeekStart]);
+            .finally(() => setMonthLoading(false));
+    }, [activeTab, selectedMonth]);
 
     const loadLicitacionData = async (fecha, plazo) => {
         setLoading(true);
@@ -710,14 +712,14 @@ function LicitacionesLRMPage() {
                         </button>
                         <button
                             type="button"
-                            onClick={() => setActiveTab('semanal')}
+                            onClick={() => setActiveTab('mensual')}
                             className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
-                                activeTab === 'semanal'
+                                activeTab === 'mensual'
                                     ? 'border-indigo-500 text-indigo-600'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                             }`}
                         >
-                            Análisis semanal
+                            Análisis mensual
                         </button>
                     </nav>
                 </div>
@@ -994,52 +996,52 @@ function LicitacionesLRMPage() {
                 </>
                 )}
 
-                {activeTab === 'semanal' && (
+                {activeTab === 'mensual' && (
                     <div className="space-y-6">
                         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Semana (lunes a domingo)</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Mes</label>
                             <select
-                                value={selectedWeekStart || ''}
-                                onChange={(e) => setSelectedWeekStart(e.target.value || null)}
+                                value={selectedMonth || ''}
+                                onChange={(e) => setSelectedMonth(e.target.value || null)}
                                 className="block w-full max-w-xs rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                             >
-                                <option value="">Seleccione una semana</option>
-                                {weeksAvailable.map(w => (
-                                    <option key={w} value={w}>
-                                        {formatFecha(w)} – {formatFecha(weekEndFromMonday(w))}
+                                <option value="">Seleccione un mes</option>
+                                {monthsAvailable.map(ym => (
+                                    <option key={ym} value={ym}>
+                                        {formatMonthLabel(ym)}
                                     </option>
                                 ))}
                             </select>
                         </div>
-                        {weekError && (
+                        {monthError && (
                             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                                {weekError}
+                                {monthError}
                             </div>
                         )}
-                        {weekLoading && (
+                        {monthLoading && (
                             <div className="text-center py-8">
                                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                                <p className="mt-2 text-gray-600">Cargando datos de la semana...</p>
+                                <p className="mt-2 text-gray-600">Cargando datos del mes...</p>
                             </div>
                         )}
-                        {!weekLoading && weekData && (
+                        {!monthLoading && monthData && (
                             <>
                                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                                    <h2 className="text-lg font-bold text-gray-900 mb-4">Resumen de la semana</h2>
+                                    <h2 className="text-lg font-bold text-gray-900 mb-4">Resumen del mes</h2>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <p className="text-sm text-gray-600">Total licitado</p>
-                                            <p className="text-xl font-semibold text-gray-900">{formatNumber(weekData.total_licitado)}</p>
+                                            <p className="text-xl font-semibold text-gray-900">{formatNumber(monthData.total_licitado)}</p>
                                         </div>
                                         <div>
                                             <p className="text-sm text-gray-600">Adjudicado (%)</p>
-                                            <p className="text-xl font-semibold text-indigo-600">{formatPercent(weekData.porcentaje_adjudicacion)}</p>
+                                            <p className="text-xl font-semibold text-indigo-600">{formatPercent(monthData.porcentaje_adjudicacion)}</p>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 overflow-x-auto">
                                     <h2 className="text-lg font-bold text-gray-900 mb-4">Detalle por día y plazo</h2>
-                                    {weekData.filas && weekData.filas.length > 0 ? (
+                                    {monthData.filas && monthData.filas.length > 0 ? (
                                         <table className="min-w-full divide-y divide-gray-200">
                                             <thead className="bg-gray-50">
                                                 <tr>
@@ -1052,7 +1054,7 @@ function LicitacionesLRMPage() {
                                                 </tr>
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
-                                                {weekData.filas.map((row, idx) => (
+                                                {monthData.filas.map((row, idx) => (
                                                     <tr key={idx}>
                                                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{formatFecha(row.fecha)}</td>
                                                         <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-900">{row.plazo} días</td>
@@ -1065,7 +1067,7 @@ function LicitacionesLRMPage() {
                                             </tbody>
                                         </table>
                                     ) : (
-                                        <p className="text-gray-500">No hay licitaciones en esta semana.</p>
+                                        <p className="text-gray-500">No hay licitaciones en este mes.</p>
                                     )}
                                 </div>
                             </>

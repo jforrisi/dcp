@@ -482,6 +482,16 @@ def actualizar_historico(download_path):
     if df_historico.empty:
         df_combinado = df_nuevos.copy()
         print("[INFO] No hay datos históricos, usando solo datos nuevos")
+        fecha_col_empty = df_combinado.columns[0]
+        if df_combinado[fecha_col_empty].dtype == 'object':
+            print("[INFO] Convirtiendo fechas de texto DD/MM/YYYY a datetime...")
+            df_combinado[fecha_col_empty] = pd.to_datetime(
+                df_combinado[fecha_col_empty], format='%d/%m/%Y', errors='coerce'
+            )
+            if df_combinado[fecha_col_empty].isna().all():
+                df_combinado[fecha_col_empty] = pd.to_datetime(
+                    df_nuevos[fecha_col_nuevos], dayfirst=True, errors='coerce'
+                )
     else:
         fecha_col_historico = df_historico.columns[0]
         df_nuevos_normalizado = df_nuevos.copy()
@@ -490,10 +500,10 @@ def actualizar_historico(download_path):
         
         print(f"[INFO] Columna de fecha detectada: '{fecha_col}'")
         
-        # Convertir fechas a formato comparable si es necesario
+        # Convertir fechas a formato comparable (dayfirst=True para DD/MM/YYYY de BEVSA)
         try:
-            df_historico[fecha_col] = pd.to_datetime(df_historico[fecha_col], errors='coerce')
-            df_nuevos_normalizado[fecha_col] = pd.to_datetime(df_nuevos_normalizado[fecha_col], errors='coerce')
+            df_historico[fecha_col] = pd.to_datetime(df_historico[fecha_col], dayfirst=True, errors='coerce')
+            df_nuevos_normalizado[fecha_col] = pd.to_datetime(df_nuevos_normalizado[fecha_col], dayfirst=True, errors='coerce')
         except:
             pass
         

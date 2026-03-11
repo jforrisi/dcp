@@ -729,6 +729,16 @@ def actualizar_historico(download_path):
         df_combinado = df_nuevos.copy()
         print("[INFO] No hay datos históricos, usando solo datos nuevos")
         fecha_col = fecha_col_nuevos
+        # Convertir fechas string DD/MM/YYYY a datetime para evitar ambigüedad al releer el Excel
+        if df_combinado[fecha_col].dtype == 'object':
+            print("[INFO] Convirtiendo fechas de texto DD/MM/YYYY a datetime...")
+            df_combinado[fecha_col] = pd.to_datetime(
+                df_combinado[fecha_col], format='%d/%m/%Y', errors='coerce'
+            )
+            if df_combinado[fecha_col].isna().all():
+                df_combinado[fecha_col] = pd.to_datetime(
+                    df_nuevos[fecha_col_nuevos], dayfirst=True, errors='coerce'
+                )
     else:
         # Obtener el nombre de la columna de fecha del histórico (primera columna)
         fecha_col_historico = df_historico.columns[0]
@@ -745,8 +755,8 @@ def actualizar_historico(download_path):
         # El histórico ya tiene fechas en formato datetime
         # El temp puede tener fechas como texto DD/MM/YYYY o como datetime (si Excel las convirtió)
         try:
-            # Convertir histórico
-            df_historico[fecha_col] = pd.to_datetime(df_historico[fecha_col], errors='coerce')
+            # Convertir histórico (dayfirst=True porque BEVSA usa DD/MM/YYYY)
+            df_historico[fecha_col] = pd.to_datetime(df_historico[fecha_col], dayfirst=True, errors='coerce')
             
             # Verificar tipo de dato del temp antes de convertir
             tipo_temp = df_nuevos_normalizado[fecha_col].dtype
@@ -756,19 +766,24 @@ def actualizar_historico(download_path):
             # Si es string/object, intentar con formato DD/MM/YYYY
             if df_nuevos_normalizado[fecha_col].dtype == 'object':
                 print("[INFO] Fechas del temp son texto, convirtiendo con formato DD/MM/YYYY...")
+                fechas_originales = df_nuevos_normalizado[fecha_col].copy()
                 df_nuevos_normalizado[fecha_col] = pd.to_datetime(
                     df_nuevos_normalizado[fecha_col], 
                     format='%d/%m/%Y', 
                     errors='coerce'
                 )
-                # Si falla, intentar sin formato específico
-                if df_nuevos_normalizado[fecha_col].isna().all():
-                    print("[WARN] Formato DD/MM/YYYY falló, intentando conversión automática...")
-                    df_nuevos_normalizado[fecha_col] = pd.to_datetime(df_nuevos_normalizado[fecha_col], errors='coerce')
+                # Si falla, reintentar con los valores originales y dayfirst=True
+                if df_nuevos_normalizado[fecha_col].isna().all() and not fechas_originales.isna().all():
+                    print("[WARN] Formato DD/MM/YYYY falló, reintentando con dayfirst=True...")
+                    df_nuevos_normalizado[fecha_col] = pd.to_datetime(
+                        fechas_originales, dayfirst=True, errors='coerce'
+                    )
             else:
                 # Ya es datetime, solo asegurar que esté en formato correcto
                 print("[INFO] Fechas del temp ya son datetime, convirtiendo directamente...")
-                df_nuevos_normalizado[fecha_col] = pd.to_datetime(df_nuevos_normalizado[fecha_col], errors='coerce')
+                df_nuevos_normalizado[fecha_col] = pd.to_datetime(
+                    df_nuevos_normalizado[fecha_col], dayfirst=True, errors='coerce'
+                )
             
             print(f"[INFO] Primeras 3 fechas del temp (después de convertir): {df_nuevos_normalizado[fecha_col].head(3).tolist()}")
             print(f"[INFO] Última fecha del temp: {df_nuevos_normalizado[fecha_col].max()}")
@@ -777,9 +792,9 @@ def actualizar_historico(download_path):
             print(f"[WARN] Error al convertir fechas: {e}")
             import traceback
             traceback.print_exc()
-            # Intentar conversión automática como fallback
-            df_historico[fecha_col] = pd.to_datetime(df_historico[fecha_col], errors='coerce')
-            df_nuevos_normalizado[fecha_col] = pd.to_datetime(df_nuevos_normalizado[fecha_col], errors='coerce')
+            # Intentar conversión automática como fallback (dayfirst=True para formato DD/MM/YYYY de BEVSA)
+            df_historico[fecha_col] = pd.to_datetime(df_historico[fecha_col], dayfirst=True, errors='coerce')
+            df_nuevos_normalizado[fecha_col] = pd.to_datetime(df_nuevos_normalizado[fecha_col], dayfirst=True, errors='coerce')
         
         # Eliminar filas con fechas nulas antes del merge
         filas_antes_hist = len(df_historico)

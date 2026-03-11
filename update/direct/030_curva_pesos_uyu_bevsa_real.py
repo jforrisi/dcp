@@ -144,11 +144,20 @@ def transformar_a_formato_largo(df, mapeo_variables, mapeo_columnas):
         print(f"[WARN] {filas_sin_id} filas sin id_variable, serán omitidas")
         df_melted = df_melted.dropna(subset=['id_variable'])
     
+    # Parsear fechas DD/MM/YYYY (BEVSA usa formato uruguayo: día/mes/año)
+    fechas_raw = df_melted[columna_fecha]
+    if fechas_raw.dtype == 'object':
+        fechas = pd.to_datetime(fechas_raw, format='%d/%m/%Y', errors='coerce')
+        if fechas.isna().sum() > fechas_raw.isna().sum():
+            fechas = pd.to_datetime(fechas_raw, dayfirst=True, errors='coerce')
+    else:
+        fechas = pd.to_datetime(fechas_raw, dayfirst=True, errors='coerce')
+
     # Preparar DataFrame final
     df_final = pd.DataFrame({
         'id_variable': df_melted['id_variable'].astype(int),
         'id_pais': ID_PAIS_URUGUAY,
-        'fecha': pd.to_datetime(df_melted[columna_fecha]),
+        'fecha': fechas,
         'valor': pd.to_numeric(df_melted['valor'], errors='coerce')
     })
     

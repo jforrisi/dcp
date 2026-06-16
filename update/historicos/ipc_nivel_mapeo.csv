@@ -1,0 +1,669 @@
+﻿orden,division,grupo,clase,subclase,producto,descripcion,ponderacion,etiqueta,nivel
+1,99,,,,,GENERAL,,IPC general,division
+2,1,,,,,ALIMENTOS Y BEBIDAS NO ALCOHÓLICAS,0.258495,Alim. y beb. s/alcohol,division
+3,1,011,,,,Alimentos,0.22701,Alimentos,grupo
+4,1,011,0111,,,Cereales y productos a base de cereales,0.049449,Cereales y productos a base de cereales,clase
+5,1,011,0111,01111,,Cereales,0.0025,Cereales,subclase
+6,1,011,0111,01111,01111201,Arroz,0.0025,Arroz,producto
+7,1,011,0111,01112,,Harinas,0.00212,Harinas,subclase
+8,1,011,0111,01112,01112101,Harina de trigo,0.001679,Harina de trigo,producto
+9,1,011,0111,01112,01112601,Harina de maíz,0.000441,Harina de maíz,producto
+10,1,011,0111,01113,,Panes y productos de panadería,0.034502,Panes y productos de panadería,subclase
+11,1,011,0111,01113,01113101,Pan Flauta,0.00745,Pan Flauta,producto
+12,1,011,0111,01113,01113102,Pan Catalán,0.000587,Pan Catalán,producto
+13,1,011,0111,01113,01113103,Pan Porteño,0.002284,Pan Porteño,producto
+14,1,011,0111,01113,01113104,Galleta de campaña,0.003201,Galleta de campaña,producto
+15,1,011,0111,01113,01113105,Pan blanco envasado en rebanadas,0.001561,Pan blanco envasado en rebanadas,producto
+16,1,011,0111,01113,01113106,Pan integral envasado en rebanadas,0.00032,Pan integral envasado en rebanadas,producto
+17,1,011,0111,01113,01113107,Panes blandos envasados,0.000539,Panes blandos envasados,producto
+18,1,011,0111,01113,01113108,Bizcochos,0.005089,Bizcochos,producto
+19,1,011,0111,01113,01113109,Galletas saladas,0.001581,Galletas saladas,producto
+20,1,011,0111,01113,01113110,Galletas malteadas,0.001593,Galletas malteadas,producto
+21,1,011,0111,01113,01113111,Galletas  integrales,0.000873,Galletas  integrales,producto
+22,1,011,0111,01113,01113901,Masitas,0.000778,Masitas,producto
+23,1,011,0111,01113,01113902,Torta dulce entera,0.001311,Torta dulce entera,producto
+24,1,011,0111,01113,01113903,Sandwiches por ciento,0.000646,Sandwiches por ciento,producto
+25,1,011,0111,01113,01113904,Galletitas dulces,0.003194,Galletitas dulces,producto
+26,1,011,0111,01113,01113905,Alfajores,0.001729,Alfajores,producto
+27,1,011,0111,01113,01113906,Pan rallado,0.000853,Pan rallado,producto
+28,1,011,0111,01113,01113907,Budines,0.000913,Budines,producto
+29,1,011,0111,01114,,Cereales para el desayuno,0.001312,Cereales para el desayuno,subclase
+30,1,011,0111,01114,01114001,Cereales,0.001312,Cereales,producto
+31,1,011,0111,01115,,Fideos y pastas,0.00767,Fideos y pastas,subclase
+32,1,011,0111,01115,01115001,Fideos secos,0.003966,Fideos secos,producto
+33,1,011,0111,01115,01115002,Pastas frescas sin relleno,0.000955,Pastas frescas sin relleno,producto
+34,1,011,0111,01115,01115003,Pastas frescas con relleno,0.002749,Pastas frescas con relleno,producto
+35,1,011,0111,01119,,Otros  cereales y harinas,0.001345,Otros  cereales y harinas,subclase
+36,1,011,0111,01119,01119001,Tapas de empanadas,0.001345,Tapas de empanadas,producto
+37,1,011,0112,,,Carne y otros productos derivados,0.080159,Carne y otros productos derivados,clase
+38,1,011,0112,01122,,"Carne fresca, refrigerada o congelada",0.054984,"Carne fresca, refrigerada o congelada",subclase
+39,1,011,0112,01122,01122101,Nalga,0.005198,Nalga,producto
+40,1,011,0112,01122,01122102,Vacío,0.001621,Vacío,producto
+41,1,011,0112,01122,01122103,Bola de lomo,0.001627,Bola de lomo,producto
+42,1,011,0112,01122,01122104,Cuadril,0.002544,Cuadril,producto
+43,1,011,0112,01122,01122105,Carne picada,0.012621,Carne picada,producto
+44,1,011,0112,01122,01122106,Asado de tira,0.00787,Asado de tira,producto
+45,1,011,0112,01122,01122107,Aguja,0.002139,Aguja,producto
+46,1,011,0112,01122,01122108,Falda,0.001081,Falda,producto
+47,1,011,0112,01122,01122109,Paleta,0.001255,Paleta,producto
+48,1,011,0112,01122,01122110,Costillas,0.001553,Costillas,producto
+49,1,011,0112,01122,01122111,Peceto,0.00088,Peceto,producto
+50,1,011,0112,01122,01122112,Lomo,0.000302,Lomo,producto
+51,1,011,0112,01122,01122113,Osobuco,0.000371,Osobuco,producto
+52,1,011,0112,01122,01122201,Costillas de cerdo,0.000867,Costillas de cerdo,producto
+53,1,011,0112,01122,01122202,Carré y pulpa de cerdo,0.002088,Carré y pulpa de cerdo,producto
+54,1,011,0112,01122,01122301,Carne ovina,0.001998,Carne ovina,producto
+55,1,011,0112,01122,01122401,Pollo entero,0.004505,Pollo entero,producto
+56,1,011,0112,01122,01122402,"Pollo, cortes con hueso",0.0033,"Pollo, cortes con hueso",producto
+57,1,011,0112,01122,01122403,"Pollo, cortes sin hueso",0.003164,"Pollo, cortes sin hueso",producto
+58,1,011,0112,01123,,Fiambres,0.008608,Fiambres,subclase
+59,1,011,0112,01123,01123201,Jamón,0.004415,Jamón,producto
+60,1,011,0112,01123,01123202,Paleta,0.000517,Paleta,producto
+61,1,011,0112,01123,01123203,Bondiola,0.001179,Bondiola,producto
+62,1,011,0112,01123,01123204,Mortadela,0.000692,Mortadela,producto
+63,1,011,0112,01123,01123205,Panceta,0.00074,Panceta,producto
+64,1,011,0112,01123,01123206,Salame,0.001065,Salame,producto
+65,1,011,0112,01124,,Menudencias y achuras de vaca,0.000694,Menudencias y achuras de vaca,subclase
+66,1,011,0112,01124,01124001,"Menudencias, achuras de vaca",0.000694,"Menudencias, achuras de vaca",producto
+67,1,011,0112,01125,,Embutidos y otras preparaciones de carne,0.015873,Embutidos y otras preparaciones de carne,subclase
+68,1,011,0112,01125,01125101,Frankfurters,0.002821,Frankfurters,producto
+69,1,011,0112,01125,01125102,Chorizos,0.004348,Chorizos,producto
+70,1,011,0112,01125,01125901,"Milanesa de carne, preparada para cocinar",0.003684,"Milanesa de carne, preparada para cocinar",producto
+71,1,011,0112,01125,01125902,Hamburguesa de carne preparada para cocinar,0.002016,Hambu. de carne prep. para cocinar,producto
+72,1,011,0112,01125,01125903,"Milanesa de pollo, preparada para cocinar",0.003004,"Milanesa de pollo, preparada para cocinar",producto
+73,1,011,0113,,,Pescados y otros mariscos,0.004271,Pescados y otros mariscos,clase
+74,1,011,0113,01131,,"Pescado fresco, refrigerado o congelado",0.002959,"Pescado fresco, refrigerado o congelado",subclase
+75,1,011,0113,01131,01131401,Pescado fresco no fileteado,0.000528,Pescado fresco no fileteado,producto
+76,1,011,0113,01131,01131402,Bifes de pescado,0.001834,Bifes de pescado,producto
+77,1,011,0113,01131,01131403,Pescado congelado,0.000597,Pescado congelado,producto
+78,1,011,0113,01133,,Preparaciones de pescado,0.001312,Preparaciones de pescado,subclase
+79,1,011,0113,01133,01133101,Pescado enlatado,0.001312,Pescado enlatado,producto
+80,1,011,0114,,,"Leche, otros productos lácteos y huevos",0.032577,"Leche, otros productos lácteos y huevos",clase
+81,1,011,0114,01141,,Leche entera,0.008149,Leche entera,subclase
+82,1,011,0114,01141,01141101,"Leche común entera, envasada",0.0073,"Leche común entera, envasada",producto
+83,1,011,0114,01141,01141102,Leche entera larga vida en caja,0.000849,Leche entera larga vida en caja,producto
+84,1,011,0114,01142,,Leche descremada,0.002188,Leche descremada,subclase
+85,1,011,0114,01142,01142001,Leche descremada envasada,0.002188,Leche descremada envasada,producto
+86,1,011,0114,01145,,Queso,0.011427,Queso,subclase
+87,1,011,0114,01145,01145001,Quesos untables,0.001537,Quesos untables,producto
+88,1,011,0114,01145,01145002,Queso rallado,0.001967,Queso rallado,producto
+89,1,011,0114,01145,01145003,Queso muzzarella,0.002871,Queso muzzarella,producto
+90,1,011,0114,01145,01145004,Queso de sandwich,0.001389,Queso de sandwich,producto
+91,1,011,0114,01145,01145005,Queso colonia,0.001803,Queso colonia,producto
+92,1,011,0114,01145,01145006,Queso magro,0.001017,Queso magro,producto
+93,1,011,0114,01145,01145007,Queso duro o semiduro,0.000843,Queso duro o semiduro,producto
+94,1,011,0114,01146,,Yogur y productos similares,0.00373,Yogur y productos similares,subclase
+95,1,011,0114,01146,01146001,Yogurt común,0.002806,Yogurt común,producto
+96,1,011,0114,01146,01146002,Yogurt dietético,0.000924,Yogurt dietético,producto
+97,1,011,0114,01147,,Postres y bebidas a base de leche,0.002822,Postres y bebidas a base de leche,subclase
+98,1,011,0114,01147,01147001,Otras leches,0.001819,Otras leches,producto
+99,1,011,0114,01147,01147002,Postres y flanes preparados con leche,0.001003,Postres y flanes preparados con leche,producto
+100,1,011,0114,01148,,Huevos,0.004261,Huevos,subclase
+101,1,011,0114,01148,01148101,Huevos de gallina,0.004261,Huevos de gallina,producto
+102,1,011,0115,,,Aceites y grasas,0.005976,Aceites y grasas,clase
+103,1,011,0115,01151,,Aceites vegetales,0.004212,Aceites vegetales,subclase
+104,1,011,0115,01151,01151101,Aceite de girasol,0.002132,Aceite de girasol,producto
+105,1,011,0115,01151,01151301,Aceite de oliva,0.000898,Aceite de oliva,producto
+106,1,011,0115,01151,01151401,Aceite de soja,0.001182,Aceite de soja,producto
+107,1,011,0115,01152,,Manteca y otras grasas,0.001764,Manteca y otras grasas,subclase
+108,1,011,0115,01152,01152101,Manteca,0.001764,Manteca,producto
+109,1,011,0116,,,Frutas y frutos secos,0.012415,Frutas y frutos secos,clase
+110,1,011,0116,01161,,"Frutas tropicales, frescas",0.003367,"Frutas tropicales, frescas",subclase
+111,1,011,0116,01161,01161201,Bananas,0.003367,Bananas,producto
+112,1,011,0116,01162,,"Frutas cítricas, frescas",0.00272,"Frutas cítricas, frescas",subclase
+113,1,011,0116,01162,01162201,Limones,0.000381,Limones,producto
+114,1,011,0116,01162,01162301,Naranjas,0.001365,Naranjas,producto
+115,1,011,0116,01162,01162401,Mandarinas,0.000974,Mandarinas,producto
+116,1,011,0116,01163,,"Frutas con carozo o semillas, frescas",0.004702,"Frutas con carozo o semillas, frescas",subclase
+117,1,011,0116,01163,01163101,Manzanas,0.003208,Manzanas,producto
+118,1,011,0116,01163,01163201,Peras,0.000771,Peras,producto
+119,1,011,0116,01163,01163501,Duraznos,0.000723,Duraznos,producto
+120,1,011,0116,01164,,"Frutillas, frescas",0.000417,"Frutillas, frescas",subclase
+121,1,011,0116,01164,01164501,"Frutillas, frescas",0.000417,"Frutillas, frescas",producto
+122,1,011,0116,01168,,"Frutos secos, con cáscara o sin cáscara",0.000727,"Frutos secos, con cáscara o sin cáscara",subclase
+123,1,011,0116,01168,01168901,Frutos secos,0.000727,Frutos secos,producto
+124,1,011,0116,01169,,Frutas y frutos secos molidos y otras preparaciones,0.000482,Frutas y frutos secos molidos y otras pre…,subclase
+125,1,011,0116,01169,01169201,Frutas envasadas en almíbar,0.000482,Frutas envasadas en almíbar,producto
+126,1,011,0117,,,"Hortalizas, tubérculos y legumbres",0.02348,"Hortalizas, tubérculos y legumbres",clase
+127,1,011,0117,01171,,"Hortalizas de hoja o de tallo, frescas o refrigeradas",0.002272,"Horta. de hoja o de…, frescas o refri.",subclase
+128,1,011,0117,01171,01171401,Lechuga,0.001462,Lechuga,producto
+129,1,011,0117,01171,01171501,"Espinacas, frescas o refrigeradas",0.000343,"Espinacas, frescas o refrigeradas",producto
+130,1,011,0117,01171,01171502,Acelgas,0.000467,Acelgas,producto
+131,1,011,0117,01172,,Hortalizas de fruta,0.006151,Hortalizas de fruta,subclase
+132,1,011,0117,01172,01172101,Morrones,0.001497,Morrones,producto
+133,1,011,0117,01172,01172301,Berenjenas,0.000115,Berenjenas,producto
+134,1,011,0117,01172,01172401,Tomates,0.002896,Tomates,producto
+135,1,011,0117,01172,01172501,Zapallitos y zucchini,0.000587,Zapallitos y zucchini,producto
+136,1,011,0117,01172,01172502,"Zapallo criollo, calabaza y kabutiá",0.001056,"Zapallo criollo, calabaza y kabutiá",producto
+137,1,011,0117,01174,,"Otros vegetales, frescos o refrigerados",0.004326,"Otros vegetales, frescos o refrigerados",subclase
+138,1,011,0117,01174,01174101,Zanahorias,0.001223,Zanahorias,producto
+139,1,011,0117,01174,01174201,"Ajo, fresco o refrigerado",0.000358,"Ajo, fresco o refrigerado",producto
+140,1,011,0117,01174,01174301,"Cebollas, cebollines, cebolla de verdeo",0.001982,"Cebollas, cebollines, cebolla de verdeo",producto
+141,1,011,0117,01174,01174401,Puerros,0.000221,Puerros,producto
+142,1,011,0117,01174,01174801,Choclos,0.000424,Choclos,producto
+143,1,011,0117,01174,01174901,Remolachas,0.000118,Remolachas,producto
+144,1,011,0117,01175,,Tubérculos,0.005171,Tubérculos,subclase
+145,1,011,0117,01175,01175101,"Papa, papines",0.004302,"Papa, papines",producto
+146,1,011,0117,01175,01175201,Boniatos,0.000869,Boniatos,producto
+147,1,011,0117,01176,,Legumbres,0.000525,Legumbres,subclase
+148,1,011,0117,01176,01176401,"Lentejas, lentejones",0.000525,"Lentejas, lentejones",producto
+149,1,011,0117,01179,,"Productos a base de hortalizas, tubérculos o legumbres, conservados, procesados o congelados",0.005035,"Prod. a base de hor…, tubér. o legu., con…",subclase
+150,1,011,0117,01179,01179201,Arvejas enlatadas,0.000904,Arvejas enlatadas,producto
+151,1,011,0117,01179,01179301,Aceitunas en conserva,0.000618,Aceitunas en conserva,producto
+152,1,011,0117,01179,01179401,Papas preparadas congeladas,0.000984,Papas preparadas congeladas,producto
+153,1,011,0117,01179,01179901,Puré de papas instantáneo deshidratado,0.000577,Puré de papas instantáneo deshidratado,producto
+154,1,011,0117,01179,01179902,Papas fritas con o sin sal para copetín,0.001952,Papas fritas con o sin sal para copetín,producto
+155,1,011,0118,,,"Azúcar, productos conservados a base de azúcar y postres",0.010712,"Azúcar, prod. conse. a base…",clase
+156,1,011,0118,01181,,Azúcar de caña y  de remolacha,0.001504,Azúcar de caña y  de remolacha,subclase
+157,1,011,0118,01181,01181101,Azúcar blanco refinada,0.001504,Azúcar blanco refinada,producto
+158,1,011,0118,01182,,Otros azúcares y sucedáneos del azúcar,0.000552,Otros azúcares y sucedáneos del azúcar,subclase
+159,1,011,0118,01182,01182001,Edulcorantes naturales,0.000552,Edulcorantes naturales,producto
+160,1,011,0118,01183,,"Mermeladas, jaleas de frutas, purés y pastas de frutas, miel",0.002722,"Merme., jaleas de frutas, purés y pastas …",subclase
+161,1,011,0118,01183,01183201,Dulce de leche,0.001029,Dulce de leche,producto
+162,1,011,0118,01183,01183901,Mermeladas y jaleas,0.000847,Mermeladas y jaleas,producto
+163,1,011,0118,01183,01183902,Dulces de corte,0.000846,Dulces de corte,producto
+164,1,011,0118,01185,,"Chocolate, cocoa y productos alimenticios a base de cocoa",0.001598,"Choc., cocoa y prod. alime…",subclase
+165,1,011,0118,01185,01185101,"Chocolates, bombones, chocolatines",0.001124,"Chocolates, bombones, chocolatines",producto
+166,1,011,0118,01185,01185301,Cocoa en polvo,0.000474,Cocoa en polvo,producto
+167,1,011,0118,01186,,"Hielo, helado y sorbete",0.003422,"Hielo, helado y sorbete",subclase
+168,1,011,0118,01186,01186001,Helados,0.003422,Helados,producto
+169,1,011,0118,01189,,Otros dulces y postres,0.000914,Otros dulces y postres,subclase
+170,1,011,0118,01189,01189901,"Caramelos, chicles, chupetines",0.000914,"Caramelos, chicles, chupetines",producto
+171,1,011,0119,,,Alimentos preparados y otros productos alimenticios,0.007971,Alim. prepa. y otros prod. alime.,clase
+172,1,011,0119,01191,,Comida preparada,0.000933,Comida preparada,subclase
+173,1,011,0119,01191,01191401,"Pizzas, muzarella congeladas",0.000933,"Pizzas, muzarella congeladas",producto
+174,1,011,0119,01193,,"Sal, condimentos y salsas",0.005308,"Sal, condimentos y salsas",subclase
+175,1,011,0119,01193,01193101,Sal,0.000463,Sal,producto
+176,1,011,0119,01193,01193901,Condimentos,0.00078,Condimentos,producto
+177,1,011,0119,01193,01193902,Pulpa de tomate,0.002295,Pulpa de tomate,producto
+178,1,011,0119,01193,01193903,"Mayonesa, salsa golf, mostaza, kétchup, salsa de soja",0.00177,"Mayo., salsa golf, mostaza, kétchup…",producto
+179,1,011,0119,01199,,Otros productos alimenticios n.c.p.,0.00173,Otros productos alimenticios n.c.p.,subclase
+180,1,011,0119,01199,01199001,Caldos en cubos y sopas concentradas,0.000599,Caldos en cubos y sopas concentradas,producto
+181,1,011,0119,01199,01199002,Polvo de hornear,0.000506,Polvo de hornear,producto
+182,1,011,0119,01199,01199003,Postres en polvo,0.000625,Postres en polvo,producto
+183,1,012,,,,Bebidas no alcohólicas,0.031485,Bebidas no alcohólicas,grupo
+184,1,012,0121,,,Jugos de frutas y verduras,0.002262,Jugos de frutas y verduras,clase
+185,1,012,0121,01210,,Jugos de frutas y verduras,0.002262,Jugos de frutas y verduras,subclase
+186,1,012,0121,01210,01210001,Jugos de fruta naturales líquidos,0.001278,Jugos de fruta naturales líquidos,producto
+187,1,012,0121,01210,01210002,Jugo de fruta concentrados en polvo,0.000984,Jugo de fruta concentrados en polvo,producto
+188,1,012,0122,,,Café y sucedáneos del café,0.00177,Café y sucedáneos del café,clase
+189,1,012,0122,01220,,Café y sucedáneos del café,0.00177,Café y sucedáneos del café,subclase
+190,1,012,0122,01220,01220101,Café soluble instantáneo,0.00155,Café soluble instantáneo,producto
+191,1,012,0122,01220,01220102,Café de filtro,0.00022,Café de filtro,producto
+192,1,012,0123,,,"Té, yerba mate y otros productos vegetales para infusión",0.006386,"Té, yerba mate y otros …",clase
+193,1,012,0123,01230,,"Té, yerba mate y otros productos vegetales para infusión",0.006386,"Té, yerba mate y otros …",subclase
+194,1,012,0123,01230,01230201,Té en saquitos,0.000567,Té en saquitos,producto
+195,1,012,0123,01230,01230501,Yerba mate,0.005819,Yerba mate,producto
+196,1,012,0125,,,Agua,0.007714,Agua,clase
+197,1,012,0125,01250,,Agua,0.007714,Agua,subclase
+198,1,012,0125,01250,01250001,Agua,0.007714,Agua,producto
+199,1,012,0126,,,Refrescos,0.012505,Refrescos,clase
+200,1,012,0126,01260,,Refrescos,0.012505,Refrescos,subclase
+201,1,012,0126,01260,01260001,Refrescos,0.010663,Refrescos,producto
+202,1,012,0126,01260,01260002,Refrescos diet,0.001842,Refrescos diet,producto
+203,1,012,0129,,,Otras bebidas sin alcohol,0.000848,Otras bebidas sin alcohol,clase
+204,1,012,0129,01290,,Otras bebidas sin alcohol,0.000848,Otras bebidas sin alcohol,subclase
+205,1,012,0129,01290,01290001,"Jugos artificiales, isotónicos o energizantes",0.000848,"Jugos artif., isotó. o energ.",producto
+206,2,,,,,"BEBIDAS ALCOHÓLICAS, TABACO Y NARCÓTICOS",0.036433,"Beb. alc., tabaco y narc.",division
+207,2,021,,,,Bebidas alcohólicas,0.019292,Bebidas alcohólicas,grupo
+208,2,021,0211,,,Destilados y licores,0.00318,Destilados y licores,clase
+209,2,021,0211,02110,,Destilados y licores,0.00318,Destilados y licores,subclase
+210,2,021,0211,02110,02110001,Whisky,0.00318,Whisky,producto
+211,2,021,0212,,,Vino,0.007701,Vino,clase
+212,2,021,0212,02121,,Vino de uvas,0.007701,Vino de uvas,subclase
+213,2,021,0212,02121,02121001,Vino,0.007701,Vino,producto
+214,2,021,0213,,,Cerveza,0.008411,Cerveza,clase
+215,2,021,0213,02130,,Cerveza,0.008411,Cerveza,subclase
+216,2,021,0213,02130,02130001,Cerveza,0.008411,Cerveza,producto
+217,2,023,,,,Tabaco,0.017141,Tabaco,grupo
+218,2,023,0230,,,Tabaco,0.017141,Tabaco,clase
+219,2,023,0230,02301,,Cigarrillos,0.015264,Cigarrillos,subclase
+220,2,023,0230,02301,02301001,Cigarrillos con filtro,0.015264,Cigarrillos con filtro,producto
+221,2,023,0230,02309,,Otros productos de tabaco,0.001877,Otros productos de tabaco,subclase
+222,2,023,0230,02309,02309001,Tabaco para pipa y para armar,0.001596,Tabaco para pipa y para armar,producto
+223,2,023,0230,02309,02309002,Papel para cigarrillos,0.000281,Papel para cigarrillos,producto
+224,3,,,,,ROPA Y CALZADO,0.029053,Ropa y calzado,division
+225,3,031,,,,Ropa,0.017934,Ropa,grupo
+226,3,031,0312,,,Prendas de vestir,0.016564,Prendas de vestir,clase
+227,3,031,0312,03121,,Prendas para hombres,0.005825,Prendas para hombres,subclase
+228,3,031,0312,03121,03121001,"Ropa interior, hombres",0.00087,"Ropa interior, hombres",producto
+229,3,031,0312,03121,03121002,"Pantalones no jeans, hombres",0.000652,"Pantalones no jeans, hombres",producto
+230,3,031,0312,03121,03121003,"Jeans, hombres",0.000946,"Jeans, hombres",producto
+231,3,031,0312,03121,03121004,"Camperas, hombres",0.000663,"Camperas, hombres",producto
+232,3,031,0312,03121,03121005,"Buzo, remera, hombres",0.000883,"Buzo, remera, hombres",producto
+233,3,031,0312,03121,03121006,"Camisa, hombres",0.00086,"Camisa, hombres",producto
+234,3,031,0312,03121,03121007,"Bermudas, shorts, hombres",0.000468,"Bermudas, shorts, hombres",producto
+235,3,031,0312,03121,03121008,"Ropa deportiva, hombres",0.000483,"Ropa deportiva, hombres",producto
+236,3,031,0312,03122,,Prendas para mujeres,0.006751,Prendas para mujeres,subclase
+237,3,031,0312,03122,03122001,"Ropa interior, mujeres",0.001498,"Ropa interior, mujeres",producto
+238,3,031,0312,03122,03122002,"Pantalones no jeans, mujeres",0.000894,"Pantalones no jeans, mujeres",producto
+239,3,031,0312,03122,03122003,"Jeans, mujeres",0.00128,"Jeans, mujeres",producto
+240,3,031,0312,03122,03122004,"Tapado, chaqueta, mujeres",0.000858,"Tapado, chaqueta, mujeres",producto
+241,3,031,0312,03122,03122005,"Buzo, polera tejidos, mujeres",0.000539,"Buzo, polera tejidos, mujeres",producto
+242,3,031,0312,03122,03122006,"Buzo, polera no tejidos, mujeres",0.00075,"Buzo, polera no tejidos, mujeres",producto
+243,3,031,0312,03122,03122007,"Falda, vestido, mujeres",0.000556,"Falda, vestido, mujeres",producto
+244,3,031,0312,03122,03122008,"Camisa, mujeres",0.000376,"Camisa, mujeres",producto
+245,3,031,0312,03123,,Prendas para bebés,0.000399,Prendas para bebés,subclase
+246,3,031,0312,03123,03123001,"Pelele, batita, medias, escarpines, buzo, enterito - No Tejidos",0.000399,"Pelele, batita, medias, escar.…",producto
+247,3,031,0312,03124,,Uniformes para estudiantes,0.000655,Uniformes para estudiantes,subclase
+248,3,031,0312,03124,03124001,"Uniforme, túnica escolar, moña, niños",0.000655,"Uniforme, túnica escolar, moña, niños",producto
+249,3,031,0312,03125,,Prendas para niños y niñas,0.002934,Prendas para niños y niñas,subclase
+250,3,031,0312,03125,03125001,"Ropa interior, niños",0.000481,"Ropa interior, niños",producto
+251,3,031,0312,03125,03125002,"Pantalones, calzas, niños",0.000852,"Pantalones, calzas, niños",producto
+252,3,031,0312,03125,03125003,"Remera, polera, buzos, niños",0.000968,"Remera, polera, buzos, niños",producto
+253,3,031,0312,03125,03125004,"Ropa deportiva, niños",0.000633,"Ropa deportiva, niños",producto
+254,3,031,0313,,,Otras prendas y complementos de vestir,0.000384,Otras prendas y complementos de vestir,clase
+255,3,031,0313,03132,,Accesorios de ropa,0.000384,Accesorios de ropa,subclase
+256,3,031,0313,03132,03132001,Accesorios de ropa,0.000384,Accesorios de ropa,producto
+257,3,031,0314,,,"Limpieza, reparación, confección y alquiler de ropa",0.000986,"Limp., repar., confe. y alqu. de r…",clase
+258,3,031,0314,03141,,Limpieza de ropa,0.000986,Limpieza de ropa,subclase
+259,3,031,0314,03141,03141001,Limpieza de ropa,0.000986,Limpieza de ropa,producto
+260,3,032,,,,Calzado,0.011119,Calzado,grupo
+261,3,032,0321,,,Zapatos y otros calzados,0.011119,Zapatos y otros calzados,clase
+262,3,032,0321,03211,,Calzado para hombres,0.003645,Calzado para hombres,subclase
+263,3,032,0321,03211,03211001,"Zapatos de cuero, hombres",0.000589,"Zapatos de cuero, hombres",producto
+264,3,032,0321,03211,03211002,"Zapatos no de cuero, hombres",0.000308,"Zapatos no de cuero, hombres",producto
+265,3,032,0321,03211,03211003,"Calzado deportivo, hombres",0.002748,"Calzado deportivo, hombres",producto
+266,3,032,0321,03212,,Calzado para mujeres,0.004717,Calzado para mujeres,subclase
+267,3,032,0321,03212,03212001,"Botas de cuero, mujeres",0.000848,"Botas de cuero, mujeres",producto
+268,3,032,0321,03212,03212002,"Zapatos de cuero, mujeres",0.000616,"Zapatos de cuero, mujeres",producto
+269,3,032,0321,03212,03212003,"Sandalias y ojotas de cuero, mujeres",0.000494,"Sandalias y ojotas de cuero, mujeres",producto
+270,3,032,0321,03212,03212004,"Sandalias y ojotas no  de cuero, mujeres",0.001207,"Sandalias y ojotas no  de cuero, mujeres",producto
+271,3,032,0321,03212,03212006,"Calzado deportivo, mujeres",0.001552,"Calzado deportivo, mujeres",producto
+272,3,032,0321,03213,,Calzado para niños y bebés,0.002757,Calzado para niños y bebés,subclase
+273,3,032,0321,03213,03213001,"Sandalias y ojotas no de cuero, niños",0.000384,"Sandalias y ojotas no de cuero, niños",producto
+274,3,032,0321,03213,03213002,"Calzado deportivo, niños",0.002373,"Calzado deportivo, niños",producto
+275,4,,,,,"VIVIENDA, AGUA, ELECTRICIDAD, GAS Y OTROS COMBUSTIBLES",0.129999,"Vivienda, agua, elect., gas",division
+276,4,041,,,,Alquileres reales de vivienda,0.035921,Alquileres reales de vivienda,grupo
+277,4,041,0411,,,Alquileres reales pagados por los inquilinos por la residencia principal,0.035921,Alqui. reales pagados por los inqui. por …,clase
+278,4,041,0411,04110,,Alquileres reales pagados por los inquilinos por la residencia principal,0.035921,Alqui. reales pagados por los inqui. por …,subclase
+279,4,041,0411,04110,04110000,Alquileres,0.035921,Alquileres,producto
+280,4,043,,,,"Mantenimiento, reparación y seguridad de la vivienda",0.009657,"Mante., repar. y segu. de l…",grupo
+281,4,043,0431,,,Materiales para el mantenimiento y reparación de la vivienda,0.004515,Mater. para el mante. y repar. de la vivi.,clase
+282,4,043,0431,04311,,Materiales para el mantenimiento y reparación de la vivienda,0.004515,Mater. para el mante. y repar. de la vivi.,subclase
+283,4,043,0431,04311,04311001,Pinturas,0.001825,Pinturas,producto
+284,4,043,0431,04311,04311002,Carpintería metálica y de madera,0.001039,Carpintería metálica y de madera,producto
+285,4,043,0431,04311,04311003,"Cerámicos, azulejos y otros",0.000734,"Cerámicos, azulejos y otros",producto
+286,4,043,0431,04311,04311004,"Arena, portland, yeso, enduido",0.000917,"Arena, portland, yeso, enduido",producto
+287,4,043,0432,,,"Servicios para el mantenimiento, reparación y seguridad de la vivienda",0.005142,"Serv. para el mante., repar. y segu. de l…",clase
+288,4,043,0432,04320,,"Servicios para el mantenimiento, reparación y seguridad de la vivienda",0.005142,"Serv. para el mante., repar. y segu. de l…",subclase
+289,4,043,0432,04320,04320001,Servicio de albañilería,0.002615,Servicio de albañilería,producto
+290,4,043,0432,04320,04320002,Servicio de pintura y empapelado,0.000966,Servicio de pintura y empapelado,producto
+291,4,043,0432,04320,04320003,Sanitaria: reparación o mantenimiento,0.00032,Sanitaria: reparación o mantenimiento,producto
+292,4,043,0432,04320,04320004,Servicio de vigilancia,0.001241,Servicio de vigilancia,producto
+293,4,044,,,,Abastecimiento de agua y servicios diversos relacionados,0.028939,Abast. de agua y serv. dive. relac.,grupo
+294,4,044,0441,,,Suministro de agua,0.011347,Suministro de agua,clase
+295,4,044,0441,04411,,Abastecimiento de agua mediante sistemas de redes,0.011347,Abast. de agua medi. sist. de redes,subclase
+296,4,044,0441,04411,04411000,Suministro de agua (OSE),0.011347,Suministro de agua (OSE),producto
+297,4,044,0442,,,Recogida de basuras,0.002669,Recogida de basuras,clase
+298,4,044,0442,04420,,Recogida de basuras,0.002669,Recogida de basuras,subclase
+299,4,044,0442,04420,04420000,Tributos domiciliarios,0.002669,Tributos domiciliarios,producto
+300,4,044,0443,,,Recogida de aguas residuales,0.001696,Recogida de aguas residuales,clase
+301,4,044,0443,04431,,Recolección de aguas residuales a través de sistemas de alcantarillado.,0.001696,Recol. de aguas resid. a través de sist. …,subclase
+302,4,044,0443,04431,04431000,Tarifa de saneamiento,0.001696,Tarifa de saneamiento,producto
+303,4,044,0444,,,Otros servicios relacionados con la vivienda,0.013227,Otros serv. relac. con la vivi.,clase
+304,4,044,0444,04441,,Cargos de mantenimiento en edificios,0.013227,Cargos de mantenimiento en edificios,subclase
+305,4,044,0444,04441,04441000,Gastos comunes,0.013227,Gastos comunes,producto
+306,4,045,,,,"Electricidad, gas y otros combustibles",0.055482,"Electricidad, gas y otros combustibles",grupo
+307,4,045,0451,,,Electricidad,0.04239,Electricidad,clase
+308,4,045,0451,04510,,Electricidad,0.04239,Electricidad,subclase
+309,4,045,0451,04510,04510000,Suministro de energía eléctrica,0.04239,Suministro de energía eléctrica,producto
+310,4,045,0452,,,Gas,0.009133,Gas,clase
+311,4,045,0452,04521,,Gas natural a través de redes,0.000876,Gas natural a través de redes,subclase
+312,4,045,0452,04521,04521000,Suministro de gas por cañería,0.000876,Suministro de gas por cañería,producto
+313,4,045,0452,04522,,Hidrocarburos licuados,0.008257,Hidrocarburos licuados,subclase
+314,4,045,0452,04522,04522000,"Supergas, recarga de garrafa",0.008257,"Supergas, recarga de garrafa",producto
+315,4,045,0454,,,Combustibles sólidos,0.003959,Combustibles sólidos,clase
+316,4,045,0454,04542,,"Madera combustible, incluye pellets y briquetas",0.003959,"Madera combu., incluye pellets y b…",subclase
+317,4,045,0454,04542,04542001,Leña,0.003959,Leña,producto
+318,5,,,,,"MOBILIARIO, ENSERES DOMÉSTICOS y DEMÁS ARTÍCULOS REGULARES DE LOS HOGARES",0.054185,"Mobil., enseres y art. hog.",division
+319,5,051,,,,"Mobiliario, enseres domésticos y alfombras sueltas",0.007547,"Mobil., enseres domés. y al…",grupo
+320,5,051,0511,,,"Mobiliario, enseres domésticos y alfombras sueltas",0.007547,"Mobil., enseres domés. y al…",clase
+321,5,051,0511,05111,,Muebles para el hogar,0.00691,Muebles para el hogar,subclase
+322,5,051,0511,05111,05111001,Juego de comedor,0.001255,Juego de comedor,producto
+323,5,051,0511,05111,05111002,"Sofás, sillones, puf",0.002003,"Sofás, sillones, puf",producto
+324,5,051,0511,05111,05111003,Cama,0.000674,Cama,producto
+325,5,051,0511,05111,05111004,"Colchón, sommier",0.001797,"Colchón, sommier",producto
+326,5,051,0511,05111,05111005,"Ropero, placard",0.001181,"Ropero, placard",producto
+327,5,051,0511,05113,,Equipos de iluminación,0.000637,Equipos de iluminación,subclase
+328,5,051,0511,05113,05113001,Artefactos de iluminación,0.000637,Artefactos de iluminación,producto
+329,5,052,,,,Textiles para el hogar,0.002336,Textiles para el hogar,grupo
+330,5,052,0521,,,Textiles para el hogar,0.002336,Textiles para el hogar,clase
+331,5,052,0521,05212,,Ropa de cama,0.001979,Ropa de cama,subclase
+332,5,052,0521,05212,05212001,"Acolchados, colchas, cubrecamas",0.000825,"Acolchados, colchas, cubrecamas",producto
+333,5,052,0521,05212,05212002,"Sábanas, fundas",0.001154,"Sábanas, fundas",producto
+334,5,052,0521,05213,,Mantelería y ropa de baño,0.000357,Mantelería y ropa de baño,subclase
+335,5,052,0521,05213,05213001,Toallas,0.000357,Toallas,producto
+336,5,053,,,,Electrodomésticos,0.007622,Electrodomésticos,grupo
+337,5,053,0531,,,Grandes electrodomésticos,0.006751,Grandes electrodomésticos,clase
+338,5,053,0531,05311,,Principales electrodomésticos de cocina,0.002852,Principales electrodomésticos de cocina,subclase
+339,5,053,0531,05311,05311001,Heladeras,0.001813,Heladeras,producto
+340,5,053,0531,05311,05311002,Cocinas,0.001039,Cocinas,producto
+341,5,053,0531,05312,,Principales electrodomésticos de lavandería,0.001558,Princ. elect. de lavan.,subclase
+342,5,053,0531,05312,05312001,Lavarropas,0.001558,Lavarropas,producto
+343,5,053,0531,05313,,"Calentadroes, aires acondicionados",0.002341,"Calentadroes, aires acondicionados",subclase
+344,5,053,0531,05313,05313001,Calefón eléctrico,0.001177,Calefón eléctrico,producto
+345,5,053,0531,05313,05313002,Equipo de aire acondicionado,0.001164,Equipo de aire acondicionado,producto
+346,5,053,0532,,,Pequeños electrodomésticos,0.000871,Pequeños electrodomésticos,clase
+347,5,053,0532,05322,,Pequeños electrodomésticos para preparar bebidas,0.000871,Pequ. elect. para prep. bebidas,subclase
+348,5,053,0532,05322,05322001,Cafetera y jarra eléctrica,0.000871,Cafetera y jarra eléctrica,producto
+349,5,054,,,,"Cristalería, vajilla y utensilios domésticos",0.00131,"Crist., vajilla y utens. do…",grupo
+350,5,054,0540,,,"Cristalería, vajilla y utensilios domésticos",0.00131,"Crist., vajilla y utens. do…",clase
+351,5,054,0540,05401,,"Cristalería, cerámica y loza, vajilla",0.000644,"Cristalería, cerámica y loza, vajilla",subclase
+352,5,054,0540,05401,05401001,"Ollas, caldera, etc.",0.000644,"Ollas, caldera, etc.",producto
+353,5,054,0540,05403,,Utensilios y artículos de cocina no eléctricos.,0.000666,Utens. y artí. de cocina no eléct.,subclase
+354,5,054,0540,05403,05403001,"Mate, termo, bombilla",0.000666,"Mate, termo, bombilla",producto
+355,5,055,,,,Herramientas y equipos para casa y jardín,0.002141,Herramientas y equipos para casa y jardín,grupo
+356,5,055,0551,,,Herramientas y equipos  motorizados,0.000811,Herramientas y equipos  motorizados,clase
+357,5,055,0551,05510,,Herramientas y equipos  motorizados,0.000811,Herramientas y equipos  motorizados,subclase
+358,5,055,0551,05510,05510001,"Taladro, sierra, lijadora, pulidora y cortadora de césped",0.000811,"Taladro, sierra, lija., puli. y cort. de …",producto
+359,5,055,0552,,,Herramientas no motorizadas y accesorios varios,0.00133,Herra. no motor. y acces. varios,clase
+360,5,055,0552,05522,,Accesorios varios,0.00133,Accesorios varios,subclase
+361,5,055,0552,05522,05522001,"Tubos fluorescentes, lámparas eléctricas",0.000743,"Tubos fluorescentes, lámparas eléctricas",producto
+362,5,055,0552,05522,05522002,Pilas y baterías para uso general,0.000587,Pilas y baterías para uso general,producto
+363,5,056,,,,Bienes y servicios para el mantenimiento rutinario del hogar,0.033229,Bienes y serv. para el mante. ruti. del h…,grupo
+364,5,056,0561,,,Artículos para el hogar no duraderos,0.011361,Artículos para el hogar no duraderos,clase
+365,5,056,0561,05611,,Productos de limpieza y mantenimiento,0.011361,Productos de limpieza y mantenimiento,subclase
+366,5,056,0561,05611,05611001,"Jabones de limpieza en polvo y en barra, suavizante",0.004071,"Jabones de limp. en…, suavi.",producto
+367,5,056,0561,05611,05611002,Blanqueador líquido,0.001192,Blanqueador líquido,producto
+368,5,056,0561,05611,05611003,Detergente,0.001502,Detergente,producto
+369,5,056,0561,05611,05611004,"Desengrasadores, desinfectantes, desodorante de ambiente",0.001964,"Desen., desin., desod. de ambi.",producto
+370,5,056,0561,05611,05611005,"Insecticidas, líquidos o en pastillas y aparatos",0.001431,"Insec., líqu. o en past. y …",producto
+371,5,056,0561,05611,05611006,"Paños de limpieza, franelas, esponjas",0.000549,"Paños de limpieza, franelas, esponjas",producto
+372,5,056,0561,05611,05611007,Papel de cocina,0.000652,Papel de cocina,producto
+373,5,056,0562,,,Servicio doméstico,0.021868,Servicio doméstico,clase
+374,5,056,0562,05621,,Servicio doméstico por personal remunerado,0.021868,Servicio doméstico por personal remunerado,subclase
+375,5,056,0562,05621,05621001,Servicio doméstico,0.021868,Servicio doméstico,producto
+376,6,,,,,SALUD,0.038537,Salud,division
+377,6,061,,,,Medicamentos y productos sanitarios,0.021128,Medicamentos y productos sanitarios,grupo
+378,6,061,0611,,,Medicamentos,0.017539,Medicamentos,clase
+379,6,061,0611,06111,,"Medicamentos, vacunas y otras preparaciones farmacéuticas.",0.017539,"Medic., vacunas y otras pre…",subclase
+380,6,061,0611,06111,06111001,Analgésicos,0.003071,Analgésicos,producto
+381,6,061,0611,06111,06111002,Antibióticos,0.000664,Antibióticos,producto
+382,6,061,0611,06111,06111003,Antiácidos y digestivos,0.000585,Antiácidos y digestivos,producto
+383,6,061,0611,06111,06111004,Antigripales,0.00076,Antigripales,producto
+384,6,061,0611,06111,06111005,Psicofármacos,0.000581,Psicofármacos,producto
+385,6,061,0611,06111,06111006,Medicamentos para afecciones respiratorias,0.000549,Medicamentos para afecciones respiratorias,producto
+386,6,061,0611,06111,06111007,"Anticonceptivos orales, parches",0.000872,"Anticonceptivos orales, parches",producto
+387,6,061,0611,06111,06111008,Preservativos,0.000298,Preservativos,producto
+388,6,061,0611,06111,06111009,Tickets de medicamentos,0.010159,Tickets de medicamentos,producto
+389,6,061,0613,,,Productos de asistencia,0.003589,Productos de asistencia,clase
+390,6,061,0613,06131,,Productos de asistencia para la visión,0.003589,Productos de asistencia para la visión,subclase
+391,6,061,0613,06131,06131001,Anteojos y lentes de contacto,0.003589,Anteojos y lentes de contacto,producto
+392,6,062,,,,Servicios de atención ambulatoria,0.017135,Servicios de atención ambulatoria,grupo
+393,6,062,0621,,,Servicios de atención preventiva,0.006765,Servicios de atención preventiva,clase
+394,6,062,0621,06219,,Otros servicios de prevención,0.006765,Otros servicios de prevención,subclase
+395,6,062,0621,06219,06219001,Consulta particular médico,0.000583,Consulta particular médico,producto
+396,6,062,0621,06219,06219002,"Análisis de sangre, orina, otros, particulares",0.001295,"Anál. de sangre, orina, otros, parti.",producto
+397,6,062,0621,06219,06219003,Tickets de análisis clínicos,0.002917,Tickets de análisis clínicos,producto
+398,6,062,0621,06219,06219004,Órdenes para consultas médicas,0.00197,Órdenes para consultas médicas,producto
+399,6,062,0622,,,Servicios dentales para pacientes ambulatorios,0.00797,Serv. dent. para paci. ambul.,clase
+400,6,062,0622,06221,,Servicios preventivos dentales,0.00797,Servicios preventivos dentales,subclase
+401,6,062,0622,06221,06221001,Prótesis dentales y dentadura postiza,0.000855,Prótesis dentales y dentadura postiza,producto
+402,6,062,0622,06221,06221002,Servicios odontológicos,0.007115,Servicios odontológicos,producto
+403,6,062,0623,,,Otros servicios de atención ambulatoria,0.0024,Otros servicios de atención ambulatoria,clase
+404,6,062,0623,06232,,Servicios de atención a largo plazo para pacientes ambulatorios,0.0024,Serv. de aten. a largo plazo para paci. a…,subclase
+405,6,062,0623,06232,06232001,Tratamientos terapéuticos particulares,0.001848,Tratamientos terapéuticos particulares,producto
+406,6,062,0623,06232,06232002,Medicina no tradicional,0.000552,Medicina no tradicional,producto
+407,6,063,,,,Servicios de atención hospitalaria,0.000274,Servicios de atención hospitalaria,grupo
+408,6,063,0631,,,Servicios curativos y de rehabilitación para pacientes hospitalizados,0.000274,Serv. cura. y de rehab. para paci. hospi.,clase
+409,6,063,0631,06310,,Servicios curativos y de rehabilitación para pacientes hospitalizados,0.000274,Serv. cura. y de rehab. para paci. hospi.,subclase
+410,6,063,0631,06310,06310001,"Servicio de internación, intervención quirúrgica",0.000274,"Serv. de inter., inter. quirú.",producto
+411,7,,,,,TRANSPORTE,0.116693,Transporte,division
+412,7,071,,,,Compra de vehículos,0.02854,Compra de vehículos,grupo
+413,7,071,0711,,,Automóviles,0.025376,Automóviles,clase
+414,7,071,0711,07111,,Automóviles nuevos,0.025376,Automóviles nuevos,subclase
+415,7,071,0711,07111,07111001,Automóvil o camioneta,0.025376,Automóvil o camioneta,producto
+416,7,071,0712,,,Motocicletas,0.002177,Motocicletas,clase
+417,7,071,0712,07120,,Motocicletas,0.002177,Motocicletas,subclase
+418,7,071,0712,07120,07120001,Motos,0.002177,Motos,producto
+419,7,071,0713,,,Bicicletas,0.000987,Bicicletas,clase
+420,7,071,0713,07130,,Bicicletas,0.000987,Bicicletas,subclase
+421,7,071,0713,07130,07130001,Bicicletas,0.000987,Bicicletas,producto
+422,7,072,,,,Operación de equipo de transporte personal,0.062678,Operación de equipo de transporte personal,grupo
+423,7,072,0721,,,Repuestos y accesorios para equipo de transporte personal,0.00235,Repu. y acces. para equipo de trans. pers.,clase
+424,7,072,0721,07211,,Neumáticos,0.001228,Neumáticos,subclase
+425,7,072,0721,07211,07211001,"Neumáticos, cámaras, cubiertas",0.001228,"Neumáticos, cámaras, cubiertas",producto
+426,7,072,0721,07212,,"Piezas, repuestos para equipo de transporte personal",0.001122,"Piezas, repu. para equipo d…",subclase
+427,7,072,0721,07212,07212001,Accesorios y repuestos de autos,0.001122,Accesorios y repuestos de autos,producto
+428,7,072,0722,,,Combustibles y lubricantes para equipo de transporte personal,0.043376,Combu. y lubri. para equipo de trans. per…,clase
+429,7,072,0722,07221,,Diesel,0.00542,Diesel,subclase
+430,7,072,0722,07221,07221001,"Gas Oil, para transporte personal",0.00542,"Gas Oil, para transporte personal",producto
+431,7,072,0722,07222,,Gasolina,0.035392,Gasolina,subclase
+432,7,072,0722,07222,07222001,"Nafta, para transporte personal",0.035392,"Nafta, para transporte personal",producto
+433,7,072,0722,07224,,Lubricantes,0.002564,Lubricantes,subclase
+434,7,072,0722,07224,07224001,"Lubricantes, aceite y cambio de aceite",0.002564,"Lubricantes, aceite y cambio de aceite",producto
+435,7,072,0723,,,Mantenimiento y reparación de equipo de transporte personal,0.007326,Mante. y repar. de equipo de trans. pers.,clase
+436,7,072,0723,07230,,Mantenimiento y reparación de equipo de transporte personal,0.007326,Mante. y repar. de equipo de trans. pers.,subclase
+437,7,072,0723,07230,07230001,Chapa y pintura,0.001168,Chapa y pintura,producto
+438,7,072,0723,07230,07230002,Servicio de auxilio de automotor,0.000555,Servicio de auxilio de automotor,producto
+439,7,072,0723,07230,07230003,Reparaciones mecánicas de vehículos,0.004946,Reparaciones mecánicas de vehículos,producto
+440,7,072,0723,07230,07230004,"Servicio de gomería, lavado y engrase",0.000657,"Servicio de gomería, lavado y engrase",producto
+441,7,072,0724,,,Otros servicios relacionados con el equipo de transporte personal,0.009626,Otros serv. relac. con el equipo de trans…,clase
+442,7,072,0724,07241,,Servicios para estacionamiento,0.001099,Servicios para estacionamiento,subclase
+443,7,072,0724,07241,07241001,"Estacionamiento, alquiler de cochera y garaje",0.001099,"Estac., alqu. de cochera y …",producto
+444,7,072,0724,07242,,Instalaciones de peaje,0.000412,Instalaciones de peaje,subclase
+445,7,072,0724,07242,07242000,Peajes,0.000412,Peajes,producto
+446,7,072,0724,07243,,"Clases de manejo, exámenes, licencias y pruebas de idoneidad vial",0.008115,"Clases de manejo, exám., lice. y pruebas …",subclase
+447,7,072,0724,07243,07243000,Patente de rodado,0.007988,Patente de rodado,producto
+448,7,072,0724,07243,07243001,Licencia de conducir,0.000127,Licencia de conducir,producto
+449,7,073,,,,Servicios de transporte de pasajeros,0.025475,Servicios de transporte de pasajeros,grupo
+450,7,073,0732,,,Transporte de pasajeros por carretera,0.018643,Transporte de pasajeros por carretera,clase
+451,7,073,0732,07321,,Transporte de pasajeros en ómnibus,0.015188,Transporte de pasajeros en ómnibus,subclase
+452,7,073,0732,07321,07321010,Boleto de ómnibus local,0.012696,Boleto de ómnibus local,producto
+453,7,073,0732,07321,07321020,Transporte interdepartamental y suburbano,0.002492,Transporte interdepartamental y suburbano,producto
+454,7,073,0732,07322,,Transporte de pasajeros en taxi y coche de alquiler con conductor.,0.003455,Trans. de pasa. en taxi y coche de alqu. …,subclase
+455,7,073,0732,07322,07322000,Transporte de pasajeros con chofer,0.003455,Transporte de pasajeros con chofer,producto
+456,7,073,0733,,,Transporte de pasajeros por aire,0.006832,Transporte de pasajeros por aire,clase
+457,7,073,0733,07332,,"Transporte de pasajeros por aire, internacional",0.006832,"Trans. de pasa. por…, inter.",subclase
+458,7,073,0733,07332,07332001,Pasaje de avión,0.006832,Pasaje de avión,producto
+459,8,,,,,INFORMACIÓN Y COMUNICACIÓN,0.061832,Inform. y comunic.,division
+460,8,081,,,,Equipo de información y comunicación,0.007402,Inform. y comunic.,grupo
+461,8,081,0812,,,Equipo de telefonía móvil,0.002854,Equipo de telefonía móvil,clase
+462,8,081,0812,08120,,Equipo de telefonía móvil,0.002854,Equipo de telefonía móvil,subclase
+463,8,081,0812,08120,08120001,Teléfonos celulares: aparato,0.002854,Teléfonos celulares: aparato,producto
+464,8,081,0813,,,Equipo de procesamiento de información,0.002028,Equipo de procesamiento de información,clase
+465,8,081,0813,08131,,"Ordenadores, portátiles y tabletas",0.001182,"Ordenadores, portátiles y tabletas",subclase
+466,8,081,0813,08131,08131001,"Computadora, Laptop",0.001015,"Computadora, Laptop",producto
+467,8,081,0813,08131,08131002,Tablet,0.000167,Tablet,producto
+468,8,081,0813,08132,,Equipos periféricos y sus componentes consumibles,0.000846,Equipos perif. y sus compo. consu.,subclase
+469,8,081,0813,08132,08132001,Cartuchos para impresora,0.000846,Cartuchos para impresora,producto
+470,8,081,0814,,,"Equipos para la recepción, grabación y reproducción de sonido y visión",0.00252,"Equipos para la rec…, grab. y repro. de s…",clase
+471,8,081,0814,08140,,"Equipos para la recepción, grabación y reproducción de sonido y visión",0.00252,"Equipos para la rec…, grab. y repro. de s…",subclase
+472,8,081,0814,08140,08140001,Televisor,0.00252,Televisor,producto
+473,8,083,,,,Servicios de información y comunicación,0.05443,Inform. y comunic.,grupo
+474,8,083,0831,,,Servicios de comunicaciones fijas,0.008682,Servicios de comunicaciones fijas,clase
+475,8,083,0831,08310,,Servicios de comunicaciones fijas,0.008682,Servicios de comunicaciones fijas,subclase
+476,8,083,0831,08310,08310000,Servicio de telefonía fija,0.008682,Servicio de telefonía fija,producto
+477,8,083,0832,,,Servicios de comunicaciones móviles,0.018309,Servicios de comunicaciones móviles,clase
+478,8,083,0832,08320,,Servicios de comunicaciones móviles,0.018309,Servicios de comunicaciones móviles,subclase
+479,8,083,0832,08320,08320000,Servicio de telefonía móvil,0.018309,Servicio de telefonía móvil,producto
+480,8,083,0833,,,Servicios de provisión de acceso a Internet y servicios de almacenamiento en red,0.007555,Serv. de prov. de acceso a Inte. y serv. …,clase
+481,8,083,0833,08330,,Servicios de provisión de acceso a Internet y servicios de almacenamiento en red,0.007555,Serv. de prov. de acceso a Inte. y serv. …,subclase
+482,8,083,0833,08330,08330000,Servicio de conexión a Internet por contrato,0.007555,Serv. de cone. a Inte. por cont.,producto
+483,8,083,0839,,,Otros servicios de información y comunicación,0.019884,Inform. y comunic.,clase
+484,8,083,0839,08391,,Licencias y tarifas de televisión y radio,0.019241,Licencias y tarifas de televisión y radio,subclase
+485,8,083,0839,08391,08391001,Servicio de TV cable,0.019241,Servicio de TV cable,producto
+486,8,083,0839,08392,,"Suscripción a contenidos audiovisuales, servicios de streaming y alquiler de contenidos audiovisuales",0.000643,"Suscr. a conte. aud…, serv. de stre. y al…",subclase
+487,8,083,0839,08392,08392001,Suscripciones por internet,0.000643,Suscripciones por internet,producto
+488,9,,,,,"RECREACIÓN, DEPORTE Y CULTURA",0.056618,"Recreac., dep. y cult.",division
+489,9,092,,,,Otros bienes recreativos,0.006869,Otros bienes recreativos,grupo
+490,9,092,0921,,,"Juegos, juguetes y pasatiempos",0.005468,"Juegos, juguetes y pasatiempos",clase
+491,9,092,0921,09211,,"Computadoras de videojuegos, consolas de juegos, aplicaciones y software de juegos",0.000985,"Compu. de video., cons. de juegos, aplic.…",subclase
+492,9,092,0921,09211,09211001,Consola y video juegos,0.000985,Consola y video juegos,producto
+493,9,092,0921,09212,,"Otros juegos, juguetes y pasatiempos",0.004483,"Otros juegos, juguetes y pasatiempos",subclase
+494,9,092,0921,09212,09212001,Juguetes y juegos,0.002974,Juguetes y juegos,producto
+495,9,092,0921,09212,09212002,Bicicleta infantil,0.001509,Bicicleta infantil,producto
+496,9,092,0922,,,"Equipo para deporte, camping y recreación al aire libre",0.001401,"Equipo para deporte, camping y recre. al…",clase
+497,9,092,0922,09221,,Equipo para deporte,0.001401,Equipo para deporte,subclase
+498,9,092,0922,09221,09221001,Pelotas de deportes,0.001401,Pelotas de deportes,producto
+499,9,093,,,,Jardines y mascotas,0.010795,Jardines y mascotas,grupo
+500,9,093,0931,,,"Jardines, plantas y flores",0.001155,"Jardines, plantas y flores",clase
+501,9,093,0931,09312,,"Plantas, semillas y flores",0.001155,"Plantas, semillas y flores",subclase
+502,9,093,0931,09312,09312001,"Plantas, flores",0.001155,"Plantas, flores",producto
+503,9,093,0932,,,Mascotas y productos relacionados,0.00964,Mascotas y productos relacionados,clase
+504,9,093,0932,09322,,Productos para mascotas y otros animales domésticos,0.00964,Prod. para masc. y otros anim. domés.,subclase
+505,9,093,0932,09322,09322001,Alimentos para animales domésticos,0.008089,Alimentos para animales domésticos,producto
+506,9,093,0932,09322,09322002,Productos veterinarios,0.001551,Productos veterinarios,producto
+507,9,094,,,,Servicios recreativos,0.019974,Servicios recreativos,grupo
+508,9,094,0945,,,Servicios veterinarios y otros para mascotas,0.001737,Serv. veter. y otros para masc.,clase
+509,9,094,0945,09450,,Servicios veterinarios y otros para mascotas,0.001737,Serv. veter. y otros para masc.,subclase
+510,9,094,0945,09450,09450001,Veterinario,0.001737,Veterinario,producto
+511,9,094,0946,,,Servicios recreativos y deportivos,0.007224,Servicios recreativos y deportivos,clase
+512,9,094,0946,09462,,Servicios deportivos - Práctica,0.007224,Servicios deportivos - Práctica,subclase
+513,9,094,0946,09462,09462001,Club deportivo y gimnasio,0.007224,Club deportivo y gimnasio,producto
+514,9,094,0947,,,Juegos de azar,0.011013,Juegos de azar,clase
+515,9,094,0947,09470,,Juegos de azar,0.011013,Juegos de azar,subclase
+516,9,094,0947,09470,09470000,Juegos de azar,0.011013,Juegos de azar,producto
+517,9,096,,,,Servicios culturales,0.000884,Servicios culturales,grupo
+518,9,096,0961,,,"Cines, teatros, conciertos",0.000884,"Cines, teatros, conciertos",clase
+519,9,096,0961,09610,,"Cines, teatros, conciertos",0.000884,"Cines, teatros, conciertos",subclase
+520,9,096,0961,09610,09610001,Entrada al cine,0.000884,Entrada al cine,producto
+521,9,097,,,,"Periódicos, libros y papelería",0.005941,"Periódicos, libros y papelería",grupo
+522,9,097,0971,,,Libros,0.002544,Libros,clase
+523,9,097,0971,09711,,Libros educativos o de texto,0.001342,Libros educativos o de texto,subclase
+524,9,097,0971,09711,09711001,Libros de enseñanza,0.000741,Libros de enseñanza,producto
+525,9,097,0971,09711,09711002,Textos universitarios y de formación profesional,0.000601,Textos unive. y de form. profe.,producto
+526,9,097,0971,09712,,Otros libros,0.001202,Otros libros,subclase
+527,9,097,0971,09712,09712001,"Novelas, ensayos, cuentos, en papel, libros infantiles",0.001202,"Novelas, ensayos, cuentos, en papel…",producto
+528,9,097,0972,,,Periódicos y publicaciones periódicas,0.000965,Periódicos y publicaciones periódicas,clase
+529,9,097,0972,09721,,"Periódicos,  diarios",0.000965,"Periódicos,  diarios",subclase
+530,9,097,0972,09721,09721000,"Suscripción a periódicos, semanarios",0.000965,"Suscripción a periódicos, semanarios",producto
+531,9,097,0974,,,Material de papelería y dibujo,0.002432,Material de papelería y dibujo,clase
+532,9,097,0974,09740,,Material de papelería y dibujo,0.002432,Material de papelería y dibujo,subclase
+533,9,097,0974,09740,09740001,"Lápices, lapiceras",0.000993,"Lápices, lapiceras",producto
+534,9,097,0974,09740,09740002,"Cuadernos, cuadernolas",0.001061,"Cuadernos, cuadernolas",producto
+535,9,097,0974,09740,09740003,Hoja para impresora,0.000378,Hoja para impresora,producto
+536,9,098,,,,Paquetes de vacaciones,0.012155,Paquetes de vacaciones,grupo
+537,9,098,0980,,,Paquetes de vacaciones,0.012155,Paquetes de vacaciones,clase
+538,9,098,0980,09800,,Paquetes de vacaciones,0.012155,Paquetes de vacaciones,subclase
+539,9,098,0980,09800,09800002,Paquetes turísticos al exterior,0.012155,Paquetes turísticos al exterior,producto
+540,10,,,,,SERVICIOS DE EDUCACIÓN,0.034638,Educación,division
+541,10,101,,,,Educación de la primera infancia y primaria,0.015088,Educ. de la primera infa. y prim.,grupo
+542,10,101,1010,,,Educación de la primera infancia y primaria,0.015088,Educ. de la primera infa. y prim.,clase
+543,10,101,1010,10101,,Educación de la primera infancia,0.005432,Educación de la primera infancia,subclase
+544,10,101,1010,10101,10101000,Enseñanza preescolar,0.005432,Enseñanza preescolar,producto
+545,10,101,1010,10102,,Educación primaria,0.009656,Educación primaria,subclase
+546,10,101,1010,10102,10102000,Enseñanza primaria,0.009656,Enseñanza primaria,producto
+547,10,102,,,,Educación secundaria,0.008973,Educación secundaria,grupo
+548,10,102,1020,,,Educación secundaria,0.008973,Educación secundaria,clase
+549,10,102,1020,10200,,Educación secundaria,0.008973,Educación secundaria,subclase
+550,10,102,1020,10200,10200000,Enseñanza secundaria,0.008973,Enseñanza secundaria,producto
+551,10,104,,,,Educación terciaria,0.003591,Educación terciaria,grupo
+552,10,104,1040,,,Educación terciaria,0.003591,Educación terciaria,clase
+553,10,104,1040,10400,,Educación terciaria,0.003591,Educación terciaria,subclase
+554,10,104,1040,10400,10400000,"Enseñanza terciaria, enseñanza universitaria",0.003591,"Ense. terc., ense. unive.",producto
+555,10,105,,,,Educación no definida por nivel,0.006986,Educación no definida por nivel,grupo
+556,10,105,1050,,,Educación no definida por nivel,0.006986,Educación no definida por nivel,clase
+557,10,105,1050,10502,,Otra educación no definida por nivel,0.006986,Otra educación no definida por nivel,subclase
+558,10,105,1050,10502,10502001,"Cursos de música, canto, baile, artes plásticas",0.001463,"Cursos de música, canto, baile, artes plá…",producto
+559,10,105,1050,10502,10502002,Enseñanza de idiomas,0.002675,Enseñanza de idiomas,producto
+560,10,105,1050,10502,10502003,Enseñanza comercial,0.001943,Enseñanza comercial,producto
+561,10,105,1050,10502,10502004,Clases particulares de apoyo a estudiantes,0.000905,Clases particulares de apoyo a estudiantes,producto
+562,11,,,,,RESTAURANTES Y SERVICIOS DE ALOJAMIENTO,0.083084,Restaur. y alojam.,division
+563,11,111,,,,Servicios de alimentos y bebidas,0.080028,Servicios de alimentos y bebidas,grupo
+564,11,111,1111,,,"Restaurantes, cafés y similares",0.080028,"Restaurantes, cafés y similares",clase
+565,11,111,1111,11111,,"Restaurantes, cafés y similares",0.080028,"Restaurantes, cafés y similares",subclase
+566,11,111,1111,11111,11111001,RH Sandwiches,0.002227,RH Sandwiches,producto
+567,11,111,1111,11111,11111002,RH Medias lunas y tortugas rellenas,0.001354,RH Medias lunas y tortugas rellenas,producto
+568,11,111,1111,11111,11111003,RH Sandwiches calientes,0.000844,RH Sandwiches calientes,producto
+569,11,111,1111,11111,11111004,"RH Café, café con leche, capuchino",0.002056,"RH Café, café con leche, capuchino",producto
+570,11,111,1111,11111,11111005,RH Chivito,0.002917,RH Chivito,producto
+571,11,111,1111,11111,11111006,RH Milanesa,0.008602,RH Milanesa,producto
+572,11,111,1111,11111,11111007,RH Frankfurter al pan,0.000763,RH Frankfurter al pan,producto
+573,11,111,1111,11111,11111008,RH Hamburguesa de carne roja al pan,0.002341,RH Hamburguesa de carne roja al pan,producto
+574,11,111,1111,11111,11111009,"RH Tarta salada, porción",0.004433,"RH Tarta salada, porción",producto
+575,11,111,1111,11111,11111010,RH Empanadas,0.004629,RH Empanadas,producto
+576,11,111,1111,11111,11111011,RH Carnes rojas con guarnición,0.003038,RH Carnes rojas con guarnición,producto
+577,11,111,1111,11111,11111012,RH Pescado con guarnición,0.00261,RH Pescado con guarnición,producto
+578,11,111,1111,11111,11111013,RH Pollo con guarnición,0.003606,RH Pollo con guarnición,producto
+579,11,111,1111,11111,11111014,RH Plato de pasta,0.004784,RH Plato de pasta,producto
+580,11,111,1111,11111,11111015,RH Comida de Olla,0.001213,RH Comida de Olla,producto
+581,11,111,1111,11111,11111016,RH Ensalada completa,0.001745,RH Ensalada completa,producto
+582,11,111,1111,11111,11111017,"RH Papas fritas, porción",0.001783,"RH Papas fritas, porción",producto
+583,11,111,1111,11111,11111018,RH Asado a la parrillada,0.003612,RH Asado a la parrillada,producto
+584,11,111,1111,11111,11111019,"RH Pollo al spiedo, entero",0.001209,"RH Pollo al spiedo, entero",producto
+585,11,111,1111,11111,11111020,RH Fainá porción,0.00048,RH Fainá porción,producto
+586,11,111,1111,11111,11111021,RH Pizza porción,0.003005,RH Pizza porción,producto
+587,11,111,1111,11111,11111022,"RH Muzzarella, porción",0.002216,"RH Muzzarella, porción",producto
+588,11,111,1111,11111,11111023,RH Pizzeta grande o familiar,0.005273,RH Pizzeta grande o familiar,producto
+589,11,111,1111,11111,11111024,RH Menú ejecutivo,0.001476,RH Menú ejecutivo,producto
+590,11,111,1111,11111,11111025,"RH Combo de hamburguesa, papas fritas y refresco",0.003535,"RH Combo de hambu., papas fritas y refr.",producto
+591,11,111,1111,11111,11111026,RH Helado barrita o cucurucho,0.000735,RH Helado barrita o cucurucho,producto
+592,11,111,1111,11111,11111027,"RH Helado copa, cassata, vasito, bochas",0.000812,"RH Helado copa, cassata, vasito, bochas",producto
+593,11,111,1111,11111,11111028,RH Torta dulce porción,0.000847,RH Torta dulce porción,producto
+594,11,111,1111,11111,11111029,RH Postres,0.001266,RH Postres,producto
+595,11,111,1111,11111,11111030,RH Agua de mesa,0.000736,RH Agua de mesa,producto
+596,11,111,1111,11111,11111031,RH Refrescos,0.003057,RH Refrescos,producto
+597,11,111,1111,11111,11111032,RH Cerveza,0.001689,RH Cerveza,producto
+598,11,111,1111,11111,11111033,RH Vino,0.00025,RH Vino,producto
+599,11,111,1111,11111,11111034,"RH Whisky, tragos, otras bebidas blancas",0.000885,"RH Whisky, tragos, otras bebidas blancas",producto
+600,11,112,,,,Servicios de alojamiento,0.003056,Servicios de alojamiento,grupo
+601,11,112,1120,,,Servicios de alojamiento,0.003056,Servicios de alojamiento,clase
+602,11,112,1120,11201,,"Hoteles, moteles, posadas y servicios de alojamiento similares",0.003056,"Hoteles, moteles, posadas y serv. de …",subclase
+603,11,112,1120,11201,11201001,Hotel,0.003056,Hotel,producto
+604,12,,,,,SEGUROS Y SERVICIOS FINANCIEROS,0.056905,Seguros y finanzas,division
+605,12,121,,,,Seguros,0.035934,Seguros,grupo
+606,12,121,1211,,,Seguro de vida y accidentes,0.002688,Seguro de vida y accidentes,clase
+607,12,121,1211,12110,,Seguro de vida y accidentes,0.002688,Seguro de vida y accidentes,subclase
+608,12,121,1211,12110,12110001,Previsión de servicios fúnebres,0.002688,Previsión de servicios fúnebres,producto
+609,12,121,1212,,,Seguro relacionado con la salud,0.02338,Seguro relacionado con la salud,clase
+610,12,121,1212,12120,,Seguro relacionado con la salud,0.02338,Seguro relacionado con la salud,subclase
+611,12,121,1212,12120,12120000,Cuota mutual,0.004875,Cuota mutual,producto
+612,12,121,1212,12120,12120001,Cuota de seguros integrales de salud privados,0.007766,Cuota de seguros integ. de salud priv.,producto
+613,12,121,1212,12120,12120002,Cuota de Emergencia Médico Móvil,0.005136,Cuota de Emergencia Médico Móvil,producto
+614,12,121,1212,12120,12120003,Servicio de acompañante,0.005603,Servicio de acompañante,producto
+615,12,121,1213,,,Seguro relacionado con la vivienda,0.000606,Seguro relacionado con la vivienda,clase
+616,12,121,1213,12130,,Seguro relacionado con la vivienda,0.000606,Seguro relacionado con la vivienda,subclase
+617,12,121,1213,12130,12130000,Seguro de vivienda,0.000606,Seguro de vivienda,producto
+618,12,121,1214,,,Seguro relacionado con el transporte,0.00926,Seguro relacionado con el transporte,clase
+619,12,121,1214,12141,,Seguro de transporte personal,0.00926,Seguro de transporte personal,subclase
+620,12,121,1214,12141,12141000,Seguro de automóvil,0.00926,Seguro de automóvil,producto
+621,12,122,,,,Servicios financieros,0.020971,Servicios financieros,grupo
+622,12,122,1222,,,Cargos explícitos por corporaciones captadoras de depósitos,0.018787,Cargos explí. por corpo. capta. de depó.,clase
+623,12,122,1222,12220,,Cargos explícitos por corporaciones captadoras de depósitos,0.018787,Cargos explí. por corpo. capta. de depó.,subclase
+624,12,122,1222,12220,12220001,Pagos por servicios bancarios y de casas bancarias,0.018787,Pagos por serv. banc. y de casas banc.,producto
+625,12,122,1229,,,Otros servicios financieros,0.002184,Otros servicios financieros,clase
+626,12,122,1229,12299,,Otros servicios financieros,0.002184,Otros servicios financieros,subclase
+627,12,122,1229,12299,12299001,Costo o renovación de tarjeta de crédito o débito,0.002184,Costo o renov. de tarjeta de crédito o dé…,producto
+628,13,,,,,"CUIDADO PERSONAL, PROTECCIÓN SOCIAL Y BIENES DIVERSOS",0.043528,"Cuid. pers., prot. soc., bienes div.",division
+629,13,131,,,,Cuidado personal,0.036256,Cuidado personal,grupo
+630,13,131,1312,,,"Otros aparatos, artículos y productos para el cuidado personal",0.026871,"Otros apar., artí. y prod. para …",clase
+631,13,131,1312,13120,,"Otros aparatos, artículos y productos para el cuidado personal",0.026871,"Otros apar., artí. y prod. para …",subclase
+632,13,131,1312,13120,13120001,"Talco, polvo para los pies",0.000241,"Talco, polvo para los pies",producto
+633,13,131,1312,13120,13120002,"Jabón de tocador, líquido o en barra, gel de ducha",0.002318,"Jabón de tocador, líquido o en barra, gel…",producto
+634,13,131,1312,13120,13120003,Espuma de afeitar,0.001894,Espuma de afeitar,producto
+635,13,131,1312,13120,13120004,Pasta dental,0.002458,Pasta dental,producto
+636,13,131,1312,13120,13120005,"Shampoo, acondicionador, savia, cremas para el cabello",0.004454,"Shampoo, acond., savia, cremas para el ca…",producto
+637,13,131,1312,13120,13120006,Desodorantes y antitranspirantes,0.003634,Desodorantes y antitranspirantes,producto
+638,13,131,1312,13120,13120007,Papel higiénico,0.002798,Papel higiénico,producto
+639,13,131,1312,13120,13120008,"Toallas higiénicas femeninas, protectores diarios, tampones",0.001724,"Toallas higié. feme., prote. diarios, tam…",producto
+640,13,131,1312,13120,13120009,Pañales desechables,0.00258,Pañales desechables,producto
+641,13,131,1312,13120,13120010,Cosméticos y perfumes,0.002004,Cosméticos y perfumes,producto
+642,13,131,1312,13120,13120011,"Cremas para la piel, hidratantes, nutritivas",0.001156,"Cremas para la piel, hidra., nutri.",producto
+643,13,131,1312,13120,13120012,Protectores solares,0.000585,Protectores solares,producto
+644,13,131,1312,13120,13120013,"Tintas, gel, cera, espuma, modelador para el cabello",0.001025,"Tintas, gel, cera, espuma…",producto
+645,13,131,1313,,,Salones de peluquería y establecimientos de acicalamiento personal,0.009385,Salones de peluq. y estab. de acica. pers.,clase
+646,13,131,1313,13131,,Peluquería,0.008531,Peluquería,subclase
+647,13,131,1313,13131,13131001,"Peluquería de hombre, niño",0.001897,"Peluquería de hombre, niño",producto
+648,13,131,1313,13131,13131002,Peluquería de mujer,0.006634,Peluquería de mujer,producto
+649,13,131,1313,13132,,Tratamientos de acicalamiento personal,0.000854,Tratamientos de acicalamiento personal,subclase
+650,13,131,1313,13132,13132001,"Depilación, pedicuría, manicuría",0.000854,"Depilación, pedicuría, manicuría",producto
+651,13,132,,,,Efectos personales NCP,0.001325,Efectos personales NCP,grupo
+652,13,132,1321,,,Joyas y relojes,0.000439,Joyas y relojes,clase
+653,13,132,1321,13211,,Joyas y relojes,0.000439,Joyas y relojes,subclase
+654,13,132,1321,13211,13211001,"Joyas, bijouterie",0.000439,"Joyas, bijouterie",producto
+655,13,132,1329,,,Otros efectos personales,0.000886,Otros efectos personales,clase
+656,13,132,1329,13291,,Artículos de viaje y artículos para bebés y otros efectos personales.,0.000886,Artí. de viaje y artí. para bebés y otros…,subclase
+657,13,132,1329,13291,13291001,Carteras,0.000445,Carteras,producto
+658,13,132,1329,13291,13291002,Mochila,0.000441,Mochila,producto
+659,13,133,,,,Protección social,0.000897,Protección social,grupo
+660,13,133,1330,,,Protección social,0.000897,Protección social,clase
+661,13,133,1330,13302,,Residencias no médicas para ancianos y residencias para discapacitados,0.000897,Resid. no médicas para anci. y resid. par…,subclase
+662,13,133,1330,13302,13302001,Residenciales de ancianos,0.000897,Residenciales de ancianos,producto
+663,13,139,,,,Otros servicios NEP,0.00505,Otros servicios NEP,grupo
+664,13,139,1390,,,Otros servicios NEP,0.00505,Otros servicios NEP,clase
+665,13,139,1390,13909,,Otros servicios NEP,0.00505,Otros servicios NEP,subclase
+666,13,139,1390,13909,13909001,Servicios de abogados,0.001375,Servicios de abogados,producto
+667,13,139,1390,13909,13909002,Servicios de escribanos,0.002902,Servicios de escribanos,producto
+668,13,139,1390,13909,13909003,Trámite para obtención del pasaporte,0.000773,Trámite para obtención del pasaporte,producto

@@ -45,6 +45,7 @@ licitaciones_lrm_007 = load_module_from_path('licitaciones_lrm_007', '007_licita
 update_008 = load_module_from_path('update_008', '008_update')
 politica_monetaria_009 = load_module_from_path('politica_monetaria_009', '009_politica_monetaria')
 inflacion_implicita_010 = load_module_from_path('inflacion_implicita_010', '010_inflacion_implicita')
+analisis_ipc_011 = load_module_from_path('analisis_ipc_011', '011_analisis_ipc')
 
 # Export modules/blueprints with original names for backward compatibility
 # ticker module exports a blueprint named 'ticker'
@@ -61,3 +62,4 @@ licitaciones_lrm = licitaciones_lrm_007
 update = update_008
 politica_monetaria = politica_monetaria_009
 inflacion_implicita = inflacion_implicita_010
+analisis_ipc = analisis_ipc_011

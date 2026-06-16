@@ -500,14 +500,14 @@ def descargar_excel_bevsa(driver, download_path):
     df = pd.read_excel(origen, engine='openpyxl')
     fecha_col = df.columns[0] if len(df.columns) > 0 else None
     if fecha_col and len(df) > ULTIMOS_N:
-        df[fecha_col] = pd.to_datetime(df[fecha_col], errors='coerce')
+        df[fecha_col] = pd.to_datetime(df[fecha_col], errors="coerce", dayfirst=True)
         df = df.dropna(subset=[fecha_col])
         df = df.sort_values(fecha_col, ascending=False).head(ULTIMOS_N).sort_values(fecha_col, ascending=True)
     df.to_excel(destino, index=False, engine='openpyxl')
     try:
         max_fecha = None
         if fecha_col and not df.empty:
-            _s = pd.to_datetime(df[fecha_col], errors="coerce").dropna()
+            _s = pd.to_datetime(df[fecha_col], errors="coerce", dayfirst=True).dropna()
             if len(_s):
                 max_fecha = _s.max().date()
         hoy = datetime.now().date()
@@ -581,9 +581,11 @@ def actualizar_historico(download_path):
         fecha_col_hist = 'FECHA'
     fecha_col = 'FECHA'
 
-    df_historico[fecha_col] = pd.to_datetime(df_historico[fecha_col], errors='coerce')
+    df_historico[fecha_col] = pd.to_datetime(
+        df_historico[fecha_col], errors="coerce", dayfirst=True
+    )
     df_historico = df_historico.dropna(subset=[fecha_col])
-    df_temp[fecha_col] = pd.to_datetime(df_temp[fecha_col], errors='coerce')
+    df_temp[fecha_col] = pd.to_datetime(df_temp[fecha_col], errors="coerce", dayfirst=True)
     df_temp = df_temp.dropna(subset=[fecha_col])
 
     if df_historico.empty:

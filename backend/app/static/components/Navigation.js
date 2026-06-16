@@ -11,6 +11,7 @@ function Navigation({ currentPage, onPageChange }) {
         { id: 'dcp', nombre: 'Precios de Exportación', displayName: 'Precios de Exportación' },
         { id: 'cotizaciones', nombre: 'Cotizaciones de monedas', displayName: 'Cotizaciones de monedas' },
         { id: 'inflacion-dolares', nombre: 'Inflación en dólares', displayName: 'Inflación en dólares' },
+        { id: 'analisis-ipc', nombre: 'Análisis IPC Uruguay', displayName: 'Análisis IPC Uruguay' },
         { id: 'yield-curve', nombre: 'Curva de Rendimiento', displayName: 'Curva de Rendimiento' },
         { id: 'licitaciones-lrm', nombre: 'Licitaciones LRM', displayName: 'Licitaciones LRM' },
         { id: 'politica-monetaria', nombre: 'Monitor Monetario LatAm', displayName: 'Monitor Monetario LatAm' },

@@ -8,7 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Babel 7: la 8.x emite import de react/jsx-runtime y rompe type="text/babel" en el navegador -->
+    <script src="https://unpkg.com/@babel/standalone@7.26.9/babel.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -89,6 +90,7 @@
     <script type="text/babel" src="/static/pages/DataExportPage.js"></script>
     <script type="text/babel" src="/static/pages/LicitacionesLRMPage.js"></script>
     <script type="text/babel" src="/static/pages/PoliticaMonetariaPage.js"></script>
+    <script type="text/babel" src="/static/pages/AnalisisIPCPage.js?v=202604096"></script>
     <!-- App Principal -->
     <script type="text/babel" src="/static/app.js"></script>
 </body>

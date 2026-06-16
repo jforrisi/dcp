@@ -60,6 +60,17 @@ function HomePage() {
             color: 'from-purple-500 to-purple-600'
         },
         {
+            id: 'analisis-ipc',
+            nombre: 'Análisis IPC Uruguay',
+            descripcion: 'IPC desagregado: evolución, impacto y contribuciones por división',
+            icono: (
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                </svg>
+            ),
+            color: 'from-rose-500 to-rose-600'
+        },
+        {
             id: 'yield-curve',
             nombre: 'Curva de Rendimiento',
             descripcion: 'Curva de rendimiento y análisis temporal de tasas',

@@ -22,6 +22,7 @@ function App() {
             {currentPage === 'data-export' && <DataExportPage />}
             {currentPage === 'licitaciones-lrm' && <LicitacionesLRMPage />}
             {currentPage === 'politica-monetaria' && <PoliticaMonetariaPage />}
+            {currentPage === 'analisis-ipc' && <AnalisisIPCPage />}
         </div>
     );
 }

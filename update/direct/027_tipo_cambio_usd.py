@@ -15,6 +15,7 @@ import os
 import pandas as pd
 from _helpers import (
     completar_dias_faltantes,
+    parse_fechas_uruguay_excel,
     validar_fechas_solo_nulas,
     insertar_en_bd_unificado
 )
@@ -71,7 +72,7 @@ def leer_excel_bevsa():
     tc_df = tc_df.rename(columns={col_fecha: "FECHA", col_valor: "VALOR"})
     tc_df = tc_df.dropna(how="all")
     tc_df = tc_df.dropna(subset=["FECHA"])
-    tc_df["FECHA"] = pd.to_datetime(tc_df["FECHA"], errors="coerce")
+    tc_df["FECHA"] = parse_fechas_uruguay_excel(tc_df["FECHA"])
     tc_df = tc_df.dropna(subset=["FECHA"])
     tc_df["VALOR"] = pd.to_numeric(tc_df["VALOR"], errors="coerce")
     tc_df = tc_df.dropna(subset=["VALOR"])

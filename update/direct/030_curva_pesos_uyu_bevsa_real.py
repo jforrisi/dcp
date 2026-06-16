@@ -7,8 +7,12 @@ from pathlib import Path
 
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+_root = Path(__file__).resolve().parent.parent.parent
+_direct = Path(__file__).resolve().parent
+sys.path.insert(0, str(_root))
+sys.path.insert(0, str(_direct))
 from db.connection import execute_query, execute_update, insert_dataframe
+from _helpers import parse_fechas_uruguay_excel
 
 # Configuración
 ID_PAIS_URUGUAY = 858
@@ -144,14 +148,8 @@ def transformar_a_formato_largo(df, mapeo_variables, mapeo_columnas):
         print(f"[WARN] {filas_sin_id} filas sin id_variable, serán omitidas")
         df_melted = df_melted.dropna(subset=['id_variable'])
     
-    # Parsear fechas DD/MM/YYYY (BEVSA usa formato uruguayo: día/mes/año)
-    fechas_raw = df_melted[columna_fecha]
-    if fechas_raw.dtype == 'object':
-        fechas = pd.to_datetime(fechas_raw, format='%d/%m/%Y', errors='coerce')
-        if fechas.isna().sum() > fechas_raw.isna().sum():
-            fechas = pd.to_datetime(fechas_raw, dayfirst=True, errors='coerce')
-    else:
-        fechas = pd.to_datetime(fechas_raw, dayfirst=True, errors='coerce')
+    # BEVSA / Excel uruguayo: día primero (evita interpretación mes-día de pandas)
+    fechas = parse_fechas_uruguay_excel(df_melted[columna_fecha])
 
     # Preparar DataFrame final
     df_final = pd.DataFrame({

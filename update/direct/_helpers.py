@@ -15,6 +15,20 @@ import pandas as pd
 from db.connection import execute_query, execute_query_single, execute_update, insert_dataframe
 
 
+def parse_fechas_uruguay_excel(serie: pd.Series) -> pd.Series:
+    """
+    Fechas al estilo BEVSA / Excel uruguayo: día-mes-año (DD/MM/YYYY, DD-MM-YYYY, etc.).
+
+    Si la columna ya es datetime64 (celda de fecha nativa en Excel), se normaliza sin
+    re-interpretar. Si es texto o mixto, se usa dayfirst=True para evitar el default
+    estilo US (mes-día) de pandas.
+    """
+    s = serie
+    if pd.api.types.is_datetime64_any_dtype(s):
+        return pd.to_datetime(s, errors="coerce")
+    return pd.to_datetime(s, errors="coerce", dayfirst=True)
+
+
 def insertar_en_bd_helper(
     db_name: str,
     id_variable: int,

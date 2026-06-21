@@ -5,6 +5,7 @@ from io import BytesIO
 from flask import Blueprint, request, jsonify, abort, send_file
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, PatternFill
+from openpyxl.utils import get_column_letter
 from ...database import execute_query, execute_query_single
 
 bp = Blueprint('cotizaciones', __name__)
@@ -463,12 +464,19 @@ def export_cotizaciones_to_excel():
                 return f'{pais} (Sintético)' if pais else 'Sintético'
             return pais
         
+        # Estructura para la hoja pivote (Hoja 3): {fecha_iso: {col_pais: valor}}
+        pivot_data = {}
+        pivot_columns = []  # orden de columnas de país, sin duplicados
+
         row_num = 2
         for product in products:
             product_id = product['id']
             product_name = product['nombre']
             product_source = product.get('fuente', '')
             product_pais = _pais_export_label(product.get('pais'), product.get('id_variable'))
+
+            if product_pais and product_pais not in pivot_columns:
+                pivot_columns.append(product_pais)
             
             # Convertir id sintético a id_variable e id_pais
             id_variable = product_id // 10000
@@ -484,15 +492,19 @@ def export_cotizaciones_to_excel():
             
             for price_item in prices:
                 fecha_obj = parse_fecha(price_item['fecha'])
+                fecha_iso = fecha_obj.isoformat()
+                valor = float(price_item['valor'])
                 ws_cotizaciones.append([
-                    fecha_obj.isoformat(),
+                    fecha_iso,
                     product_pais,
                     product_name,
-                    float(price_item['valor']),
+                    valor,
                     '',  # unidad no existe en nuevo schema
                     product_source
                 ])
                 row_num += 1
+                if product_pais:
+                    pivot_data.setdefault(fecha_iso, {})[product_pais] = valor
         
         # Ajustar ancho de columnas
         ws_cotizaciones.column_dimensions['A'].width = 12
@@ -529,6 +541,28 @@ def export_cotizaciones_to_excel():
         ws_metadata.column_dimensions['A'].width = 22
         ws_metadata.column_dimensions['B'].width = 30
         ws_metadata.column_dimensions['C'].width = 15
+        
+        # Hoja 3: Por país (pivote) -> Fecha en columna A, un país por columna.
+        # Si no hay dato para una fecha/país, la celda queda en blanco.
+        ws_pivot = wb.create_sheet("Por país")
+        ws_pivot.append(['Fecha'] + pivot_columns)
+        for col in range(1, len(pivot_columns) + 2):
+            cell = ws_pivot.cell(row=1, column=col)
+            cell.fill = header_fill
+            cell.font = header_font
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+
+        for fecha_iso in sorted(pivot_data.keys()):
+            fila = [fecha_iso]
+            valores_fecha = pivot_data[fecha_iso]
+            for col_pais in pivot_columns:
+                fila.append(valores_fecha.get(col_pais, None))  # None => celda en blanco
+            ws_pivot.append(fila)
+
+        ws_pivot.column_dimensions['A'].width = 12
+        for idx in range(len(pivot_columns)):
+            col_letter = get_column_letter(idx + 2)
+            ws_pivot.column_dimensions[col_letter].width = 18
         
         # Guardar en BytesIO
         output = BytesIO()

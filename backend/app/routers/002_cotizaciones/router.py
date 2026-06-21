@@ -395,7 +395,7 @@ def export_cotizaciones_to_excel():
         ws_cotizaciones = wb.create_sheet("Cotizaciones")
         
         # Encabezados
-        headers = ['Fecha', 'País/Cotización', 'Valor', 'Unidad', 'Fuente']
+        headers = ['Fecha', 'País', 'Cotización', 'Valor', 'Unidad', 'Fuente']
         ws_cotizaciones.append(headers)
         
         # Estilo para encabezados
@@ -422,24 +422,53 @@ def export_cotizaciones_to_excel():
             fks_conditions.append("(m.id_variable = ? AND m.id_pais = ?)")
             fks_params.extend([id_var, id_pais])
         
-        # Obtener datos
-        query_products = f"""
-            SELECT 
-                (m.id_variable * 10000 + m.id_pais) as id,
-                v.id_nombre_variable as nombre,
-                m.fuente
-            FROM maestro m
-            LEFT JOIN variables v ON m.id_variable = v.id_variable
-            WHERE ({' OR '.join(fks_conditions)})
-            AND m.activo = 1
-        """
-        products = execute_query(query_products, tuple(fks_params))
+        # Obtener datos (incluye país como en GET /cotizaciones)
+        try:
+            query_products = f"""
+                SELECT 
+                    (m.id_variable * 10000 + m.id_pais) as id,
+                    v.id_nombre_variable as nombre,
+                    m.fuente,
+                    pg.nombre_pais_grupo as pais,
+                    v.id_variable
+                FROM maestro m
+                LEFT JOIN pais_grupo pg ON m.id_pais = pg.id_pais
+                LEFT JOIN variables v ON m.id_variable = v.id_variable
+                WHERE ({' OR '.join(fks_conditions)})
+                AND (m.activo = 1 OR CAST(m.activo AS INTEGER) = 1)
+            """
+            products = execute_query(query_products, tuple(fks_params))
+        except Exception:
+            query_products = f"""
+                SELECT 
+                    (m.id_variable * 10000 + m.id_pais) as id,
+                    v.id_nombre_variable as nombre,
+                    m.fuente,
+                    NULL as pais,
+                    v.id_variable
+                FROM maestro m
+                LEFT JOIN variables v ON m.id_variable = v.id_variable
+                WHERE ({' OR '.join(fks_conditions)})
+                AND (m.activo = 1 OR CAST(m.activo AS INTEGER) = 1)
+            """
+            products = execute_query(query_products, tuple(fks_params))
+
+        def _pais_export_label(pais_raw, id_variable):
+            pais = pais_raw or ''
+            if pais and '(' in pais:
+                pais = pais.split('(')[0].strip()
+            if id_variable == 21:
+                return f'{pais} (Informal)' if pais else 'Informal'
+            if id_variable == 85:
+                return f'{pais} (Sintético)' if pais else 'Sintético'
+            return pais
         
         row_num = 2
         for product in products:
             product_id = product['id']
             product_name = product['nombre']
             product_source = product.get('fuente', '')
+            product_pais = _pais_export_label(product.get('pais'), product.get('id_variable'))
             
             # Convertir id sintético a id_variable e id_pais
             id_variable = product_id // 10000
@@ -457,6 +486,7 @@ def export_cotizaciones_to_excel():
                 fecha_obj = parse_fecha(price_item['fecha'])
                 ws_cotizaciones.append([
                     fecha_obj.isoformat(),
+                    product_pais,
                     product_name,
                     float(price_item['valor']),
                     '',  # unidad no existe en nuevo schema
@@ -466,10 +496,11 @@ def export_cotizaciones_to_excel():
         
         # Ajustar ancho de columnas
         ws_cotizaciones.column_dimensions['A'].width = 12
-        ws_cotizaciones.column_dimensions['B'].width = 30
-        ws_cotizaciones.column_dimensions['C'].width = 15
+        ws_cotizaciones.column_dimensions['B'].width = 22
+        ws_cotizaciones.column_dimensions['C'].width = 30
         ws_cotizaciones.column_dimensions['D'].width = 15
-        ws_cotizaciones.column_dimensions['E'].width = 20
+        ws_cotizaciones.column_dimensions['E'].width = 15
+        ws_cotizaciones.column_dimensions['F'].width = 20
         
         # Hoja 2: Metadatos
         ws_metadata = wb.create_sheet("Metadatos")
@@ -486,13 +517,18 @@ def export_cotizaciones_to_excel():
         ws_metadata.append(['Fecha hasta', fecha_hasta_str])
         ws_metadata.append(['Total cotizaciones', len(products)])
         ws_metadata.append(['', ''])
-        ws_metadata.append(['Cotización', 'ID'])
+        ws_metadata.append(['País', 'Cotización', 'ID'])
         
         for product in products:
-            ws_metadata.append([product['nombre'], product['id']])
+            ws_metadata.append([
+                _pais_export_label(product.get('pais'), product.get('id_variable')),
+                product['nombre'],
+                product['id'],
+            ])
         
-        ws_metadata.column_dimensions['A'].width = 25
-        ws_metadata.column_dimensions['B'].width = 15
+        ws_metadata.column_dimensions['A'].width = 22
+        ws_metadata.column_dimensions['B'].width = 30
+        ws_metadata.column_dimensions['C'].width = 15
         
         # Guardar en BytesIO
         output = BytesIO()

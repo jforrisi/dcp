@@ -15,7 +15,7 @@ Países incluidos:
 - Perú (F072.PEN.USD.N.O.D)
 - Argentina oficial (F072.ARS.USD.N.O.D)
 
-1) Extraer datos desde API del BCCH usando bcchapi (desde 2010-01-01).
+1) Extraer datos desde API del BCCH usando bcchapi (desde 2005-01-01).
 2) Filtrar valores no numéricos.
 3) Completar días faltantes (forward fill).
 4) Validar fechas.
@@ -47,6 +47,7 @@ from _helpers import (
 # Credenciales del BCCH
 BCCH_USER = "joaquin.forrisi@gmail.com"
 BCCH_PASSWORD = "Joaquin.13"
+FECHA_INICIO = "2005-01-01"
 
 # Configuración de países
 # NOTA: id_variable e id_pais configurados desde maestro_database.xlsx Sheet1_old
@@ -102,7 +103,7 @@ PAISES_CONFIG = [
     },
 ]
 
-def extraer_bcch_pais(codigo_serie: str, nombre_pais: str, fecha_inicio: str = "2010-01-01", fecha_fin: str = None):
+def extraer_bcch_pais(codigo_serie: str, nombre_pais: str, fecha_inicio: str = FECHA_INICIO, fecha_fin: str = None):
     """
     Extrae datos de tipo de cambio de un país desde el BCCH usando bcchapi.
     
@@ -211,7 +212,7 @@ def procesar_pais(pais_config: dict) -> bool:
         df = extraer_bcch_pais(
             codigo_serie=pais_config["codigo_serie"],
             nombre_pais=pais_config["nombre"],
-            fecha_inicio="2010-01-01",
+            fecha_inicio=FECHA_INICIO,
             fecha_fin=None
         )
         

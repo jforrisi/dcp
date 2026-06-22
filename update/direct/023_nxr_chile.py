@@ -5,7 +5,7 @@ Script: nxr_chile
 Actualiza la base de datos con la serie de tipo de cambio USD/CLP del Banco Central 
 de Chile (BCCH), usando su API oficial (bcchapi).
 
-1) Extraer datos desde API del BCCH usando bcchapi (desde 2010-01-01).
+1) Extraer datos desde API del BCCH usando bcchapi (desde 2005-01-01).
 2) Filtrar valores no numéricos.
 3) Completar días faltantes (forward fill).
 4) Validar fechas.
@@ -27,6 +27,7 @@ from _helpers import (
 # Credenciales del BCCH
 BCCH_USER = "joaquin.forrisi@gmail.com"
 BCCH_PASSWORD = "Joaquin.13"
+FECHA_INICIO = "2005-01-01"
 
 # Código de serie del BCCH para Dólar Observado (puede variar, se busca automáticamente)
 CODIGO_SERIE_BCCH = None  # Se buscará automáticamente
@@ -107,12 +108,12 @@ def buscar_codigo_serie(siete: Siete):
         traceback.print_exc()
         return None
 
-def extraer_bcch_chile(fecha_inicio="2010-01-01", fecha_fin=None):
+def extraer_bcch_chile(fecha_inicio=FECHA_INICIO, fecha_fin=None):
     """
     Extrae datos de tipo de cambio del Banco Central de Chile usando bcchapi.
     
     Args:
-        fecha_inicio: Fecha de inicio en formato YYYY-MM-DD (por defecto: 2010-01-01)
+        fecha_inicio: Fecha de inicio en formato YYYY-MM-DD (por defecto: 2005-01-01)
         fecha_fin: Fecha de fin en formato YYYY-MM-DD (por defecto: hoy)
         
     Returns:
@@ -213,9 +214,9 @@ def main():
     print("ACTUALIZACION DE DATOS: TIPO DE CAMBIO USD/CLP (CHILE)")
     print("=" * 60)
     
-    # Extraer datos desde API del BCCH (desde 2010-01-01)
-    print("\n[INFO] Extrayendo datos del Banco Central de Chile (API)...")
-    df = extraer_bcch_chile(fecha_inicio="2010-01-01", fecha_fin=None)
+    # Extraer datos desde API del BCCH (desde 2005-01-01)
+    print(f"\n[INFO] Extrayendo datos del Banco Central de Chile (desde {FECHA_INICIO})...")
+    df = extraer_bcch_chile(fecha_inicio=FECHA_INICIO, fecha_fin=None)
     
     if df is None or df.empty:
         print("[ERROR] No se pudieron extraer los datos")

@@ -22,6 +22,8 @@ from _helpers import (
 
 
 # Configuración de base de datos
+FECHA_INICIO = "01-01-2005"  # MM-DD-YYYY
+
 # Configuración de IDs (desde maestro_database.xlsx Sheet1_old)
 ID_VARIABLE = 20  # Configurar cuando esté en maestro_database.xlsx
 ID_PAIS = 76  # Brasil)
@@ -32,7 +34,7 @@ def extraer_bcb_brasil(fecha_inicio=None, fecha_fin=None):
     Extrae datos de tipo de cambio del Banco Central de Brasil (BCB).
     
     Args:
-        fecha_inicio: Fecha de inicio en formato MM-DD-YYYY (por defecto: 01-01-2010)
+        fecha_inicio: Fecha de inicio en formato MM-DD-YYYY (por defecto: 01-01-2005)
         fecha_fin: Fecha de fin en formato MM-DD-YYYY (por defecto: hoy)
         
     Returns:
@@ -41,7 +43,7 @@ def extraer_bcb_brasil(fecha_inicio=None, fecha_fin=None):
     try:
         # Fechas por defecto
         if fecha_inicio is None:
-            fecha_inicio = "01-01-2010"  # MM-DD-YYYY - desde 2010 como solicitado
+            fecha_inicio = FECHA_INICIO
         if fecha_fin is None:
             fecha_fin = datetime.today().strftime("%m-%d-%Y")
         
@@ -111,9 +113,9 @@ def main():
     print("ACTUALIZACION DE DATOS: TIPO DE CAMBIO USD/BRL (BRASIL)")
     print("=" * 60)
     
-    # Extraer datos desde API del BCB (desde 2010)
-    print("\n[INFO] Extrayendo datos del Banco Central de Brasil (desde 2010)...")
-    df = extraer_bcb_brasil(fecha_inicio="01-01-2010", fecha_fin=None)
+    # Extraer datos desde API del BCB (desde 2005)
+    print(f"\n[INFO] Extrayendo datos del Banco Central de Brasil (desde {FECHA_INICIO})...")
+    df = extraer_bcb_brasil(fecha_inicio=FECHA_INICIO, fecha_fin=None)
     
     if df is None or df.empty:
         print("[ERROR] No se pudieron extraer los datos")

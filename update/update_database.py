@@ -38,6 +38,12 @@ DIRECT_EXCLUIDOS_BEVSA = {
     "029_curva_pesos_uyu_bevsa_nominal.py",
     "030_curva_pesos_uyu_bevsa_real.py",
 }
+# TPM histórico completo: corre con update/update_tpm.py (no en cada update_database)
+DIRECT_EXCLUIDOS_TPM = {
+    "037_tasa_pm_multipais.py",
+    "tpm_multipais_config.py",
+    "tpm_bcch_helpers.py",
+}
 
 
 def descubrir_scripts_download() -> Dict[str, List[Path]]:
@@ -85,7 +91,7 @@ def descubrir_scripts_update() -> Dict[str, List[Path]]:
     if direct_dir.exists():
         for script_file in sorted(direct_dir.glob("*.py")):
             if script_file.name != "__init__.py" and not script_file.name.startswith("_"):
-                if script_file.name not in DIRECT_EXCLUIDOS_BEVSA:
+                if script_file.name not in DIRECT_EXCLUIDOS_BEVSA and script_file.name not in DIRECT_EXCLUIDOS_TPM:
                     scripts['direct'].append(script_file)
     
     # Scripts de update/calculate/ (scripts que se alimentan de otros)
